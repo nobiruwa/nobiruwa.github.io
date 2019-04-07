@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/syntax.css">
+    <link rel="stylesheet" href="../css/default.css">
+    <title>My Hakyll Blog - EmacsでのC/C++開発</title>
+  </head>
+  <body>
+    <div id="header">
+      <div id="logo">
+        <a href="../">Nobiruwa's</a>
+      </div>
+      <div id="navigation">
+        <a href="../">Home</a>
+        <a href="../archive.html">Archive</a>
+      </div>
+    </div>
+
+    <div id="content">
+      <h1>EmacsでのC/C++開発</h1>
+
+      <div class="info">
+    Posted on April  7, 2019
+    
+        by nobiruwa
+    
+</div>
+
+<h2 id="tldr">tl;dr</h2>
+<p>lsp-modeとcclsを用いることで、十分に快適な環境を得ることができました。</p>
+<h2 id="切っ掛け">切っ掛け</h2>
+<p><a href="http://www.opengl-tutorial.org/">OpenGLのチュートリアル</a>を使って学習しているところ、GNU Globalでは一部のAPIの補完がイマイチだったので、環境を模索することにしました。</p>
+<p>例えば、以下のAPIはGNU Globalが<code>/usr/include</code>配下を入力して作るタグGTAGSには登録されません。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><a class="sourceLine" id="cb1-1" title="1"><span class="pp">#define glBindVertexArray </span>GLEW_GET_FUN(__glewBindVertexArray)</a></code></pre></div>
+<p>目標はOpenGLの開発をベンチマークとして、以下の事が実現できるようになることです。</p>
+<ol type="1">
+<li>関数名の補完ができる</li>
+<li>関数の引数の型・戻り値(つまり関数の型)が分かる</li>
+<li>貧弱なPCでもストレスなく使用できる</li>
+</ol>
+<h2 id="変遷">変遷</h2>
+<ol type="1">
+<li><a href="https://github.com/leoliu/ggtags">ggtags</a> + <a href="https://www.gnu.org/software/global/">GNU Global</a>
+<ul>
+<li>glewのAPIが補完できたりできなかったりしました。</li>
+<li>関数を参照するヘッダー内行を検索することで関数の型が分かるのですが、カレントバッファーがいちいちヘッダーファイルに変化するのが億劫に感じました。</li>
+</ul></li>
+<li>ggtags + <a href="http://ctags.sourceforge.net/">Exuberant Ctags</a>
+<ul>
+<li>GNU Globalと大差ありませんでした。</li>
+</ul></li>
+<li><a href="https://github.com/Sarcasm/irony-mode">irony-mode</a>
+<ul>
+<li><code>glBindVertexArray</code>を補完できるようになりましたが、関数の型が分からず惜しいです。</li>
+</ul></li>
+<li><a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a> + <a href="https://clang.llvm.org/extra/clangd/">clangd</a>
+<ul>
+<li>補完と関数の型は申し分ありませんでした。</li>
+<li>ただ、clangdがlsp-modeから送信されるリクエストを処理しきれず、CPU使用率が100%を超えしばしば通信が切断されます。</li>
+</ul></li>
+<li><a href="https://github.com/joaotavora/eglot">eglot</a> + clangd
+<ul>
+<li>補完と関数の型はlsp-modeほどの情報量はありませんでしたが、申し分ありませんでした。</li>
+<li>eglotはEmacs側でリクエストをdebounceしますが、clangdはそれでも負荷が高いです。</li>
+</ul></li>
+<li><a href="https://github.com/abingham/emacs-ycmd">emacs-ycmd</a> + <a href="https://github.com/Valloric/ycmd">ycmd</a>
+<ul>
+<li>期待したような情報が表示されず、カスタマイズによる改善を断念しました。</li>
+</ul></li>
+<li>ggtags + <a href="https://github.com/universal-ctags/ctags">universal-ctags</a>
+<ul>
+<li>universal-ctagsのコマンドを読み解くのが面倒になり使用を断念しました。</li>
+</ul></li>
+<li>lsp-mode + <a href="https://github.com/MaskRay/ccls">ccls</a>
+<ul>
+<li>補完と関数の型は申し分ありませんでした。</li>
+<li>cclsがdeounce(キューに溜まったリクエストを間引く)するようで、CPU使用率は許容範囲でした。</li>
+</ul></li>
+</ol>
+<h2 id="lsp-mode-ccls-の構築手順">lsp-mode + ccls の構築手順</h2>
+<p>開発のモードとしてlsp-modeを用い、バックエンドにはCCLSを用います。</p>
+<p>この組み合わせが気に入った理由は以下の通りです。</p>
+<ol type="1">
+<li>lsp-mode + <a href="https://github.com/tigersoldier/company-lsp">company-lsp</a> + <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a> により、様々な情報が出力されます。</li>
+<li>cclsは他のバックエンド(clangd、<a href="https://github.com/cquery-project/cquery">cquery</a>)に比べて動作が軽量です。
+<ol start="3" type="1">
+<li><a href="https://langserver.org/">LSP</a> (<a href="https://microsoft.github.io/language-server-protocol/">Language Protocol Server</a>) に基づいているため、フロントエンドとバックエンドは乗り換えが比較的容易です。</li>
+</ol></li>
+</ol>
+<p>cclsはクライアントからのリクエストを適度にdebounce(間引く)するため、比較的CPU使用率が跳ね上がることを防いでいるようです。</p>
+<p>詳細はさておき、Clang 7 (2019年4月現在、Debian SidのデフォルトのClangがこのバージョンのため)と組み合わせて開発環境を揃えるための手順と設定を記録しておきます。</p>
+<h4 id="clangのインストール-cclsのビルド">Clangのインストール + cclsのビルド</h4>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">$ <span class="fu">sudo</span> apt-get install cmake libclang-7-dev clang-format-7 clang-tools-7</a>
+<a class="sourceLine" id="cb2-2" title="2">$ <span class="bu">cd</span> ~/repo</a>
+<a class="sourceLine" id="cb2-3" title="3">$ <span class="fu">git</span> clone --depth=1 --recursive https://github.com/MaskRay/ccls.git ccls.git</a>
+<a class="sourceLine" id="cb2-4" title="4">$ <span class="bu">cd</span> ccls.git</a>
+<a class="sourceLine" id="cb2-5" title="5">$ <span class="fu">sed</span> -i -e <span class="st">'s/find_program(CLANG_EXECUTABLE clang)/find_program(CLANG_EXECUTABLE clang-7)/'</span> CMakeLists.txt</a>
+<a class="sourceLine" id="cb2-6" title="6">$ <span class="fu">cmake</span> -H. -BRelease -DCMAKE_BUILD_TYPE=Release </a>
+<a class="sourceLine" id="cb2-7" title="7">$ <span class="fu">cmake</span> --build Release</a></code></pre></div>
+<h4 id="emacsパッケージのインストール">Emacsパッケージのインストール</h4>
+<pre class="emacs"><code>M-x package-install
+ccls
+clang-format
+lsp-mode
+lsp-ui</code></pre>
+<h4 id="emacsパッケージの設定">Emacsパッケージの設定</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><a class="sourceLine" id="cb4-1" title="1"><span class="co">;;;;;;;;</span></a>
+<a class="sourceLine" id="cb4-2" title="2"><span class="co">;; ccls</span></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co">;;;;;;;;</span></a>
+<a class="sourceLine" id="cb4-4" title="4">(<span class="kw">require</span> 'ccls)</a>
+<a class="sourceLine" id="cb4-5" title="5">(<span class="kw">setq</span> ccls-executable (expand-file-name <span class="st">&quot;~/repo/ccls.git/Release/ccls&quot;</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><a class="sourceLine" id="cb5-1" title="1"><span class="co">;;;;;;;;</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="co">;; clang-format</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="co">;;;;;;;;</span></a>
+<a class="sourceLine" id="cb5-4" title="4">(<span class="kw">require</span> 'clang-format)</a>
+<a class="sourceLine" id="cb5-5" title="5">(<span class="kw">setq</span> clang-format-executable <span class="st">&quot;/usr/bin/clang-format-7&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><a class="sourceLine" id="cb6-1" title="1"><span class="co">;;;</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="co">;; company-mode</span></a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="co">;; company-*</span></a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="co">;;;</span></a>
+<a class="sourceLine" id="cb6-5" title="5">(<span class="kw">require</span> 'company)</a>
+<a class="sourceLine" id="cb6-6" title="6"></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co">;; company-backends</span></a>
+<a class="sourceLine" id="cb6-8" title="8">(<span class="kw">require</span> 'company-clang)</a>
+<a class="sourceLine" id="cb6-9" title="9">(<span class="kw">setq</span> company-clang-executable (executable-find <span class="st">&quot;/usr/bin/clang-7&quot;</span>))</a>
+<a class="sourceLine" id="cb6-10" title="10">(<span class="kw">setq</span> company-clang--version '(normal . <span class="fl">7.0</span>))</a>
+<a class="sourceLine" id="cb6-11" title="11"></a>
+<a class="sourceLine" id="cb6-12" title="12">(<span class="kw">require</span> 'company-dict)</a>
+<a class="sourceLine" id="cb6-13" title="13">(<span class="kw">require</span> 'company-lsp)</a>
+<a class="sourceLine" id="cb6-14" title="14"></a>
+<a class="sourceLine" id="cb6-15" title="15">(<span class="kw">setq</span> company-dict-dir <span class="st">&quot;~/repo/nobiruwa.github/dot-emacs.d.git/company-dict&quot;</span>)</a>
+<a class="sourceLine" id="cb6-16" title="16"></a>
+<a class="sourceLine" id="cb6-17" title="17">(with-eval-after-load <span class="st">&quot;company&quot;</span></a>
+<a class="sourceLine" id="cb6-18" title="18">  (global-company-mode +<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb6-19" title="19">  <span class="co">;; C-[ C-i</span></a>
+<a class="sourceLine" id="cb6-20" title="20">  (global-set-key (kbd <span class="st">&quot;C-M-i&quot;</span>) 'company-complete)</a>
+<a class="sourceLine" id="cb6-21" title="21">  (define-key emacs-lisp-mode-map (kbd <span class="st">&quot;C-M-i&quot;</span>) 'company-complete)</a>
+<a class="sourceLine" id="cb6-22" title="22">  (define-key lisp-interaction-mode-map (kbd <span class="st">&quot;C-M-i&quot;</span>) 'company-complete)</a>
+<a class="sourceLine" id="cb6-23" title="23"></a>
+<a class="sourceLine" id="cb6-24" title="24">  (<span class="kw">setq</span> company-backends</a>
+<a class="sourceLine" id="cb6-25" title="25">        '(company-bbdb</a>
+<a class="sourceLine" id="cb6-26" title="26">          company-nxml</a>
+<a class="sourceLine" id="cb6-27" title="27">          company-css</a>
+<a class="sourceLine" id="cb6-28" title="28">          company-eclim</a>
+<a class="sourceLine" id="cb6-29" title="29">          company-semantic</a>
+<a class="sourceLine" id="cb6-30" title="30">          company-lsp</a>
+<a class="sourceLine" id="cb6-31" title="31">          company-clang</a>
+<a class="sourceLine" id="cb6-32" title="32">          company-xcode</a>
+<a class="sourceLine" id="cb6-33" title="33">          company-cmake</a>
+<a class="sourceLine" id="cb6-34" title="34">          company-capf</a>
+<a class="sourceLine" id="cb6-35" title="35">          company-files</a>
+<a class="sourceLine" id="cb6-36" title="36">          (company-dabbrev-code company-etags company-keywords company-dict)</a>
+<a class="sourceLine" id="cb6-37" title="37">          company-oddmuse</a>
+<a class="sourceLine" id="cb6-38" title="38">          company-dabbrev)))</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><a class="sourceLine" id="cb7-1" title="1"><span class="co">;;;;;;;;</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="co">;; lsp-mode</span></a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="co">;;;;;;;;</span></a>
+<a class="sourceLine" id="cb7-4" title="4">(<span class="kw">require</span> 'lsp-mode)</a>
+<a class="sourceLine" id="cb7-5" title="5">(<span class="kw">setq</span> lsp-clients-clangd-executable <span class="st">&quot;/usr/bin/clangd-7&quot;</span>)</a>
+<a class="sourceLine" id="cb7-6" title="6">(<span class="kw">setq</span> lsp-prefer-flymake <span class="kw">nil</span>)</a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="co">;; # apt-get install clang-tools-7 # libclang-devのメジャーバージョンと合わせる</span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="co">;; C++ではclang-formatが必要</span></a>
+<a class="sourceLine" id="cb7-9" title="9">(add-hook 'c-mode-hook #'lsp)</a>
+<a class="sourceLine" id="cb7-10" title="10">(add-hook 'c++-mode-hook #'lsp)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><a class="sourceLine" id="cb8-1" title="1"><span class="co">;;;;;;;;</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="co">;; lsp-ui</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="co">;;;;;;;;</span></a>
+<a class="sourceLine" id="cb8-4" title="4">(<span class="kw">require</span> 'lsp-ui)</a></code></pre></div>
+
+    </div>
+    <div id="footer">
+      Site proudly generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </div>
+  </body>
+</html>
