@@ -14,7 +14,7 @@ lsp-modeとcclsを用いることで、十分に快適な環境を得ること�
 
 例えば、以下のAPIはGNU Globalが`/usr/include`配下を入力して作るタグGTAGSには登録されません。
 
-```c++
+```{#mycode .cpp .numberLines startFrom="100"}
 #define glBindVertexArray GLEW_GET_FUN(__glewBindVertexArray)
 ```
 
@@ -55,7 +55,7 @@ lsp-modeとcclsを用いることで、十分に快適な環境を得ること�
 
 1. lsp-mode + [company-lsp](https://github.com/tigersoldier/company-lsp) + [lsp-ui](https://github.com/emacs-lsp/lsp-ui) により、様々な情報が出力されます。
 2. cclsは他のバックエンド(clangd、[cquery](https://github.com/cquery-project/cquery))に比べて動作が軽量です。
-   3. [LSP](https://langserver.org/) ([Language Protocol Server](https://microsoft.github.io/language-server-protocol/)) に基づいているため、フロントエンドとバックエンドは乗り換えが比較的容易です。
+   - [LSP](https://langserver.org/) ([Language Protocol Server](https://microsoft.github.io/language-server-protocol/)) に基づいているため、フロントエンドとバックエンドは乗り換えが比較的容易です。
 
 cclsはクライアントからのリクエストを適度にdebounce(間引く)するため、比較的CPU使用率が跳ね上がることを防いでいるようです。
 
