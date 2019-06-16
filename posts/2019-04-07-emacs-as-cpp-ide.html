@@ -85,9 +85,9 @@
 <ol type="1">
 <li>lsp-mode + <a href="https://github.com/tigersoldier/company-lsp">company-lsp</a> + <a href="https://github.com/emacs-lsp/lsp-ui">lsp-ui</a> により、様々な情報が出力されます。</li>
 <li>cclsは他のバックエンド(clangd、<a href="https://github.com/cquery-project/cquery">cquery</a>)に比べて動作が軽量です。
-<ol start="3" type="1">
+<ul>
 <li><a href="https://langserver.org/">LSP</a> (<a href="https://microsoft.github.io/language-server-protocol/">Language Protocol Server</a>) に基づいているため、フロントエンドとバックエンドは乗り換えが比較的容易です。</li>
-</ol></li>
+</ul></li>
 </ol>
 <p>cclsはクライアントからのリクエストを適度にdebounce(間引く)するため、比較的CPU使用率が跳ね上がることを防いでいるようです。</p>
 <p>詳細はさておき、Clang 7 (2019年4月現在、Debian SidのデフォルトのClangがこのバージョンのため)と組み合わせて開発環境を揃えるための手順と設定を記録しておきます。</p>
