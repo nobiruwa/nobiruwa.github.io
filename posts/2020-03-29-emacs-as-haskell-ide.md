@@ -1,0 +1,52 @@
+---
+title: EmacsでのHaskell開発
+author: nobiruwa
+tags: Haskell, Emacs, LSP
+---
+
+## tl;dr
+
+[lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)と[haskell-ide-engine](https://github.com/haskell/haskell-ide-engine)を用いることで、十分に快適な環境を得ることができました。
+
+## 切っ掛け
+
+元々は[intero](https://github.com/chrisdone/intero)を愛用していましたが、lts-14.20(GHC 8.6.5)を使い始めた頃から、関数によっては補完が表示されなくなりなした。GitHubを見ると"The intero project has reached the end of its life cycle."とあり、代替のなかからLSPと簡単に統合が可能なhaskell-ide-engineを用いることにしました。
+
+## lsp-haskell + haskell-ide-engine の構築手順
+
+開発のモードとして[lsp-mode](https://github.com/emacs-lsp/lsp-mode)を用い、バックエンドにはhaskell-ide-engineを用います。そのために、lsp-haskellをインストールします。
+
+### haskell-ide-engine
+
+#### haskell-ide-engineのインストール
+
+lsp-haskellには、interoのようなバックエンドの自動インストールは実装されていないので、ソースコードからインストールします。インストール手順の詳細は[haskell-ide-engineのREADME](https://github.com/haskell/haskell-ide-engine#installation-from-source)にあります。
+
+私はGHC 8.6.5を使用しており、ソースコードのリポジトリを`~/repo/<project-name>.git`というディレクトリ体系で管理していることから、以下のコマンドで`hie-8.6.5`と`hie-wrapper`を`~/.local/bin`ディレクトリにインストールしました。
+
+```bash
+$ mkdir -p ~/repo
+$ cd ~/repo
+$ git clone https://github.com/haskell/haskell-ide-engine.git --recurse-submodules haskell-ide-engine.git
+$ cd haskell-ide-engine.git
+$ ./install.hs ghc-8.6.5
+```
+
+### Emacs
+
+#### Emacsパッケージのインストール
+
+```emacs
+M-x package-install
+lsp-haskell
+```
+
+#### Emacsパッケージの設定
+
+```lisp
+;;;;;;;;
+;; lsp-haskell
+;;;;;;;;
+(require 'lsp-haskell)
+(add-hook 'haskell-mode-hook #'lsp)
+```
