@@ -22,14 +22,15 @@ tags: Haskell, Emacs, LSP
 
 lsp-haskellには、interoのようなバックエンドの自動インストールは実装されていないので、ソースコードからインストールします。インストール手順の詳細は[haskell-ide-engineのREADME](https://github.com/haskell/haskell-ide-engine#installation-from-source)にあります。
 
-私はGHC 8.6.5を使用しており、ソースコードのリポジトリを`~/repo/<project-name>.git`というディレクトリ体系で管理していることから、以下のコマンドで`hie-8.6.5`と`hie-wrapper`を`~/.local/bin`ディレクトリにインストールしました。
+私はGHC 8.6.5を使用しており、ソースコードのリポジトリを`~/repo/<project-name>.git`というディレクトリ体系で管理していることから、以下のコマンドで`hie`(または`hie-8.6.5`)と`hie-wrapper`を`~/.local/bin`ディレクトリにインストールしました。
 
 ```bash
 $ mkdir -p ~/repo
 $ cd ~/repo
 $ git clone https://github.com/haskell/haskell-ide-engine.git --recurse-submodules haskell-ide-engine.git
 $ cd haskell-ide-engine.git
-$ ./install.hs ghc-8.6.5
+$ stack ./install.hs hie # GHC 8.6.5がデフォルトのバージョンである場合
+$ stack ./install.hs hie-8.6.5 # GHC 8.6.5がデフォルトのバージョンでない場合
 ```
 
 ### Emacs
