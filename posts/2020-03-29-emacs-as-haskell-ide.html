@@ -54,6 +54,13 @@ lsp-haskell</code></pre>
 <span id="cb3-3"><a href="#cb3-3"></a><span class="co">;;;;;;;;</span></span>
 <span id="cb3-4"><a href="#cb3-4"></a>(<span class="kw">require</span> 'lsp-haskell)</span>
 <span id="cb3-5"><a href="#cb3-5"></a>(add-hook 'haskell-mode-hook #'lsp)</span></code></pre></div>
+<h3 id="プロジェクトの作成">プロジェクトの作成</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a>$ <span class="ex">stack</span> new --resolver=<span class="op">&lt;</span>resolver name<span class="op">&gt;</span> <span class="op">&lt;</span>project-name<span class="op">&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ex">//</span> example</span>
+<span id="cb4-3"><a href="#cb4-3"></a>$ <span class="ex">stack</span> new --resolver=lts-14.20 http-conduit-example</span></code></pre></div>
+<p>HIEがプロジェクトのセットアップに失敗する場合はプロジェクトの設定ファイルを作成してみます。 設定に関する詳細は<a href="https://github.com/haskell/haskell-ide-engine#project-configuration">README</a>の通りですが、以下に最小の設定を示します。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">cradle</span><span class="kw">:</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="at">  </span><span class="fu">stack</span><span class="kw">:</span></span></code></pre></div>
 
     </div>
     <div id="footer">
