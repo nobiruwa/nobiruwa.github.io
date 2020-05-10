@@ -51,3 +51,19 @@ lsp-haskell
 (require 'lsp-haskell)
 (add-hook 'haskell-mode-hook #'lsp)
 ```
+
+### プロジェクトの作成
+
+```bash
+$ stack new --resolver=<resolver name> <project-name>
+// example
+$ stack new --resolver=lts-14.20 http-conduit-example
+```
+
+HIEがプロジェクトのセットアップに失敗する場合はプロジェクトの設定ファイルを作成してみます。
+設定に関する詳細は[README](https://github.com/haskell/haskell-ide-engine#project-configuration)の通りですが、以下に最小の設定を示します。
+
+```yaml
+cradle:
+  stack:
+```
