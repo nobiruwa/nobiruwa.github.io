@@ -31,6 +31,7 @@ $ git clone https://github.com/haskell/haskell-ide-engine.git --recurse-submodul
 $ cd haskell-ide-engine.git
 $ stack ./install.hs hie # GHC 8.6.5がデフォルトのバージョンである場合
 $ stack ./install.hs hie-8.6.5 # GHC 8.6.5がデフォルトのバージョンでない場合
+$ stack ./install.hs -j1 hie-8.8.3 # 非力なPCではビルド時のジョブ数を制限する
 ```
 
 ### Emacs
