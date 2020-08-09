@@ -1,0 +1,11 @@
+pre {
+  background-color: #eee8d5;
+}
+
+pre > code {
+  background-color: transparent;
+}
+
+code {
+  background-color: #eee8d5;
+}

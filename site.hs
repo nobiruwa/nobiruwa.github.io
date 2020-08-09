@@ -15,6 +15,10 @@ main = hakyll $ do
         route   idRoute
         compile compressCssCompiler
 
+    match "css/*/*" $ do
+        route   idRoute
+        compile compressCssCompiler
+
     match (fromList [{- "about.rst", "contact.md" -}]) $ do
         route   $ setExtension "html"
         compile $ pandocCompiler
