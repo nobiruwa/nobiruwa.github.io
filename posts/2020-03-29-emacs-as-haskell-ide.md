@@ -58,7 +58,7 @@ lsp-haskell
 ```bash
 $ stack new --resolver=<resolver name> <project-name>
 // example
-$ stack new --resolver=lts-14.20 http-conduit-example
+$ stack new --resolver=lts-14.27 http-conduit-example
 ```
 
 HIEがプロジェクトのセットアップに失敗する場合はプロジェクトの設定ファイルを作成してみます。
