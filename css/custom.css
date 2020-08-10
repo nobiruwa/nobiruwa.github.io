@@ -1,5 +1,16 @@
+body {
+  max-width: 100% !important;
+  /* YouTubeの埋め込み動画サイズ+10px */
+  min-width: 570px;
+  padding-left: 2% !important;
+  padding-right: 2% !important;
+}
+
 pre {
   background-color: #eee8d5;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 pre > code {
@@ -8,4 +19,13 @@ pre > code {
 
 code {
   background-color: #eee8d5;
+}
+
+img {
+  max-width: 95%;
+}
+
+.nobiruwa-github-io-qrcode {
+  width: 128px;
+  height: 128px;
 }
