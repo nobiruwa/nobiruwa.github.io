@@ -1,7 +1,5 @@
 body {
   max-width: 100% !important;
-  /* YouTubeの埋め込み動画サイズ+10px */
-  min-width: 570px;
   padding-left: 2% !important;
   padding-right: 2% !important;
 }
@@ -28,4 +26,32 @@ img {
 .nobiruwa-github-io-qrcode {
   width: 128px;
   height: 128px;
+}
+
+/* 動画の設定 */
+
+/* 動画の設定 - 小さいスクリーンでは親要素の最大幅を取る */
+.video-container {
+  height: 0;
+  padding-bottom: 56.25%;
+  position: relative;
+  width: 100%;
+}
+
+.video-container .video {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+/* 動画の設定 - ある程度大きいスクリーンではサイズを560px x 315pxに制限する */
+@media (min-width: 560px) {
+  .video-container {
+    height: 0;
+    padding-bottom: 315px;
+    position: relative;
+    width: 560px;
+  }
 }

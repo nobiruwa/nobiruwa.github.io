@@ -17,12 +17,12 @@ tags: Posture
 
 ## 動画
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/vne8q7Ano7c" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="video-container"><iframe class="video" src="https://www.youtube.com/embed/vne8q7Ano7c" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 
 横になったときに[首をベッドの側面や壁にもたれかける姿勢](https://prtimes.jp/main/html/rd/p/000002693.000002535.html#p-iframe-image-59205-3)(図の「スマホを使うの図」)をついついやってしまいます。首が90°ほど折れまがり、首を支えるはずが首で体を支える本末転倒な状態です。とにかく首に悪い姿勢を取って首が痛くなるので、[【猫背を直したい！人向け】](https://www.youtube.com/watch?v=BAyWLMzZvHo&list=PLMPZ2x69J5noS3VR2h_VoUXvTpCKg3x1e)でプレイリストにまとめられた動画を見て姿勢の改善に取り組んでいます。
 しょうじさんが紹介するエクササイズによって、下顎が鎖骨の真上くらいにある状態にすると、体全体がすごく楽になり、呼吸しやすくなります。
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/WS-K-ZuskVM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="video-container"><iframe class="video" src="https://www.youtube.com/embed/WS-K-ZuskVM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 
 ## ほか、気をつけること
 
