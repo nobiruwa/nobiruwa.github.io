@@ -93,7 +93,7 @@ Build completed in 20m46s
 非力なマシンでは`-j`オプションで並列実行数を制限してください。
 
 ```bash
-$ stack ./install.hs -j1 hls-8.6.5
+$ stack ./install.hs -j1 hls
 $ stack ./install.hs -j1 hls-8.6.5
 ```
 
