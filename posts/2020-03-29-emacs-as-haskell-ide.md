@@ -1,10 +1,15 @@
 ---
-title: EmacsでのHaskell開発
+title: EmacsでのHaskell開発(旧)
 author: nobiruwa
 tags: Haskell, Emacs, LSP
 ---
 
+## [Obsolete]
+
+本記事は2020年9月時点ではobsoleteとなりました。[新しい記事](./2020-09-21-emacs-as-haskell-ide.html)を参照してください。
+
 ## tl;dr
+
 
 [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)と[haskell-ide-engine](https://github.com/haskell/haskell-ide-engine)を用いることで、十分に快適な環境を得ることができました。
 
