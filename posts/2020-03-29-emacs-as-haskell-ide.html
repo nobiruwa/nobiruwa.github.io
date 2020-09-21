@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
     <link rel="stylesheet" href="../css/syntax.css">
     <link rel="stylesheet" href="../css/custom.css">
-    <title>My Hakyll Blog - EmacsでのHaskell開発</title>
+    <title>My Hakyll Blog - EmacsでのHaskell開発(旧)</title>
   </head>
   <body>
     <div id="header">
@@ -20,7 +20,7 @@
     </div>
 
     <div id="content">
-      <h1>EmacsでのHaskell開発</h1>
+      <h1>EmacsでのHaskell開発(旧)</h1>
 
       <div class="info">
     Posted on March 29, 2020
@@ -29,56 +29,42 @@
     
 </div>
 
+<h2 id="obsolete">[Obsolete]</h2>
+<p>本記事は2020年9月時点ではobsoleteとなりました。<a href="./2020-09-21-emacs-as-haskell-ide.html">新しい記事</a>を参照してください。</p>
 <h2 id="tldr">tl;dr</h2>
 <p><a href="https://github.com/emacs-lsp/lsp-haskell">lsp-haskell</a>と<a href="https://github.com/haskell/haskell-ide-engine">haskell-ide-engine</a>を用いることで、十分に快適な環境を得ることができました。</p>
 <h2 id="切っ掛け">切っ掛け</h2>
 <p>元々は<a href="https://github.com/chrisdone/intero">intero</a>を愛用していましたが、lts-14.20(GHC 8.6.5)を使い始めた頃から、関数によっては補完が表示されなくなりなした。GitHubを見ると“The intero project has reached the end of its life cycle.”とあり、代替のなかからLSPと簡単に統合が可能なhaskell-ide-engineを用いることにしました。</p>
 <h2 id="lsp-haskell-haskell-ide-engine-の構築手順">lsp-haskell + haskell-ide-engine の構築手順</h2>
 <p>開発のモードとして<a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a>を用い、バックエンドにはhaskell-ide-engineを用います。そのために、lsp-haskellをインストールします。</p>
-<h3 id="stack">stack</h3>
-<h4 id="stackのインストール">stackのインストール</h4>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a>$ <span class="ex">curl</span> -sSL https://get.haskellstack.org/ <span class="op">&gt;</span> install-stack.sh</span>
-<span id="cb1-2"><a href="#cb1-2"></a>$ <span class="fu">sh</span> install-stack.sh -d <span class="va">$HOME</span>/.local/bin</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># curl options</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a> <span class="ex">-L</span>, --location      Follow redirects</span>
-<span id="cb1-6"><a href="#cb1-6"></a> <span class="ex">-S</span>, --show-error    Show error even when -s is used</span>
-<span id="cb1-7"><a href="#cb1-7"></a> <span class="ex">-s</span>, --silent        Silent mode</span>
-<span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="co"># install script options</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a> <span class="ex">-q</span>: reduce script<span class="st">'s output</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a><span class="st"> -f: force over-write even if '</span>stack<span class="st">' already installed</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="st"> -d DESTDIR: change destination directory</span></span></code></pre></div>
 <h3 id="haskell-ide-engine">haskell-ide-engine</h3>
 <h4 id="haskell-ide-engineのインストール">haskell-ide-engineのインストール</h4>
 <p>lsp-haskellには、interoのようなバックエンドの自動インストールは実装されていないので、ソースコードからインストールします。インストール手順の詳細は<a href="https://github.com/haskell/haskell-ide-engine#installation-from-source">haskell-ide-engineのREADME</a>にあります。</p>
 <p>私はGHC 8.6.5を使用しており、ソースコードのリポジトリを<code>~/repo/&lt;project-name&gt;.git</code>というディレクトリ体系で管理していることから、以下のコマンドで<code>hie</code>(または<code>hie-8.6.5</code>)と<code>hie-wrapper</code>を<code>~/.local/bin</code>ディレクトリにインストールしました。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a>$ <span class="fu">mkdir</span> -p ~/repo</span>
-<span id="cb2-2"><a href="#cb2-2"></a>$ <span class="bu">cd</span> ~/repo</span>
-<span id="cb2-3"><a href="#cb2-3"></a>$ <span class="fu">git</span> clone https://github.com/haskell/haskell-ide-engine.git --recurse-submodules haskell-ide-engine.git</span>
-<span id="cb2-4"><a href="#cb2-4"></a>$ <span class="bu">cd</span> haskell-ide-engine.git</span>
-<span id="cb2-5"><a href="#cb2-5"></a>$ <span class="ex">stack</span> ./install.hs hie <span class="co"># GHC 8.6.5がデフォルトのバージョンである場合</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>$ <span class="ex">stack</span> ./install.hs hie-8.6.5 <span class="co"># GHC 8.6.5がデフォルトのバージョンでない場合</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>$ <span class="ex">stack</span> ./install.hs -j1 hie-8.8.3 <span class="co"># 非力なPCではビルド時のジョブ数を制限する</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a>$ <span class="fu">mkdir</span> -p ~/repo</span>
+<span id="cb1-2"><a href="#cb1-2"></a>$ <span class="bu">cd</span> ~/repo</span>
+<span id="cb1-3"><a href="#cb1-3"></a>$ <span class="fu">git</span> clone https://github.com/haskell/haskell-ide-engine.git --recurse-submodules haskell-ide-engine.git</span>
+<span id="cb1-4"><a href="#cb1-4"></a>$ <span class="bu">cd</span> haskell-ide-engine.git</span>
+<span id="cb1-5"><a href="#cb1-5"></a>$ <span class="ex">stack</span> ./install.hs hie <span class="co"># GHC 8.6.5がデフォルトのバージョンである場合</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>$ <span class="ex">stack</span> ./install.hs hie-8.6.5 <span class="co"># GHC 8.6.5がデフォルトのバージョンでない場合</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a>$ <span class="ex">stack</span> ./install.hs -j1 hie-8.8.3 <span class="co"># 非力なPCではビルド時のジョブ数を制限する</span></span></code></pre></div>
 <h3 id="emacs">Emacs</h3>
 <h4 id="emacsパッケージのインストール">Emacsパッケージのインストール</h4>
 <pre class="emacs"><code>M-x package-install
 lsp-haskell</code></pre>
 <h4 id="emacsパッケージの設定">Emacsパッケージの設定</h4>
-<div class="sourceCode" id="cb4"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">;;;;;;;;</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="co">;; lsp-haskell</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="co">;;;;;;;;</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>(<span class="kw">require</span> 'lsp-haskell)</span>
-<span id="cb4-5"><a href="#cb4-5"></a>(add-hook 'haskell-mode-hook #'lsp)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">;;;;;;;;</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="co">;; lsp-haskell</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co">;;;;;;;;</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>(<span class="kw">require</span> 'lsp-haskell)</span>
+<span id="cb3-5"><a href="#cb3-5"></a>(add-hook 'haskell-mode-hook #'lsp)</span></code></pre></div>
 <h3 id="プロジェクトの作成">プロジェクトの作成</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a>$ <span class="ex">stack</span> new --resolver=<span class="op">&lt;</span>resolver name<span class="op">&gt;</span> <span class="op">&lt;</span>project-name<span class="op">&gt;</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="ex">//</span> example</span>
-<span id="cb5-3"><a href="#cb5-3"></a>$ <span class="ex">stack</span> new --resolver=lts-14.27 http-conduit-example</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a>$ <span class="ex">stack</span> new --resolver=<span class="op">&lt;</span>resolver name<span class="op">&gt;</span> <span class="op">&lt;</span>project-name<span class="op">&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="ex">//</span> example</span>
+<span id="cb4-3"><a href="#cb4-3"></a>$ <span class="ex">stack</span> new --resolver=lts-14.27 http-conduit-example</span></code></pre></div>
 <p>HIEがプロジェクトのセットアップに失敗する場合はプロジェクトの設定ファイルを作成してみます。 設定に関する詳細は<a href="https://github.com/haskell/haskell-ide-engine#project-configuration">README</a>の通りですが、以下に最小の設定を示します。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">cradle</span><span class="kw">:</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="at">  </span><span class="fu">stack</span><span class="kw">:</span></span></code></pre></div>
-<h3 id="不便なこと">不便なこと</h3>
-<p><code>C-s</code>(<code>isearch-forward</code>)で検索語を入力中にポップアップが表示され、検索が中断されます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">cradle</span><span class="kw">:</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="at">  </span><span class="fu">stack</span><span class="kw">:</span></span></code></pre></div>
 
     </div>
     <div id="footer">
