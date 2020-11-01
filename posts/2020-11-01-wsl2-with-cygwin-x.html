@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
+    <link rel="stylesheet" href="../css/syntax.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <title>My Hakyll Blog - Cygwin/XでWSL2のXアプリケーションを表示する</title>
+  </head>
+  <body>
+    <div id="header">
+      <div id="logo">
+        <a href="../">Nobiruwa's</a>
+      </div>
+      <div id="navigation">
+        <a href="../">Home</a>
+        <a href="../archive.html">Archive</a>
+      </div>
+    </div>
+
+    <div id="content">
+      <h1>Cygwin/XでWSL2のXアプリケーションを表示する</h1>
+
+      <div class="info">
+    Posted on November  1, 2020
+    
+        by nobiruwa
+    
+</div>
+
+<h2 id="tldr">tl;dr</h2>
+<p>WSL2の起動スクリプト(manではinitialization file)に以下の設定を追加します。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># X configuration</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="bu">export</span> <span class="va">DISPLAY=</span><span class="kw">`</span><span class="fu">grep</span> -oP <span class="st">&quot;(?&lt;=nameserver ).+&quot;</span> /etc/resolv.conf<span class="kw">`</span>:0.0</span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># Cygwin X Server authentication (requires cygwin's &quot;xhost&quot; package)</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="va">CYGWIN_ROOT=</span><span class="st">&quot;/mnt/c/cygwin64&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="va">CYGWIN_XHOST=</span><span class="st">&quot;</span><span class="va">$CYGWIN_ROOT</span><span class="st">/bin/xhost.exe&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="va">IP_ADDR=</span><span class="kw">`</span><span class="ex">ip</span> addr show eth0 <span class="kw">|</span> <span class="fu">grep</span> <span class="st">&quot;inet\b&quot;</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="st">'{print $2}'</span> <span class="kw">|</span> <span class="fu">cut</span> -d/ -f1<span class="kw">`</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">if</span><span class="bu"> [</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">$CYGWIN_XHOST</span><span class="st">&quot;</span><span class="bu"> ]</span> ; <span class="kw">then</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>    <span class="va">${CYGWIN_XHOST}</span> <span class="ex">+</span><span class="va">${IP_ADDR}</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">fi</span></span></code></pre></div>
+<h2 id="背景">背景</h2>
+<p>LinuxマシンでのEmacsは長らくurxvt + emacs-noxという構成で使っていましたが、<a href="https://github.com/emacs-lsp">emacs-lsp</a>をGUIで使いたいと思い、GTK版のEmacsに移行しました。これに合わせるために、X接続を<a href="https://x.cygwin.com/">Cygwin/X</a>で実現することにしました。</p>
+<p>インターネット上には<a href="https://sourceforge.net/projects/vcxsrv/">VcXsrv</a>で表示する方法については色々と情報があるのですが、ウィンドウサイズが10行分しかない状態で起動するのと突然ウィンドウが落ちるので使用を断念しました。ただVcXsrvに関する情報には、アクセスコントロールを無効にする直接のX描画(つまりSSHのX11 port forwardingを使わない)であれば表示できるとあり、Cygwin/Xの設定の参考にします。</p>
+<h2 id="前提条件">前提条件</h2>
+<ul>
+<li>Windows
+<ul>
+<li>WSL2を起動するとネットワークアダプタ<code>vEthernet (WSL)</code>が生成される。</li>
+<li><code>XWin.exe</code>のTCP受信がファイアウォールで許可されている。または<code>6000/TCP</code>の受信が許可されている。</li>
+</ul></li>
+<li>Cygwin
+<ul>
+<li>Cygwinは<code>C:\cygwin64</code>にインストールしてある。</li>
+<li>Cygwin/Xを<a href="https://x.cygwin.com/docs/ug/setup.html">Cygwin/X User’s Guide Chapter 2. Setting Up Cygwin/X</a>に従ってインストールしてある。</li>
+<li>Cygwinに<code>xhost</code>パッケージをインストールしてある。</li>
+<li>Cygwin/Xを起動するときの画面番号は<code>0</code>とする。</li>
+<li>Cygwinの<code>DISPLAY</code>環境変数は<code>:0</code>とする。</li>
+</ul></li>
+<li>WSL2
+<ul>
+<li><code>bash</code>がログインシェルとして使われている。</li>
+<li><code>eth0</code>がホスト側のネットワークアダプタ<code>vEthernet (WSL)</code>に対応している(おそらくデフォルト)。</li>
+</ul></li>
+</ul>
+<p>上記前提条件のうち、技術的要件は以下の2つです。</p>
+<ul>
+<li><code>XWin.exe</code>のTCP受信がファイアウォールで許可されている。または<code>6000/TCP</code>の受信が許可されている。</li>
+<li>Cygwinに<code>xhost</code>パッケージをインストールしてある。</li>
+</ul>
+<p>ほかの2つは既定の設定であるか、環境に関する決めの問題です。</p>
+<h2 id="アイディア">アイディア</h2>
+<p>Cygwin側で<code>xhost +</code>とすればアクセスコントロールを無効にできますが、もう少しセキュアな設定にしたいです。<code>xhost +&lt;WSL2のIPアドレス&gt;</code>によってWSL2にのみ許可を与えることにします。</p>
+<ol type="1">
+<li>Cygwin側は<code>xhost</code>に与える<code>&lt;WSL2のIPアドレス&gt;</code>を知る必要がある。</li>
+<li>WSL2側は<code>DISPLAY</code>環境変数にセットするホスト側のIPアドレスを知る必要がある(ディスプレイ番号は<code>0</code>決め打ちとした)。</li>
+</ol>
+<p>WindowsとWSL2との間の仮想ネットワーク<code>vEthernet (WSL)</code>はWSL2の起動時になって生成され、それまではWSL2のIPアドレスもホスト側のIPアドレスも決定されません。よって、WSL2の起動後に上記2点の設定ができるようになります。</p>
+<p>1についてはWSL2側の<code>ip addr</code>の出力の加工で取得できますし、2についても<a href="https://github.com/microsoft/WSL/issues/4106">Can’t use X-Server in WSL 2 #4106</a>で議論されている通り、<code>/etc/resolv.conf</code>から取得することができます。または<a href="https://ja.stackoverflow.com/questions/66736/wsl2%E3%81%AE%E4%B8%AD%E3%81%AEx-client%E3%81%8B%E3%82%89-vcxsrv-%E3%81%AB-xauth-%E3%81%A7%E6%8E%A5%E7%B6%9A%E3%81%97%E3%81%9F%E3%81%84">WSL2の中のX clientから VcXsrv に xauth で接続したい</a>にあるように、<code>&lt;マシン名&gt;.mshome.net</code>をホスト名とすることができます。CygwinのコマンドはWSL2からも実行することができるので、1と2の両方の設定もWSL2の起動スクリプトから行えます。</p>
+<p>ここまでを踏まえ、以下の設定(再掲)としました。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># X configuration</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="bu">export</span> <span class="va">DISPLAY=</span><span class="kw">`</span><span class="fu">grep</span> -oP <span class="st">&quot;(?&lt;=nameserver ).+&quot;</span> /etc/resolv.conf<span class="kw">`</span>:0.0</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="co"># Cygwin X Server authentication (requires cygwin's &quot;xhost&quot; package)</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="va">CYGWIN_ROOT=</span><span class="st">&quot;/mnt/c/cygwin64&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="va">CYGWIN_XHOST=</span><span class="st">&quot;</span><span class="va">$CYGWIN_ROOT</span><span class="st">/bin/xhost.exe&quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="va">IP_ADDR=</span><span class="kw">`</span><span class="ex">ip</span> addr show eth0 <span class="kw">|</span> <span class="fu">grep</span> <span class="st">&quot;inet\b&quot;</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="st">'{print $2}'</span> <span class="kw">|</span> <span class="fu">cut</span> -d/ -f1<span class="kw">`</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="kw">if</span><span class="bu"> [</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">$CYGWIN_XHOST</span><span class="st">&quot;</span><span class="bu"> ]</span> ; <span class="kw">then</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>    <span class="va">${CYGWIN_XHOST}</span> <span class="ex">+</span><span class="va">${IP_ADDR}</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a><span class="kw">fi</span></span></code></pre></div>
+
+    </div>
+    <div id="footer">
+      Site proudly generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </div>
+  </body>
+</html>
