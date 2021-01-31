@@ -24,3 +24,4 @@ gitからlibsecretを使うには`git-credential-libsecret`が必要なのです
 
 - [Creating a personal access token - GitHub Docs](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
 - [How to save username and password in Git?](https://stackoverflow.com/a/56898761)
+- [What is the correct way to use git with gnome-keyring and http(s) repos?](https://askubuntu.com/questions/773455/what-is-the-correct-way-to-use-git-with-gnome-keyring-and-https-repos)
