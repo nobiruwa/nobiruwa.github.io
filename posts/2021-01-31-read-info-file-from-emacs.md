@@ -19,7 +19,7 @@ C-u C-h i
 C-u F1 i
 ```
 
-## 切っ掛け
+## 経緯
 
 `/usr/share/info`に登録されていないinfoファイルを読みたいと思ったとき、`info -f MANUAL`に相当するEmacsの操作が分からなかったので調べました。
 
