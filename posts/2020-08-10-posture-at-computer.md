@@ -6,7 +6,7 @@ tags: Posture
 
 コンピューター作業の時の正しい座り方の解説は、はインターネット上に沢山あります。たいてい[横から見た図](https://www.nomorepainergonomics.com.au/blogs/no-more-pain-ergonomics/working-from-home-ergonomic-tips-checklist)で説明されることが多いです。
 
-今は、YouTubeで好んで見ている[シドニーの姿勢強制セラピストしょうじ](https://www.youtube.com/c/BalanceandPosture/featured)([Twitter](https://twitter.com/sugimorishoji))さんが紹介する、[【PC 肩こりさん必見！】 PCをする時の正しい座り方【腕の使い方編】](https://youtu.be/vne8q7Ano7c)の座り方が、自分にとって楽だと実感しています。
+今は、YouTubeで好んで見ている[シドニーの姿勢矯正セラピストしょうじ](https://www.youtube.com/c/BalanceandPosture/featured)([Twitter](https://twitter.com/sugimorishoji))さんが紹介する、[【PC 肩こりさん必見！】 PCをする時の正しい座り方【腕の使い方編】](https://youtu.be/vne8q7Ano7c)の座り方が、自分にとって楽だと実感しています。
 
 - Dos: 小さい前にならえで手のひらを上にします。この状態だと肘が体に付いているので、手のひらだけ180°ひっくりかえします。
   - 肩の筋肉が柔らかいまま作業ができます。
