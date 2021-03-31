@@ -1,5 +1,5 @@
 ---
-title: rustupを遣ったRust開発環境のインストール
+title: rustupを使ったRust開発環境のインストール
 author: nobiruwa
 tags: Rust
 ---
