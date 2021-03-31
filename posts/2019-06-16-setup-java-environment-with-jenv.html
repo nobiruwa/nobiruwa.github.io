@@ -30,52 +30,52 @@
 </div>
 
 <h2 id="tldr">tl;dr</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a>$ <span class="fu">git</span> clone https://github.com/gcuisinier/jenv.git ~/.jenv</span>
-<span id="cb1-2"><a href="#cb1-2"></a>$ <span class="fu">cat</span> <span class="op">&lt;&lt; EOF</span> <span class="op">&gt;&gt;</span> <span class="ex">~/.bash_profile</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a># jEnv configuration</span>
-<span id="cb1-4"><a href="#cb1-4"></a>JENVBIN=<span class="va">$HOME</span>/.jenv/bin</span>
-<span id="cb1-5"><a href="#cb1-5"></a>if [ -d <span class="va">$JENVBIN</span> ] ; then</span>
-<span id="cb1-6"><a href="#cb1-6"></a>    <span class="op">e</span><span class="ex">xport</span> PATH=<span class="st">&quot;</span><span class="va">$JENVBIN</span><span class="st">:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a>    eval &quot;<span class="va">$(</span><span class="ex">jenv</span> init -<span class="va">)</span>&quot;</span>
-<span id="cb1-8"><a href="#cb1-8"></a>fi</span>
-<span id="cb1-9"><a href="#cb1-9"></a>EOF</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone https://github.com/gcuisinier/jenv.git ~/.jenv</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat <span class="op">&lt;&lt; EOF</span> <span class="op">&gt;&gt;</span> ~/.bash_profile</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a># jEnv configuration</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>JENVBIN=$HOME/.jenv/bin</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>if [ -d $JENVBIN ] ; then</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    export PATH=&quot;$JENVBIN:$PATH&quot;</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    eval &quot;$(jenv init -)&quot;</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>fi</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>EOF</span></code></pre></div>
 <h2 id="動機">動機</h2>
 <p>Java 8を使うことが多いのですが、Debian Unstableではデフォルトが11, 12とどんどんあがっていきます。そこで、Rubyのvenv、Pythonのvirtualenvのように一般ユーザーがJavaのバージョンを容易に変更できるようにしたいと思いました。</p>
 <h2 id="jenvの入手">jEnvの入手</h2>
 <p><a href="https://www.jenv.be/">jEnv</a>の公式にある通りです。 まずは<code>~/.jenv</code>を用意します。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a>$ <span class="fu">git</span> clone https://github.com/gcuisinier/jenv.git ~/.jenv</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone https://github.com/gcuisinier/jenv.git ~/.jenv</span></code></pre></div>
 <p><code>~/.bash_profile</code>にて、環境変数<code>PATH</code>と<code>JAVA_HOME</code>を設定します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># jEnv configuration</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="va">JENVBIN=$HOME</span>/.jenv/bin</span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">if</span><span class="bu"> [</span> <span class="ot">-d</span> <span class="va">$JENVBIN</span><span class="bu"> ]</span> ; <span class="kw">then</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>    <span class="bu">export</span> <span class="va">PATH=</span><span class="st">&quot;</span><span class="va">$JENVBIN</span><span class="st">:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>    <span class="bu">eval</span> <span class="st">&quot;</span><span class="va">$(</span><span class="ex">jenv</span> init -<span class="va">)</span><span class="st">&quot;</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="kw">fi</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># jEnv configuration</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="va">JENVBIN</span><span class="op">=</span><span class="va">$HOME</span>/.jenv/bin</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="va">$JENVBIN</span> <span class="bu">]</span> <span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">PATH=</span><span class="st">&quot;</span><span class="va">$JENVBIN</span><span class="st">:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">eval</span> <span class="st">&quot;</span><span class="va">$(</span><span class="ex">jenv</span> init <span class="at">-</span><span class="va">)</span><span class="st">&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
 <h2 id="jdkの入手">JDKの入手</h2>
 <p>OpenJDKのバイナリは<a href="https://github.com/ojdkbuild/ojdkbuild/releases">GitHub</a>で配布しています。</p>
 <p>好みのバージョンのzipファイルをダウンロードし、<code>~/opt</code>などに展開してください。</p>
 <h2 id="jdkの登録">JDKの登録</h2>
 <p>jEnvにJDKを登録します。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a>$ <span class="ex">jenv</span> add <span class="op">&lt;</span>JDKのパス<span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv add <span class="op">&lt;</span>JDKのパス<span class="op">&gt;</span></span></code></pre></div>
 <p>登録されたJDKは下記のコマンドで確認できます。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a>$ <span class="ex">jenv</span> versions</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv versions</span></code></pre></div>
 <h2 id="グローバルのjava環境">グローバルのJava環境</h2>
 <p>グローバルのJava環境を指定します。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a>$ <span class="ex">jenv</span> global <span class="op">&lt;</span>java versionsで列挙されるバージョン文字列<span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv global <span class="op">&lt;</span>java versionsで列挙されるバージョン文字列<span class="op">&gt;</span></span></code></pre></div>
 <h2 id="ローカルのjava環境">ローカルのJava環境</h2>
 <p>ローカルのJava環境を設定するには、以下のコマンドを実行します。</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a>$ <span class="bu">cd</span> <span class="op">&lt;</span>設定したいディレクトリ<span class="op">&gt;</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>$ <span class="ex">jenv</span> local <span class="op">&lt;</span>java versionsで列挙されるバージョン文字列<span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd <span class="op">&lt;</span>設定したいディレクトリ<span class="op">&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv local <span class="op">&lt;</span>java versionsで列挙されるバージョン文字列<span class="op">&gt;</span></span></code></pre></div>
 <p><code>java local</code>を実行したディレクトリには<code>.java-version</code>ファイルが生成されます。 <code>java local</code>を実行したディレクトリとその子孫ディレクトリで実行する<code>java</code>/<code>javac</code>コマンドは、<code>.java-version</code>で指定されたJava環境のものが使用されます。</p>
 <h2 id="プラグインの有効化">プラグインの有効化</h2>
 <p>いくつかのプラグインを有効にします。たとえば、<code>export</code>プラグインはグローバルのJava環境を<code>JAVA_HOME</code>に設定します。</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a>$ <span class="ex">jenv</span> enable-plugin export</span>
-<span id="cb8-2"><a href="#cb8-2"></a>$ <span class="ex">jenv</span> enable-plugin maven</span>
-<span id="cb8-3"><a href="#cb8-3"></a>$ <span class="ex">jenv</span> enable-plugin gradle</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv enable-plugin export</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv enable-plugin maven</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv enable-plugin gradle</span></code></pre></div>
 <p>ログインシェルがdashで、<code>~/.bash_profile</code>の内容を<code>~/.profile</code>に記述した場合は<code>"$(jenv init -)"</code>が働かず便利なjenv関数を定義しません。 そのため、サブコマンドに<code>sh-</code>プリフィックスを付けて実行してください。</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a>$ <span class="ex">jenv</span> sh-enable-plugin export</span>
-<span id="cb9-2"><a href="#cb9-2"></a>$ <span class="ex">jenv</span> sh-enable-plugin maven</span>
-<span id="cb9-3"><a href="#cb9-3"></a>$ <span class="ex">jenv</span> sh-enable-plugin gradle</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv sh-enable-plugin export</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv sh-enable-plugin maven</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> jenv sh-enable-plugin gradle</span></code></pre></div>
 
     </div>
     <div id="footer">
