@@ -93,7 +93,6 @@ Build completed in 20m46s
 非力なマシンでは`-j`オプションで並列実行数を制限してください。
 
 ```bash
-$ stack ./install.hs -j1 hls
 $ stack ./install.hs -j1 hls-8.6.5
 ```
 
@@ -103,6 +102,9 @@ $ stack ./install.hs -j1 hls-8.6.5
 ghc-options:
   "$locals": -j1
 ```
+
+プロジェクトに合ったバージョンの`haskell-language-server-*`が使われない場合、`haskell-language-server`を削除することを試してください。
+
 ### Emacs
 
 #### Emacsパッケージのインストール
