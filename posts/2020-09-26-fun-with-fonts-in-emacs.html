@@ -184,22 +184,22 @@ gives the location of the correct libotf.</code></pre>
 <li><a href="#tldr">tl;dr</a>の設定で<a href="https://github.com/MinhasKamal/BengaliDictionary/blob/master/BengaliDictionary_17.txt">ベンガル語の辞書ファイル</a>や<code>chromium.desktop</code>を開き、クラッシュしなくなることを確認する</li>
 </ol>
 <p>ちなみに、切っ掛けであったFirefoxのデフォルト化については以下の設定で実現できました。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat ~/.local/share/applications/firefox.desktop</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">[Desktop</span> Entry]</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">Version</span><span class="op">=</span>1.0</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="va">Name</span><span class="op">=</span>Firefox <span class="ex">Web</span> Browser</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="va">GenericName</span><span class="op">=</span>Web <span class="ex">Browser</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="va">Comment</span><span class="op">=</span>Access <span class="ex">the</span> Internet</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="va">Exec</span><span class="op">=</span>firefox <span class="ex">%U</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="va">Terminal</span><span class="op">=</span>false</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">X-MultipleArgs=false</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="va">Type</span><span class="op">=</span>Application</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="va">Icon</span><span class="op">=</span>firefox</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="va">Categories</span><span class="op">=</span>Network<span class="kw">;</span><span class="ex">WebBrowser</span><span class="kw">;</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="va">StartupWMClass</span><span class="op">=</span>Firefox</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="va">StartupNotify</span><span class="op">=</span>true</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="va">MimeType</span><span class="op">=</span>x-scheme-handler/unknown<span class="kw">;</span><span class="ex">x-scheme-handler/about</span><span class="kw">;</span><span class="ex">text/html</span><span class="kw">;</span><span class="ex">text/xml</span><span class="kw">;</span><span class="ex">application/xhtml_xml</span><span class="kw">;</span><span class="ex">application/x-mimearchive</span><span class="kw">;</span><span class="ex">x-scheme-handler/http</span><span class="kw">;</span><span class="ex">x-scheme-handler/https</span><span class="kw">;</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> xdg-settings set default-web-browser firefox.desktop</span></code></pre></div>
+<pre class="console"><code>$ cat ~/.local/share/applications/firefox.desktop
+[Desktop Entry]
+Version=1.0
+Name=Firefox Web Browser
+GenericName=Web Browser
+Comment=Access the Internet
+Exec=firefox %U
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=firefox
+Categories=Network;WebBrowser;
+StartupWMClass=Firefox
+StartupNotify=true
+MimeType=x-scheme-handler/unknown;x-scheme-handler/about;text/html;text/xml;application/xhtml_xml;application/x-mimearchive;x-scheme-handler/http;x-scheme-handler/https;
+$ xdg-settings set default-web-browser firefox.desktop</code></pre>
 <h2 id="参考">参考</h2>
 <p>libotfがEmacsのクラッシュにつながるケースは以前からあったようです。</p>
 <ul>

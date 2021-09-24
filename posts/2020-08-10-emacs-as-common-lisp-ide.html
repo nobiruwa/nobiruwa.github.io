@@ -30,35 +30,35 @@
 </div>
 
 <h2 id="tldr">tl;dr</h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sudo apt-get <span class="at">-y</span> install git build-essential automake libcurl4-openssl-dev</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone <span class="at">-b</span> release https://github.com/roswell/roswell.git <span class="va">$HOME</span>/repo/roswell.git</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd <span class="va">$HOME</span>/repo/roswell.git</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sh bootstrap</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ./configure <span class="at">--prefix</span><span class="op">=</span><span class="va">$HOME</span>/opt/roswell</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make install</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="ex">//</span> <span class="va">$HOME</span>/opt/roswell/binをPATHに通した後:</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ros setup</span></code></pre></div>
+<pre class="console"><code>$ sudo apt-get -y install git build-essential automake libcurl4-openssl-dev
+$ git clone -b release https://github.com/roswell/roswell.git $HOME/repo/roswell.git
+$ cd $HOME/repo/roswell.git
+$ sh bootstrap
+$ ./configure --prefix=$HOME/opt/roswell
+$ make
+$ make install
+
+// $HOME/opt/roswell/binをPATHに通した後:
+$ ros setup</code></pre>
 <h2 id="動機">動機</h2>
 <p>QuickLispを使っていたのですが、cronで動作するスクリプトを作成するためにQuickLispのディレクトリをスクリプト内に埋め込んだり、イマイチ使いこなせている気がしなかったので、環境を管理するユーティリティがないかを探してRoswellに辿り着きました。</p>
 <p><a href="https://github.com/roswell/roswell">Roswell</a>はCommon Lispの実装のインストーラー兼マネージャー兼ランチャー兼etc.です。</p>
 <p>丁寧な<a href="https://github.com/roswell/roswell/wiki">Wiki</a>があり、使い方を学ぶことができます。</p>
 <h2 id="インストール">インストール</h2>
 <p><a href="https://github.com/roswell/roswell/wiki/Installation#building-from-source">Wiki</a>で十分に説明されています。が、私はユーザーディレクトリの<code>opt</code>ディレクトリにインストールしてPATHを通すスタイルが好きなので、実行するコマンドを少し変更しました。ソースコードリポジトリのローカルディレクトリ名も<code>&lt;プロジェクト名&gt;.&lt;コマンド名&gt;</code>(ex: <code>roswell.git</code>、<code>rxvt-unicode.svn</code>など)と独特の管理をしています。</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sudo apt-get <span class="at">-y</span> install git build-essential automake libcurl4-openssl-dev</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone <span class="at">-b</span> release https://github.com/roswell/roswell.git <span class="va">$HOME</span>/repo/roswell.git</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd <span class="va">$HOME</span>/repo/roswell.git</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sh bootstrap</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ./configure <span class="at">--prefix</span><span class="op">=</span><span class="va">$HOME</span>/opt/roswell</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> make install</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="ex">//</span> <span class="va">$HOME</span>/opt/roswell/binをPATHに通した後:</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ros setup</span></code></pre></div>
+<pre class="console"><code>$ sudo apt-get -y install git build-essential automake libcurl4-openssl-dev
+$ git clone -b release https://github.com/roswell/roswell.git $HOME/repo/roswell.git
+$ cd $HOME/repo/roswell.git
+$ sh bootstrap
+$ ./configure --prefix=$HOME/opt/roswell
+$ make
+$ make install
+
+// $HOME/opt/roswell/binをPATHに通した後:
+$ ros setup</code></pre>
 <h2 id="emacsのセットアップ">Emacsのセットアップ</h2>
 <p>Wikiの<a href="https://github.com/roswell/roswell/wiki/Initial-Recommended-Setup#for-emacs">for Emacs</a>の通りです。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ros install slime</span></code></pre></div>
+<pre class="console"><code>$ ros install slime</code></pre>
 <p>私はddskkを使って日本語入力をしており、SKKの変換ができるようキーバインドを変更しています。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>(<span class="kw">let</span> ((slime-helper (expand-file-name <span class="st">&quot;~/.roswell/helper.el&quot;</span>)))</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">when</span> (file-exists-p slime-helper)</span>
@@ -76,31 +76,31 @@
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">setq</span> inferior-lisp-program <span class="st">&quot;ros -Q run&quot;</span>)))</span></code></pre></div>
 <h2 id="サンプルスクリプト">サンプルスクリプト</h2>
 <p>Wikiの<a href="https://github.com/roswell/roswell/wiki#scripting-with-roswell">Scripting with Roswell</a>の通りです。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd <span class="va">$HOME</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ln <span class="at">-s</span> .roswell/local-projects lispprojects</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd lispprojects</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> mkdir scripting-with-roswell</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd scripting-with-roswell</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ros init fact</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">//</span> fact.rosが生成されるので、次のように編集する:</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat fact.ros</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/sh</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#|-*- mode:lisp -*-|#</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#|</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">exec</span> ros <span class="at">-Q</span> <span class="at">--</span> <span class="va">$0</span> <span class="st">&quot;</span><span class="va">$@</span><span class="st">&quot;</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span><span class="co">#</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">defun</span> fact <span class="er">(</span><span class="ex">n</span><span class="kw">)</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="kw">(</span><span class="cf">if</span> <span class="kw">(</span><span class="ex">zerop</span> n<span class="kw">)</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>      <span class="ex">1</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>      <span class="kw">(</span><span class="ex">*</span> n <span class="er">(</span><span class="ex">fact</span> <span class="er">(</span><span class="ex">1-</span> n<span class="kw">))))</span><span class="er">)</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="kw">(</span><span class="ex">defun</span> main <span class="er">(</span><span class="ex">n</span> <span class="kw">&amp;</span><span class="ex">rest</span> argv<span class="kw">)</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="kw">(</span><span class="bu">declare</span> <span class="va">(</span>ignore argv<span class="va">)</span><span class="kw">)</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="kw">(</span><span class="ex">format</span> t <span class="st">&quot;~&amp;Factorial ~D = ~D~%&quot;</span> n <span class="er">(</span><span class="ex">fact</span> <span class="er">(</span><span class="ex">parse-integer</span> n<span class="kw">))))</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ./fact.ros 10</span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="ex">Factorial</span> 10 = 3628800</span></code></pre></div>
+<pre class="console"><code>$ cd $HOME
+$ ln -s .roswell/local-projects lispprojects
+$ cd lispprojects
+$ mkdir scripting-with-roswell
+$ cd scripting-with-roswell
+$ ros init fact
+
+// fact.rosが生成されるので、次のように編集する:
+$ cat fact.ros
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 &quot;$@&quot;
+|#
+
+(defun fact (n)
+  (if (zerop n)
+      1
+      (* n (fact (1- n)))))
+
+(defun main (n &amp;rest argv)
+  (declare (ignore argv))
+  (format t &quot;~&amp;Factorial ~D = ~D~%&quot; n (fact (parse-integer n))))
+$ ./fact.ros 10
+Factorial 10 = 3628800</code></pre>
 
     </div>
     <div id="footer">

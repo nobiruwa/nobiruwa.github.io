@@ -93,13 +93,13 @@
 <p>cclsはクライアントからのリクエストを適度にdebounce(間引く)するため、比較的CPU使用率が跳ね上がることを防いでいるようです。</p>
 <p>詳細はさておき、Clang 7 (2019年4月現在、Debian SidのデフォルトのClangがこのバージョンのため)と組み合わせて開発環境を揃えるための手順と設定を記録しておきます。</p>
 <h4 id="clangのインストール-cclsのビルド">Clangのインストール + cclsのビルド</h4>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sudo apt-get install cmake libclang-7-dev clang-format-7 clang-tools-7</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd ~/repo</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone <span class="at">--depth</span><span class="op">=</span>1 <span class="at">--recursive</span> https://github.com/MaskRay/ccls.git ccls.git</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd ccls.git</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sed <span class="at">-i</span> <span class="at">-e</span> <span class="st">'s/find_program(CLANG_EXECUTABLE clang)/find_program(CLANG_EXECUTABLE clang-7)/'</span> CMakeLists.txt</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cmake <span class="at">-H.</span> <span class="at">-BRelease</span> <span class="at">-DCMAKE_BUILD_TYPE</span><span class="op">=</span>Release </span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cmake <span class="at">--build</span> Release</span></code></pre></div>
+<pre class="console"><code>$ sudo apt-get install cmake libclang-7-dev clang-format-7 clang-tools-7
+$ cd ~/repo
+$ git clone --depth=1 --recursive https://github.com/MaskRay/ccls.git ccls.git
+$ cd ccls.git
+$ sed -i -e 's/find_program(CLANG_EXECUTABLE clang)/find_program(CLANG_EXECUTABLE clang-7)/' CMakeLists.txt
+$ cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release 
+$ cmake --build Release</code></pre>
 <h4 id="emacsパッケージのインストール">Emacsパッケージのインストール</h4>
 <pre class="emacs"><code>M-x package-install
 ccls

@@ -37,60 +37,60 @@
 <h3 id="haskell-language-server">haskell-language-server</h3>
 <p>haskell-language-serverの<a href="https://github.com/haskell/haskell-language-server#installation">Installation</a>に従ってバイナリをインストールします。</p>
 <h4 id="prerequistes">Prerequistes</h4>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sudo apt-get install libicu-dev libncurses-dev libgmp-dev zlib1g-dev</span></code></pre></div>
+<pre class="console"><code>$ sudo apt-get install libicu-dev libncurses-dev libgmp-dev zlib1g-dev</code></pre>
 <h4 id="haskell-language-serverのビルド">haskell-language-serverのビルド</h4>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd ~/repo</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone https://github.com/haskell/haskell-language-server <span class="at">--recurse-submodules</span> haskell-language-server.git</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd haskell-language-server.git</span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> stack ./install.hs help</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Usage:</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">stack</span> install.hs <span class="op">&lt;</span>target<span class="op">&gt;</span> [options]</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">or</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">cabal</span> v2-run install.hs <span class="at">--project-file</span> install/shake.project <span class="at">--</span> <span class="op">&lt;</span>target<span class="op">&gt;</span> [options]</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Targets:</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">help</span>                Show help message including all targets</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                        </span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hls</span>                 Install haskell-language-server with the latest available GHC and the data files</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="ex">latest</span>              Install haskell-language-server with the latest available GHC</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">data</span>                Get the required data-files for <span class="kw">`</span><span class="ex">haskell-language-server</span><span class="kw">`</span> <span class="er">(</span><span class="ex">Hoogle</span> DB<span class="kw">)</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hls-8.10.1</span>          Install haskell-language-server for GHC version 8.10.1</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hls-8.10.2</span>          Install haskell-language-server for GHC version 8.10.2</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hls-8.6.4</span>           Install haskell-language-server for GHC version 8.6.4</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hls-8.6.5</span>           Install haskell-language-server for GHC version 8.6.5</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hls-8.8.2</span>           Install haskell-language-server for GHC version 8.8.2</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hls-8.8.3</span>           Install haskell-language-server for GHC version 8.8.3</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">hls-8.8.4</span>           Install haskell-language-server for GHC version 8.8.4</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                        </span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="ex">dev</span>                 Install haskell-language-server with the default stack.yaml</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                        </span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="ex">icu-macos-fix</span>       Fixes icu related problems in MacOS</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="ex">Options:</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    <span class="ex">-s,</span> <span class="at">--silent</span>        Don<span class="st">'t print anything.</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="st">    -q, --quiet         Print less (pass repeatedly for even less).</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="st">    -V, --verbose       Print more (pass repeatedly for even more).</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="st">Build completed in 0.07s</span></span></code></pre></div>
+<pre class="console"><code>$ cd ~/repo
+$ git clone https://github.com/haskell/haskell-language-server --recurse-submodules haskell-language-server.git
+$ cd haskell-language-server.git</code></pre>
+<pre class="console"><code>$ stack ./install.hs help
+
+Usage:
+    stack install.hs &lt;target&gt; [options]
+    or
+    cabal v2-run install.hs --project-file install/shake.project -- &lt;target&gt; [options]
+
+Targets:
+    help                Show help message including all targets
+                        
+    hls                 Install haskell-language-server with the latest available GHC and the data files
+    latest              Install haskell-language-server with the latest available GHC
+    data                Get the required data-files for `haskell-language-server` (Hoogle DB)
+    hls-8.10.1          Install haskell-language-server for GHC version 8.10.1
+    hls-8.10.2          Install haskell-language-server for GHC version 8.10.2
+    hls-8.6.4           Install haskell-language-server for GHC version 8.6.4
+    hls-8.6.5           Install haskell-language-server for GHC version 8.6.5
+    hls-8.8.2           Install haskell-language-server for GHC version 8.8.2
+    hls-8.8.3           Install haskell-language-server for GHC version 8.8.3
+    hls-8.8.4           Install haskell-language-server for GHC version 8.8.4
+                        
+    dev                 Install haskell-language-server with the default stack.yaml
+                        
+    icu-macos-fix       Fixes icu related problems in MacOS
+
+Options:
+    -s, --silent        Don't print anything.
+    -q, --quiet         Print less (pass repeatedly for even less).
+    -V, --verbose       Print more (pass repeatedly for even more).
+
+Build completed in 0.07s</code></pre>
 <p>まずは最新のGHCバージョン(現時点は GHC version 8.8.4 でした)のビルドを行います。</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> stack ./install.hs hls</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">[...snip...]</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Copied</span> executables to /home/ein/.local/bin:</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> haskell-language-server</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> haskell-language-server-wrapper</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># stack (for hls-8.8.4)</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Build</span> completed in 22m03s</span></code></pre></div>
+<pre class="console"><code>$ stack ./install.hs hls
+[...snip...]
+Copied executables to /home/ein/.local/bin:
+- haskell-language-server
+- haskell-language-server-wrapper
+# stack (for hls-8.8.4)
+Build completed in 22m03s</code></pre>
 <p>次に、私が主に使用しているGHCバージョン(現時点は GHC version 8.6.5 です)のビルドを行います。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> stack ./install.hs hls-8.6.5</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">[...snip...]</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Copied</span> executables to /home/ein/.local/bin:</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> haskell-language-server</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> haskell-language-server-wrapper</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># stack (for hls-8.6.5)</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Build</span> completed in 20m46s</span></code></pre></div>
+<pre class="console"><code>$ stack ./install.hs hls-8.6.5
+[...snip...]
+Copied executables to /home/ein/.local/bin:
+- haskell-language-server
+- haskell-language-server-wrapper
+# stack (for hls-8.6.5)
+Build completed in 20m46s</code></pre>
 <p>非力なマシンでは<code>-j</code>オプションで並列実行数を制限してください。</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> stack ./install.hs <span class="at">-j1</span> hls-8.6.5</span></code></pre></div>
+<pre class="console"><code>$ stack ./install.hs -j1 hls-8.6.5</code></pre>
 <p>あらゆるプロジェクトでのビルドで並列実行数を制限する場合はstackのグローバルな設定ファイルにGHCオプションを記述します。<code>~/.stack/config.yaml</code>に以下の行を追加するとよいでしょう。</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ghc-options</span><span class="kw">:</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">&quot;$locals&quot;</span><span class="kw">:</span><span class="at"> -j1</span></span></code></pre></div>
@@ -106,9 +106,9 @@ lsp-haskell</code></pre>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>(<span class="kw">require</span> 'lsp-haskell)</span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>(add-hook 'haskell-mode-hook #'lsp)</span></code></pre></div>
 <h3 id="プロジェクトの作成">プロジェクトの作成</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> stack new <span class="at">--resolver</span><span class="op">=&lt;</span>resolver name<span class="op">&gt;</span> <span class="op">&lt;</span>project-name<span class="op">&gt;</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">//</span> example</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> stack new <span class="at">--resolver</span><span class="op">=</span>lts-14.27 http-conduit-example</span></code></pre></div>
+<pre class="console"><code>$ stack new --resolver=&lt;resolver name&gt; &lt;project-name&gt;
+// example
+$ stack new --resolver=lts-14.27 http-conduit-example</code></pre>
 <p>haskell-language-serverがプロジェクトのセットアップに失敗する場合はプロジェクトの設定ファイルを作成してみます。 設定に関する詳細は<a href="https://github.com/haskell/haskell-language-server#project-configuration">haskell-language-serverのREADME</a>と<a href="https://github.com/mpickering/hie-bios/blob/master/README.md#stack">hie-biosのREADME</a>の通りですが、以下に最小の設定を示します。</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cradle</span><span class="kw">:</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">stack</span><span class="kw">:</span></span></code></pre></div>

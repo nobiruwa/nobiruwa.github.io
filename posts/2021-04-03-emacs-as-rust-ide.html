@@ -35,8 +35,8 @@
 <p>開発のモードとしてrust-modeとlsp-modeとcargo.elのcargo-minor-modeを用い、バックエンドには<code>rls</code>を用います。</p>
 <h4 id="rlsのインストール">rlsのインストール</h4>
 <p><a href="https://github.com/rust-lang/rls#setup">公式の手順</a>に従って<code>rls</code>をインストールします。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> rustup update</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> rustup component add rls rust-analysis rust-src</span></code></pre></div>
+<pre class="console"><code>$ rustup update
+$ rustup component add rls rust-analysis rust-src</code></pre>
 <h4 id="emacsパッケージのインストール">Emacsパッケージのインストール</h4>
 <pre class="emacs"><code>M-x package-install
 cargo
