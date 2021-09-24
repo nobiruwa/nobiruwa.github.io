@@ -17,7 +17,7 @@ tags: Rust, Emacs, LSP
 
 [公式の手順](https://github.com/rust-lang/rls#setup)に従って`rls`をインストールします。
 
-```bash
+```console
 $ rustup update
 $ rustup component add rls rust-analysis rust-src
 ```

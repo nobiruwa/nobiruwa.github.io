@@ -6,7 +6,7 @@ tags: Java
 
 ## tl;dr
 
-``` bash
+``` console
 $ git clone https://github.com/gcuisinier/jenv.git ~/.jenv
 $ cat << EOF >> ~/.bash_profile
 # jEnv configuration
@@ -27,13 +27,13 @@ Java 8を使うことが多いのですが、Debian Unstableではデフォル�
 [jEnv](https://www.jenv.be/)の公式にある通りです。
 まずは`~/.jenv`を用意します。
 
-``` bash
+```console
 $ git clone https://github.com/gcuisinier/jenv.git ~/.jenv
 ```
 
 `~/.bash_profile`にて、環境変数`PATH`と`JAVA_HOME`を設定します。
 
-``` bash
+```bash
 # jEnv configuration
 JENVBIN=$HOME/.jenv/bin
 if [ -d $JENVBIN ] ; then
@@ -52,13 +52,13 @@ OpenJDKのバイナリは[GitHub](https://github.com/ojdkbuild/ojdkbuild/release
 
 jEnvにJDKを登録します。
 
-``` bash
+```console
 $ jenv add <JDKのパス>
 ```
 
 登録されたJDKは下記のコマンドで確認できます。
 
-``` bash
+``` console
 $ jenv versions
 ```
 
@@ -66,7 +66,7 @@ $ jenv versions
 
 グローバルのJava環境を指定します。
 
-``` bash
+```console
 $ jenv global <java versionsで列挙されるバージョン文字列>
 ```
 
@@ -74,7 +74,7 @@ $ jenv global <java versionsで列挙されるバージョン文字列>
 
 ローカルのJava環境を設定するには、以下のコマンドを実行します。
 
-``` bash
+```console
 $ cd <設定したいディレクトリ>
 $ jenv local <java versionsで列挙されるバージョン文字列>
 ```
@@ -86,7 +86,7 @@ $ jenv local <java versionsで列挙されるバージョン文字列>
 
 いくつかのプラグインを有効にします。たとえば、`export`プラグインはグローバルのJava環境を`JAVA_HOME`に設定します。
 
-``` bash
+```console
 $ jenv enable-plugin export
 $ jenv enable-plugin maven
 $ jenv enable-plugin gradle
@@ -95,7 +95,7 @@ $ jenv enable-plugin gradle
 ログインシェルがdashで、`~/.bash_profile`の内容を`~/.profile`に記述した場合は`"$(jenv init -)"`が働かず便利なjenv関数を定義しません。
 そのため、サブコマンドに`sh-`プリフィックスを付けて実行してください。
 
-``` bash
+```console
 $ jenv sh-enable-plugin export
 $ jenv sh-enable-plugin maven
 $ jenv sh-enable-plugin gradle

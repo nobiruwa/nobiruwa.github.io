@@ -27,7 +27,7 @@ Raspberry Piへも簡単に導入できそうな、新しい言語は何かと�
 
 [rustup.rs](https://rustup.rs/) の手順に従います。
 
-```bash
+```console
 $ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 info: downloading installer
 Warning: Not enforcing strong cipher suites for TLS, this is potentially less secure

@@ -160,7 +160,7 @@ Emacsで開けないテキストファイルがあるのは非常に困るので
 
 ちなみに、切っ掛けであったFirefoxのデフォルト化については以下の設定で実現できました。
 
-```bash
+```console
 $ cat ~/.local/share/applications/firefox.desktop
 [Desktop Entry]
 Version=1.0

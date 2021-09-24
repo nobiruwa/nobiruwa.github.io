@@ -29,7 +29,7 @@ lsp-haskellには、interoのようなバックエンドの自動インストー
 
 私はGHC 8.6.5を使用しており、ソースコードのリポジトリを`~/repo/<project-name>.git`というディレクトリ体系で管理していることから、以下のコマンドで`hie`(または`hie-8.6.5`)と`hie-wrapper`を`~/.local/bin`ディレクトリにインストールしました。
 
-```bash
+```console
 $ mkdir -p ~/repo
 $ cd ~/repo
 $ git clone https://github.com/haskell/haskell-ide-engine.git --recurse-submodules haskell-ide-engine.git
@@ -60,7 +60,7 @@ lsp-haskell
 
 ### プロジェクトの作成
 
-```bash
+```console
 $ stack new --resolver=<resolver name> <project-name>
 // example
 $ stack new --resolver=lts-14.27 http-conduit-example

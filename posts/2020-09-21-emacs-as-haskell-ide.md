@@ -20,19 +20,19 @@ haskell-language-serverの[Installation](https://github.com/haskell/haskell-lang
 
 #### Prerequistes
 
-```bash
+```console
 $ sudo apt-get install libicu-dev libncurses-dev libgmp-dev zlib1g-dev
 ```
 
 #### haskell-language-serverのビルド
 
-```bash
+```console
 $ cd ~/repo
 $ git clone https://github.com/haskell/haskell-language-server --recurse-submodules haskell-language-server.git
 $ cd haskell-language-server.git
 ```
 
-```bash
+```console
 $ stack ./install.hs help
 
 Usage:
@@ -68,7 +68,7 @@ Build completed in 0.07s
 
 まずは最新のGHCバージョン(現時点は GHC version 8.8.4 でした)のビルドを行います。
 
-```bash
+```console
 $ stack ./install.hs hls
 [...snip...]
 Copied executables to /home/ein/.local/bin:
@@ -80,7 +80,7 @@ Build completed in 22m03s
 
 次に、私が主に使用しているGHCバージョン(現時点は GHC version 8.6.5 です)のビルドを行います。
 
-```bash
+```console
 $ stack ./install.hs hls-8.6.5
 [...snip...]
 Copied executables to /home/ein/.local/bin:
@@ -92,7 +92,7 @@ Build completed in 20m46s
 
 非力なマシンでは`-j`オプションで並列実行数を制限してください。
 
-```bash
+```console
 $ stack ./install.hs -j1 hls-8.6.5
 ```
 
@@ -126,7 +126,7 @@ lsp-haskell
 
 ### プロジェクトの作成
 
-```bash
+```console
 $ stack new --resolver=<resolver name> <project-name>
 // example
 $ stack new --resolver=lts-14.27 http-conduit-example

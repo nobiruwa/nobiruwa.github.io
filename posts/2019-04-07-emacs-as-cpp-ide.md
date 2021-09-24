@@ -63,7 +63,7 @@ cclsはクライアントからのリクエストを適度にdebounce(間引く)
 
 #### Clangのインストール + cclsのビルド
 
-```bash
+```console
 $ sudo apt-get install cmake libclang-7-dev clang-format-7 clang-tools-7
 $ cd ~/repo
 $ git clone --depth=1 --recursive https://github.com/MaskRay/ccls.git ccls.git

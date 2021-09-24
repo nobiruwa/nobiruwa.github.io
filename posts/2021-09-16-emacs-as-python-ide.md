@@ -14,7 +14,7 @@ tags: Python, Emacs, LSP
 
 pyrightはNode.jsパッケージです。よって、はじめに`npm`コマンドをインストールします。
 
-```bash
+```console
 $ sudo apt install npm
 ```
 

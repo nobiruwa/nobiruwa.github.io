@@ -8,7 +8,7 @@ tags: Debian, Git, Gnome
 
 libsecret-1-devをインストール、`git-credential-libsecret`をコンパイルします。
 
-```bash
+```console
 $ sudo apt-get install libsecret-1-dev
 $ sudo make --directory=/usr/share/doc/git/contrib/credential/libsecret
 $ git config --global credential.helper /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret

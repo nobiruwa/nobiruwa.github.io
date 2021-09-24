@@ -6,7 +6,7 @@ tags: Emacs, Common Lisp, Roswell
 
 ## tl;dr
 
-```bash
+```console
 $ sudo apt-get -y install git build-essential automake libcurl4-openssl-dev
 $ git clone -b release https://github.com/roswell/roswell.git $HOME/repo/roswell.git
 $ cd $HOME/repo/roswell.git
@@ -31,7 +31,7 @@ QuickLispを使っていたのですが、cronで動作するスクリプトを�
 
 [Wiki](https://github.com/roswell/roswell/wiki/Installation#building-from-source)で十分に説明されています。が、私はユーザーディレクトリの`opt`ディレクトリにインストールしてPATHを通すスタイルが好きなので、実行するコマンドを少し変更しました。ソースコードリポジトリのローカルディレクトリ名も`<プロジェクト名>.<コマンド名>`(ex: `roswell.git`、`rxvt-unicode.svn`など)と独特の管理をしています。
 
-```bash
+```console
 $ sudo apt-get -y install git build-essential automake libcurl4-openssl-dev
 $ git clone -b release https://github.com/roswell/roswell.git $HOME/repo/roswell.git
 $ cd $HOME/repo/roswell.git
@@ -48,7 +48,7 @@ $ ros setup
 
 Wikiの[for Emacs](https://github.com/roswell/roswell/wiki/Initial-Recommended-Setup#for-emacs)の通りです。
 
-```bash
+```console
 $ ros install slime
 ```
 
@@ -75,7 +75,7 @@ $ ros install slime
 
 Wikiの[Scripting with Roswell](https://github.com/roswell/roswell/wiki#scripting-with-roswell)の通りです。
 
-```bash
+```console
 $ cd $HOME
 $ ln -s .roswell/local-projects lispprojects
 $ cd lispprojects
