@@ -9,14 +9,20 @@ tags: wsl2, cygwin, cygwin-x, x11
 WSL2の起動スクリプト(manではinitialization file)に以下の設定を追加します。
 
 ```bash
-# X configuration
-export DISPLAY=`grep -oP "(?<=nameserver ).+" /etc/resolv.conf`:0.0
-
 # Cygwin X Server authentication (requires cygwin's "xhost" package)
 CYGWIN_ROOT="/mnt/c/cygwin64"
 CYGWIN_XHOST="$CYGWIN_ROOT/bin/xhost.exe"
-IP_ADDR=`ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1`
 if [ -f "$CYGWIN_XHOST" ] ; then
+    # X configuration
+    export DISPLAY=`grep -oP "(?<=nameserver ).+" /etc/resolv.conf`:0.0
+    # Avoid the following error:
+    # libGL error: No matching fbConfigs or visuals found
+    # libGL error: failed to load driver: swrast
+    # https://x.cygwin.com/docs/ug/using-glx.html
+    export LIBGL_ALWAYS_INDIRECT=1
+
+    # On Windows, set DISPLAY=:0.0
+    IP_ADDR=`ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1`
     ${CYGWIN_XHOST} +${IP_ADDR}
 fi
 ```
@@ -63,14 +69,33 @@ WindowsとWSL2との間の仮想ネットワーク`vEthernet (WSL)`はWSL2の起
 ここまでを踏まえ、以下の設定(再掲)としました。
 
 ```bash
-# X configuration
-export DISPLAY=`grep -oP "(?<=nameserver ).+" /etc/resolv.conf`:0.0
-
 # Cygwin X Server authentication (requires cygwin's "xhost" package)
 CYGWIN_ROOT="/mnt/c/cygwin64"
 CYGWIN_XHOST="$CYGWIN_ROOT/bin/xhost.exe"
-IP_ADDR=`ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1`
 if [ -f "$CYGWIN_XHOST" ] ; then
+    # X configuration
+    export DISPLAY=`grep -oP "(?<=nameserver ).+" /etc/resolv.conf`:0.0
+    # Avoid the following error:
+    # libGL error: No matching fbConfigs or visuals found
+    # libGL error: failed to load driver: swrast
+    # https://x.cygwin.com/docs/ug/using-glx.html
+    export LIBGL_ALWAYS_INDIRECT=1
+
+    # On Windows, set DISPLAY=:0.0
+    IP_ADDR=`ip addr show eth0 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1`
     ${CYGWIN_XHOST} +${IP_ADDR}
 fi
 ```
+
+## Cygwin/Xの起動ショートカットの設定
+
+[OpenGL (GLX) - Cygwin/X User's Guide](https://x.cygwin.com/docs/ug/using-glx.html)のTable 3-1からレンダリングオプションの組み合わせを選択します。
+
+`indirect`と`hardware-accelerated rendering`の組み合わせを選んだので、ショートカットは以下の内容としました。
+
+- 名前
+  - `XWin Server`
+- リンク先
+  - `C:\cygwin64\bin\run.exe --quote /usr/bin/bash.exe -l -c "cd; exec /usr/bin/Xwin.exe :0 -multiwindow -listen tcp +iglx -wgl"`
+- 作業フォルダー
+  - `C:\cygwin64`

@@ -60,3 +60,16 @@ lsp-modeとlsp-uiの設定は[過去の記事](2019-04-07-emacs-as-cpp-ide.md)�
 ;; The folowing enables automatic formatting on save.
 (setq rust-format-on-save t)
 ```
+
+## cargo-edit, cargo-featureのインストール
+
+[cargo-edit](https://github.com/killercup/cargo-edit)は`cargo add/rm/upgrade/set-version`サブコマンドを追加します。また、[cargo-feature](https://github.com/Riey/cargo-feature)は`cargo feature`サブコマンドを追加します。
+
+`cargo add`と`cargo feature`を使うと、`Cargo.toml`の`[dependencies]`セクションと`[dev-dependencies]`セクションを記述するかわりに、コマンドラインから編集できるようになります。私には合っていると思い導入することにします。
+
+```bash
+$ cargo install cargo-edit
+$ cargo install cargo-feature
+```
+
+ちなみに、サブコマンドの実体は`~/.cargo/bin`ディレクトリにあります。`cargo-add`, `cargo-feature`といったようにサブコマンドごとの実行ファイルが追加されます。
