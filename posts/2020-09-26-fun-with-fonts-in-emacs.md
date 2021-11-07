@@ -18,14 +18,23 @@ tags: Emacs, Font
 ;; customize font
 ;;;
 ;; Ref: https://www.shimmy1996.com/en/posts/2018-06-24-fun-with-fonts-in-emacs/
+;; Ref: https://qiita.com/melito/items/238bdf72237290bc6e42
+;; Ref: http://misohena.jp/blog/2017-09-26-symbol-font-settings-for-emacs25.html
+;; Ref: https://www.reddit.com/r/emacs/comments/ggd90c/color_emoji_in_emacs_27/
 (defvar user--cjk-font "VL Gothic"
   "Default font for CJK characters")
 
 (defvar user--latin-font "VL Gothic"
   "Default font for Latin characters")
 
-(defvar user--unicode-font "Noto Sans"
+(defvar user--cjk-proportional-font "VL PGothic"
+  "Default font for Latin characters")
+
+(defvar user--unicode-font "Noto Sans Mono CJK JP"
   "Default font for Unicode characters. including emojis")
+
+(defvar user--unicode-emoji-font "Noto Color Emoji"
+  "Default font for Unicode emoji characters.")
 
 ;; Notoフォントでベンガル語(charset名はbengali)を表示するとクラッシュする。
 ;; バックトレースを見るとlibm17n/libotf0でクラッシュしているようだ。
@@ -36,38 +45,52 @@ tags: Emacs, Font
 (defvar user--unicode-font-fallback "FreeSans"
   "Fallback font for Unicode characters.")
 
-(defvar user--standard-fontset
-  (create-fontset-from-fontset-spec standard-fontset-spec)
+(defvar user--standard-fontset "fontset-user"
   "Standard fontset for user.")
 
 (defun user--set-font ()
   "Set Unicode, Latin and CJK font for user--standard-fontset."
+  ;; 記号にはデフォルトのフォントではなく指定のフォントを使いたい
+  (setq use-default-font-for-symbols nil)
+  (create-fontset-from-ascii-font user--cjk-font nil (replace-regexp-in-string "fontset-" "" user--standard-fontset))
+  ;; unicodeに対してuser--cjk-fontがグリフを持っていればそれを使い、
+  ;; 持っていない場合にはuser--unicode-fontで補完する
+  (set-fontset-font user--standard-fontset 'unicode
+                    (font-spec :family user--cjk-font)
+                    nil)
   (set-fontset-font user--standard-fontset 'unicode
                     (font-spec :family user--unicode-font)
-                    nil 'prepend)
+                    nil 'append)
+  ;; latinに対してuser--latin-fontを使う
   (set-fontset-font user--standard-fontset 'latin
                     (font-spec :family user--latin-font)
                     nil 'prepend)
+  ;; CJKに対してuser--cjk-fontを使う
   (dolist (charset '(kana han cjk-misc hangul kanbun bopomofo))
     (set-fontset-font user--standard-fontset charset
                   (font-spec :family user--cjk-font)
                   nil 'prepend))
+  ;; symbolに対してuser--unicode-emoji-fontを使う
+  (set-fontset-font t 'symbol user--unicode-emoji-font nil 'append)
+  ;; TODO 日本語フォントではU+2018とU+2019は全角幅だがWeb上の英文ではアポストロフィに使われていて
+  ;; 見栄えが悪い。現状は全角で表示し必要に応じてU+0027に置換する。よい方法はないものか。
   (dolist (charset '((#x2018 . #x2019)    ;; Curly single quotes "‘’"
                      (#x201c . #x201d)))  ;; Curly double quotes "“”"
     (set-fontset-font user--standard-fontset charset
                       (font-spec :family user--cjk-font)
-                      nil 'prepend))
+                      nil)) ; 上書きするために第5引数ADDは省略する
   ;; フォールバックフォントを用いる言語(charsetは C-u C-x = のscriptセクションの名前を用いる)
   (dolist (charset '(bengali bengali-akruti bengali-cdac))
     (set-fontset-font user--standard-fontset charset
                       (font-spec :family user--unicode-font-fallback)
                       nil 'prepend)))
-(user--set-font)
-(add-hook 'before-make-frame-hook #'user--set-font)
 
-;; Ensure user--standard-fontset gets used for new frames.
-(add-to-list 'default-frame-alist (cons 'font user--standard-fontset))
-(add-to-list 'initial-frame-alist (cons 'font user--standard-fontset))
+(when window-system
+  ;; create fontset-user
+  (user--set-font)
+  ;; Ensure user--standard-fontset gets used for new frames.
+  (add-to-list 'default-frame-alist `(font . ,user--standard-fontset))
+  (add-to-list 'initial-frame-alist `(font . ,user--standard-fontset)))
 ```
 
 ## PROBLEMSの抜粋
