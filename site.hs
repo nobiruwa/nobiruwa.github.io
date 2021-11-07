@@ -1,8 +1,31 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-import           Data.Monoid (mappend)
-import           Hakyll
-
+import Data.Monoid (mappend)
+import Hakyll
+    ( Context,
+      applyAsTemplate,
+      compile,
+      compressCssCompiler,
+      constField,
+      copyFileCompiler,
+      create,
+      dateField,
+      defaultContext,
+      fromList,
+      getResourceBody,
+      hakyll,
+      idRoute,
+      listField,
+      loadAll,
+      loadAndApplyTemplate,
+      makeItem,
+      match,
+      pandocCompiler,
+      recentFirst,
+      relativizeUrls,
+      route,
+      setExtension,
+      templateCompiler )
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -46,7 +69,6 @@ main = hakyll $ do
                 >>= loadAndApplyTemplate "templates/default.html" archiveCtx
                 >>= relativizeUrls
 
-
     match "index.html" $ do
         route idRoute
         compile $ do
@@ -62,7 +84,6 @@ main = hakyll $ do
                 >>= relativizeUrls
 
     match "templates/*" $ compile templateCompiler
-
 
 --------------------------------------------------------------------------------
 postCtx :: Context String
