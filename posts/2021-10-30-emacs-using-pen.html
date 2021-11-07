@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
+    <link rel="stylesheet" href="../css/syntax.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <title>My Hakyll Blog - Pen (pen.el) のセットアップ</title>
+  </head>
+  <body>
+    <div id="header">
+      <div id="logo">
+        <a href="../">Nobiruwa's</a>
+      </div>
+      <div id="navigation">
+        <a href="../">Home</a>
+        <a href="../archive.html">Archive</a>
+      </div>
+    </div>
+
+    <div id="content">
+      <h1>Pen (pen.el) のセットアップ</h1>
+
+      <div class="info">
+    Posted on October 30, 2021
+    
+        by nobiruwa
+    
+</div>
+
+<h1 id="インストール手順">インストール手順</h1>
+<p>この手順は<a href="https://mullikine.github.io/posts/pen-tutorial/">Pen Tutorial</a>に従って、Docker上でEmacs + Pen (pen.el) を試した際の記録です。</p>
+<h2 id="pen.elとpromptsリポジトリのクローン"><code>pen.el</code>と<code>prompts</code>リポジトリのクローン</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cd ~/repo</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone <span class="st">&quot;https://github.com/semiosis/pen.el&quot;</span> pen.el.git</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> git clone <span class="st">&quot;https://github.com/semiosis/prompts&quot;</span> prompts.git</span></code></pre></div>
+<h2 id="aix-apiキーの取得"><code>AIx</code> APIキーの取得</h2>
+<p><code>AIx</code>の<code>GPT-J 6B by EleutherAI</code>エンジンを利用します。</p>
+<p><a href="https://apps.aixsolutionsgroup.com/" class="uri">https://apps.aixsolutionsgroup.com/</a>にサインアップ、ログインします。メニューの<code>API Keys</code>からAPIキーを取得します。</p>
+<h2 id="openai-apiキーの取得"><code>OpenAI</code> APIキーの取得</h2>
+<p><code>OpenAI</code>の<code>GPT-3</code>言語モデルを利用します。</p>
+<p><a href="https://beta.openai.com/" class="uri">https://beta.openai.com/</a>で<code>JOIN THE WAITLIST</code>ボタンからフォーム画面に遷移し、必要な情報を入力します。</p>
+<ul>
+<li><code>Which product are you interested in?</code>
+<ul>
+<li><code>GPT-3 (language models)</code>ラジオボタンを選択します。</li>
+</ul></li>
+<li><code>Are you primarily looking to:</code>
+<ul>
+<li>今回の目的は<code>General exploration of capabilities</code>です。</li>
+</ul></li>
+<li>他の項目も適当に入力します。</li>
+</ul>
+<p>サインアップではなくあくまでwaitlistであるということでしばらく待ちます。</p>
+<p>承認された後は<a href="https://beta.openai.com/account/api-keys" class="uri">https://beta.openai.com/account/api-keys</a>からAPIキーを取得できます。</p>
+<h2 id="penのセットアップ">Penのセットアップ</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> mkdir <span class="at">-p</span> ~/.pen</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="st">&quot;sk-&lt;openai key here&gt;&quot;</span> <span class="op">&gt;</span> ~/.pen/openai_api_key   <span class="co"># https://openai.com/</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="st">&quot;&lt;aix key here&gt;&quot;</span> <span class="op">&gt;</span> ~/.pen/aix_api_key            <span class="co"># https://aixsolutionsgroup.com/</span></span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat ~/.bash_env</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Pen configuration</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="va">PEN_AIX_KEY</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/.pen/aix_api_key&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="va">PEN_OPENAI_KEY</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/.pen/openai_api_key&quot;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="va">PEN_REPO</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/repo/pen.el.git&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">$PEN_AIX_KEY</span><span class="st">&quot;</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">$PEN_OPENAI_KEY</span><span class="st">&quot;</span> <span class="bu">]</span> <span class="kw">&amp;&amp;</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;</span><span class="va">$PEN_REPO</span><span class="st">&quot;</span> <span class="bu">]</span> <span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">PATH=</span><span class="st">&quot;</span><span class="va">$PATH</span><span class="st">:</span><span class="va">$PEN_REPO</span><span class="st">/scripts&quot;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add this to prevent C-s from freezing the terminal</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stty</span> stop undef <span class="dv">2</span><span class="op">&gt;</span>/dev/null</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stty</span> start undef <span class="dv">2</span><span class="op">&gt;</span>/dev/null</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="ex">...</span></span></code></pre></div>
+<h2 id="penの起動">Penの起動</h2>
+<p><code>pen</code>コマンドを起動します。初回起動時にはDockerイメージをプルします。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> pen</span></code></pre></div>
+<h2 id="penを試す">Penを試す</h2>
+<p><a href="https://mullikine.github.io/posts/pen-tutorial/#acolyte-mode-key-bindings-for-emacs-noobs">Acolyte minor mode</a>を使って文章の補完を行えます。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Bindings</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Alt-a</td>
+<td style="text-align: left;">Change AIx API key</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alt-o</td>
+<td style="text-align: left;">Change OpenAI API key</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alt-p</td>
+<td style="text-align: left;">Open the prompts directory in dired</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alt-t</td>
+<td style="text-align: left;">Start writing in an empty file</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alt-s</td>
+<td style="text-align: left;">Save file</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alt-r</td>
+<td style="text-align: left;">Running a prompt function like this will not insert text or replace it.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alt-TAB</td>
+<td style="text-align: left;">This completes the current line.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alt-l (little L)</td>
+<td style="text-align: left;">Multiline (long) completion.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alt-g</td>
+<td style="text-align: left;">This reloads the prompt functions.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alt-m</td>
+<td style="text-align: left;">Right click menu</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Select text then Alt-f</td>
+<td style="text-align: left;">This filters the text through a prompt function specifically designed for this.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Spacebar</td>
+<td style="text-align: left;">When text is selected, will run with that text as first argument.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alt-1</td>
+<td style="text-align: left;">Complete 1 word</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alt-2</td>
+<td style="text-align: left;">Complete 5 words</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alt-3</td>
+<td style="text-align: left;">Complete line</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alt-4</td>
+<td style="text-align: left;">Complete long (use Alt-l though, as you can see the multilines)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Alt-u Alt-2</td>
+<td style="text-align: left;">Complete 5 words, but get a new completion (updates the cache)</td>
+</tr>
+</tbody>
+</table>
+
+    </div>
+    <div id="footer">
+      Site proudly generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </div>
+  </body>
+</html>
