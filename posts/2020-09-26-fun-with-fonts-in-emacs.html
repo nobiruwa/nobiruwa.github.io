@@ -43,56 +43,79 @@
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">;; customize font</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">;;;</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">;; Ref: https://www.shimmy1996.com/en/posts/2018-06-24-fun-with-fonts-in-emacs/</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--cjk-font </span><span class="st">&quot;VL Gothic&quot;</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Default font for CJK characters&quot;</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--latin-font </span><span class="st">&quot;VL Gothic&quot;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Default font for Latin characters&quot;</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">;; Ref: https://qiita.com/melito/items/238bdf72237290bc6e42</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">;; Ref: http://misohena.jp/blog/2017-09-26-symbol-font-settings-for-emacs25.html</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">;; Ref: https://www.reddit.com/r/emacs/comments/ggd90c/color_emoji_in_emacs_27/</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--cjk-font </span><span class="st">&quot;VL Gothic&quot;</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Default font for CJK characters&quot;</span>)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--unicode-font </span><span class="st">&quot;Noto Sans&quot;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Default font for Unicode characters. including emojis&quot;</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--latin-font </span><span class="st">&quot;VL Gothic&quot;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Default font for Latin characters&quot;</span>)</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">;; Notoフォントでベンガル語(charset名はbengali)を表示するとクラッシュする。</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">;; バックトレースを見るとlibm17n/libotf0でクラッシュしているようだ。</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">;; $ fc-list :lang=bn</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">;; を実行してベンガル語をサポートするフォント一覧を出力すると、</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co">;; Notoフォント以外にFreeSansがある。</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co">;; ので、FreeSansをフォールバックフォントとして用いる。</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--unicode-font-fallback </span><span class="st">&quot;FreeSans&quot;</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Fallback font for Unicode characters.&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--cjk-proportional-font </span><span class="st">&quot;VL PGothic&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Default font for Latin characters&quot;</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--unicode-font </span><span class="st">&quot;Noto Sans Mono CJK JP&quot;</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Default font for Unicode characters. including emojis&quot;</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--unicode-emoji-font </span><span class="st">&quot;Noto Color Emoji&quot;</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Default font for Unicode emoji characters.&quot;</span>)</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--standard-fontset</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  (create-fontset-from-fontset-spec standard-fontset-spec)</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Standard fontset for user.&quot;</span>)</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defun</span><span class="fu"> user--set-font </span>()</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Set Unicode, Latin and CJK font for user--standard-fontset.&quot;</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset 'unicode</span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>                    (font-spec :family user--unicode-font)</span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span> 'prepend)</span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset 'latin</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>                    (font-spec :family user--latin-font)</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span> 'prepend)</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">dolist</span> (charset '(kana han cjk-misc hangul kanbun bopomofo))</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    (set-fontset-font user--standard-fontset charset</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>                  (font-spec :family user--cjk-font)</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">nil</span> 'prepend))</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">dolist</span> (charset '((<span class="ch">#x</span>2018 . #x2019)    ;; Curly single quotes &quot;‘’&quot;</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>                     (<span class="ch">#x</span>201c . #x201d)))  ;; Curly double quotes &quot;“”&quot;</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    (set-fontset-font user--standard-fontset charset</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>                      (font-spec :family user--cjk-font)</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">nil</span> 'prepend))</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; フォールバックフォントを用いる言語(charsetは C-u C-x = のscriptセクションの名前を用いる)</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">dolist</span> (charset '(bengali bengali-akruti bengali-cdac))</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    (set-fontset-font user--standard-fontset charset</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>                      (font-spec :family user--unicode-font-fallback)</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">nil</span> 'prepend)))</span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>(user--set-font)</span>
-<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>(add-hook 'before-make-frame-hook #'user--set-font)</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="co">;; Ensure user--standard-fontset gets used for new frames.</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>(add-to-list 'default-frame-alist (<span class="kw">cons</span> 'font user--standard-fontset))</span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>(add-to-list 'initial-frame-alist (<span class="kw">cons</span> 'font user--standard-fontset))</span></code></pre></div>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co">;; Notoフォントでベンガル語(charset名はbengali)を表示するとクラッシュする。</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">;; バックトレースを見るとlibm17n/libotf0でクラッシュしているようだ。</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">;; $ fc-list :lang=bn</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">;; を実行してベンガル語をサポートするフォント一覧を出力すると、</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">;; Notoフォント以外にFreeSansがある。</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co">;; ので、FreeSansをフォールバックフォントとして用いる。</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--unicode-font-fallback </span><span class="st">&quot;FreeSans&quot;</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Fallback font for Unicode characters.&quot;</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defvar</span><span class="fu"> user--standard-fontset </span><span class="st">&quot;fontset-user&quot;</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Standard fontset for user.&quot;</span>)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defun</span><span class="fu"> user--set-font </span>()</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Set Unicode, Latin and CJK font for user--standard-fontset.&quot;</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; 記号にはデフォルトのフォントではなく指定のフォントを使いたい</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">setq</span> use-default-font-for-symbols <span class="kw">nil</span>)</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  (create-fontset-from-ascii-font user--cjk-font <span class="kw">nil</span> (replace-regexp-in-string <span class="st">&quot;fontset-&quot;</span> <span class="st">&quot;&quot;</span> user--standard-fontset))</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; unicodeに対してuser--cjk-fontがグリフを持っていればそれを使い、</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; 持っていない場合にはuser--unicode-fontで補完する</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset 'unicode</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>                    (font-spec :family user--cjk-font)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span>)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset 'unicode</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>                    (font-spec :family user--unicode-font)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span> 'append)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; latinに対してuser--latin-fontを使う</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset 'latin</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>                    (font-spec :family user--latin-font)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span> 'prepend)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; CJKに対してuser--cjk-fontを使う</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">dolist</span> (charset '(kana han cjk-misc hangul kanbun bopomofo))</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    (set-fontset-font user--standard-fontset charset</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>                  (font-spec :family user--cjk-font)</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">nil</span> 'prepend))</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; symbolに対してuser--unicode-emoji-fontを使う</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font <span class="kw">t</span> 'symbol user--unicode-emoji-font <span class="kw">nil</span> 'append)</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; </span><span class="al">TODO</span><span class="co"> 日本語フォントではU+2018とU+2019は全角幅だがWeb上の英文ではアポストロフィに使われていて</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; 見栄えが悪い。現状は全角で表示し必要に応じてU+0027に置換する。よい方法はないものか。</span></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">dolist</span> (charset '((<span class="ch">#x</span>2018 . #x2019)    ;; Curly single quotes &quot;‘’&quot;</span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>                     (<span class="ch">#x</span>201c . #x201d)))  ;; Curly double quotes &quot;“”&quot;</span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>    (set-fontset-font user--standard-fontset charset</span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>                      (font-spec :family user--cjk-font)</span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">nil</span>)) <span class="co">; 上書きするために第5引数ADDは省略する</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; フォールバックフォントを用いる言語(charsetは C-u C-x = のscriptセクションの名前を用いる)</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">dolist</span> (charset '(bengali bengali-akruti bengali-cdac))</span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>    (set-fontset-font user--standard-fontset charset</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>                      (font-spec :family user--unicode-font-fallback)</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">nil</span> 'prepend)))</span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>(<span class="kw">when</span> window-system</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; create fontset-user</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>  (user--set-font)</span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; Ensure user--standard-fontset gets used for new frames.</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>  (add-to-list 'default-frame-alist `(font . ,user--standard-fontset))</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>  (add-to-list 'initial-frame-alist `(font . ,user--standard-fontset)))</span></code></pre></div>
 <h2 id="problemsの抜粋">PROBLEMSの抜粋</h2>
 <p>libotfに関する問題の存在は<code>PROBLEMS</code>ファイルにしっかりと書かれていました。 Emacsのよいところは公式がドキュメント化をしっかりしているところで、<code>PROBLEMS</code>ファイルにしっかり目を通しましょう、という教訓になりました。</p>
 <pre class="org"><code>** Emacs crashes when you try to view a file with complex characters.
