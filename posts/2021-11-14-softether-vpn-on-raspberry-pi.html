@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
+    <link rel="stylesheet" href="../css/syntax.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <title>My Hakyll Blog - SoftEtherによるVPNの導入</title>
+  </head>
+  <body>
+    <div id="header">
+      <div id="logo">
+        <a href="../">Nobiruwa's</a>
+      </div>
+      <div id="navigation">
+        <a href="../">Home</a>
+        <a href="../archive.html">Archive</a>
+      </div>
+    </div>
+
+    <div id="content">
+      <h1>SoftEtherによるVPNの導入</h1>
+
+      <div class="info">
+    Posted on November 14, 2021
+    
+        by nobiruwa
+    
+</div>
+
+<h2 id="vpnサーバー-raspberry-pi-4-のセットアップ">VPNサーバー (Raspberry Pi 4) のセットアップ</h2>
+<p>「SoftEther VPN」の<code>SecureNAT</code>が気になり、自宅で常に稼動しているRaspberry Pi 4をVPNサーバー化するセットアップを行いました。</p>
+<h3 id="必要なパッケージのインストール">必要なパッケージのインストール</h3>
+<pre class="console"><code># apt install softether-common softether-vpnserver softether-vpnbridge softether-vpncmd</code></pre>
+<p><code>softether-vpnserver.service</code>と<code>softether-vpnbridge.service</code>が自動起動されました。</p>
+<h3 id="ファイアウォールでのポート開放">ファイアウォールでのポート開放</h3>
+<p>VPN接続をするために、VPNサーバーの443/TCPポートへの接続を許可します。</p>
+<p><a href="https://docs.rackspace.com/support/how-to/allow-web-traffic-in-iptables/">Allow web traffic in iptables software firewall - rackspace</a>を参考にしました。</p>
+<pre class="console"><code># iptables -I INPUT -p tcp -m tcp --dport 443 -j ACCEPT
+# iptables-save</code></pre>
+<h3 id="ルータの静的napt設定-pr-500ki">ルータの静的NAPT設定 (PR-500KI)</h3>
+<p>続いて、WAN側からVPNサーバーの443/TCPポートへ接続できるよう、ルータに静的NAPTによるルーティングを設定します。</p>
+<p>自宅ではPR-500KIを使っており、この機器では、機器ごとに利用可能なWAN側ポートが制限されております。設定にあたっては<a href="v6プラスでポートを開放する方法">v6プラスでポートを開放する方法</a>を参考にしました。</p>
+<p>Raspberry PiにSSH接続し、ルータ設定用にインストールしておいたWebブラウザ(<code>midori</code>)を使って<a href="http://ntt.setup:8888/t">配信済事業者ソフトウェア一覧</a>を開き、<code>IPv4設定</code>をクリックします。</p>
+<p><a href="http://ntt.setup:8888/enabler.ipv4/main">IPv4設定</a>には<code>利用可能ポート</code>が列挙されており、静的NAPT設定に利用可能なポート番号を2つ選びます。</p>
+<p>1つはSSL通信のためのポートです。</p>
+<ul>
+<li>対象プロトコル
+<ul>
+<li><code>TCP</code>を選択</li>
+</ul></li>
+<li>公開対象ポート
+<ul>
+<li><code>利用可能ポート</code>から選んだポート番号を入力(例: <code>12345</code>)</li>
+</ul></li>
+<li>宛先アドレス
+<ul>
+<li>ルーターから払いだされたVPNサーバーのIPアドレス(例: <code>192.168.1.2</code>)</li>
+</ul></li>
+<li>宛先ポート
+<ul>
+<li>VPNサーバーが使用するSSL通信ポートを入力(<code>443</code>)</li>
+</ul></li>
+</ul>
+<p>もう1つはOpenVPN接続のポートです。</p>
+<ul>
+<li>対象プロトコル
+<ul>
+<li><code>TCP</code>を選択</li>
+</ul></li>
+<li>公開対象ポート
+<ul>
+<li><code>利用可能ポート</code>から選んだポート番号を入力(例: <code>23456</code>)</li>
+</ul></li>
+<li>宛先アドレス
+<ul>
+<li>ルーターから払いだされたVPNサーバーのIPアドレスを入力(例: <code>192.168.1.2</code>)</li>
+</ul></li>
+<li>宛先ポート
+<ul>
+<li>VPNサーバーが使用するOpenVPN通信ポート番号を入力(<code>1194</code>)</li>
+</ul></li>
+</ul>
+<h3 id="仮想hubの作成">仮想HUBの作成</h3>
+<p>VPNサーバーの操作を<code>vpncmd</code>から行ってみました。</p>
+<p>まずは管理パスワードの設定と仮想HUBの作成です。</p>
+<pre class="console"><code># vpncmd
+vpncmd command - SoftEther VPN Command Line Management Utility Developer Edition
+SoftEther VPN Command Line Management Utility (vpncmd command)
+Developer Edition
+Version 5.01 Build 9674   (English)
+Compiled 2020/12/03 09:35:09 by Unknown at Unknown
+Copyright (c) all contributors on SoftEther VPN project in GitHub.
+Copyright (c) Daiyuu Nobori, SoftEther Project at University of Tsukuba, and SoftEther Corporation.
+All rights reserved.
+
+By using vpncmd program, the following can be achieved.
+
+1. Management of VPN Server or VPN Bridge
+2. Management of VPN Client
+3. Use of VPN Tools (certificate creation and Network Traffic Speed Test Tool)
+
+Select 1, 2 or 3: 1 # 1を入力してEnter
+
+Specify the host name or IP address of the computer that the destination VPN Server or VPN Bridge is operating on.
+By specifying according to the format 'host name:port number', you can also specify the port number.
+(When the port number is unspecified, 443 is used.)
+If nothing is input and the Enter key is pressed, the connection will be made to the port number 443 of localhost (this computer).
+Hostname of IP Address of Destination: xxx.xxx.xxx.xxx:443 # Raspberry Pi 4のIPアドレスとポート番号を入力してEnter
+
+If connecting to the server by Virtual Hub Admin Mode, please input the Virtual Hub name.
+If connecting by server admin mode, please press Enter without inputting anything.
+Specify Virtual Hub Name: # Enter
+Connection has been established with VPN Server &quot;xxx.xxx.xxx.xxx&quot; (port 443).
+
+You have administrator privileges for the entire VPN Server.
+VPN Server&gt;ServerPasswordSet
+ServerPasswordSet command - Set VPN Server Administrator Password
+Please enter the password. To cancel press the Ctrl+D key.
+
+Password: ****** # VPNサーバーの管理パスワードを入力してEnter
+Confirm input: ****** # 再度管理パスワードを入力してEnter
+
+The command completed successfully.
+VPN Server&gt;HubCreate # 仮想HUBを作成するためにHubCreateコマンドを実行
+HubCreate command - Create New Virtual Hub
+Name of Virtual Hub to be created: vpn # 仮想HUB名に与える名前を入力してEnter
+
+Please enter the password. To cancel press the Ctrl+D key.
+
+Password: ****** # パスワードを入力してEnter
+Confirm input: ****** # パスワードを再度入力してEnter
+
+The command completed successfully.
+VPN Server&gt;exit</code></pre>
+<p>次に仮想HUBのSecureNATを有効にします。</p>
+<pre class="console"><code># vpncmd
+vpncmd command - SoftEther VPN Command Line Management Utility Developer Edition
+SoftEther VPN Command Line Management Utility (vpncmd command)
+Developer Edition
+Version 5.01 Build 9674   (English)
+Compiled 2020/12/03 09:35:09 by Unknown at Unknown
+Copyright (c) all contributors on SoftEther VPN project in GitHub.
+Copyright (c) Daiyuu Nobori, SoftEther Project at University of Tsukuba, and SoftEther Corporation.
+All rights reserved.
+
+By using vpncmd program, the following can be achieved.
+
+1. Management of VPN Server or VPN Bridge
+2. Management of VPN Client
+3. Use of VPN Tools (certificate creation and Network Traffic Speed Test Tool)
+
+Select 1, 2 or 3: 1 # 1を選択してEnter
+
+Specify the host name or IP address of the computer that the destination VPN Server or VPN Bridge is operating on.
+By specifying according to the format 'host name:port number', you can also specify the port number.
+(When the port number is unspecified, 443 is used.)
+If nothing is input and the Enter key is pressed, the connection will be made to the port number 443 of localhost (this computer).
+Hostname of IP Address of Destination: xxx.xxx.xxx.xxx:443 # Raspberry Pi 4のIPアドレスとポート番号を入力してEnter
+
+If connecting to the server by Virtual Hub Admin Mode, please input the Virtual Hub name.
+If connecting by server admin mode, please press Enter without inputting anything.
+Specify Virtual Hub Name: vpn # 仮想HUBの名前を入力してEnter
+Password: ********* # 仮想HUBのパスワードを入力してEnter
+
+Connection has been established with VPN Server &quot;xxx.xxx.xxx.xxx&quot; (port 443).
+
+You have administrator privileges for Virtual Hub 'vpn' on the VPN Server.
+
+VPN Server/vpn&gt;SecureNATEnable
+SecureNatEnable command - Enable the Virtual NAT and DHCP Server Function (SecureNat Function)
+The command completed successfully.
+
+VPN Server/vpn&gt;exit</code></pre>
+<h3 id="外部からsoftether-vpn-サーバー管理マネージャで設定を行う">外部からSoftEther VPN サーバー管理マネージャで設定を行う</h3>
+<p>次はインターネットからVPNサーバーに接続して残りの設定を行ってみます。</p>
+<h4 id="接続の作成">接続の作成</h4>
+<p><code>SoftEther VPN サーバー管理マネージャ</code>ウィンドウから<code>[新しい接続設定]</code>ボタンを選択します。</p>
+<p><code>新しい接続の作成</code>ダイアログでは以下のように設定しました。</p>
+<ul>
+<li>設定名
+<ul>
+<li><code>自宅</code>と入力</li>
+</ul></li>
+<li>VPN Server の指定
+<ul>
+<li>ホスト名
+<ul>
+<li>PR-500KIのWAN側のIPアドレスを入力</li>
+</ul></li>
+<li>ポート番号
+<ul>
+<li>PR-500KIの静的NAPT設定で選んだポート番号を入力</li>
+</ul></li>
+</ul></li>
+<li>経由するプロキシサーバーの設定
+<ul>
+<li>プロキシの種類
+<ul>
+<li>プロキシを必要としなかったため<code>直接 TCP/IP 接続 (プロキシを使わない)</code>を選択</li>
+</ul></li>
+</ul></li>
+<li>管理モードの選択とパスワードの入力
+<ul>
+<li><code>サーバー管理モード</code>を選択</li>
+</ul></li>
+<li>管理パスワード
+<ul>
+<li><code>ServerPasswordSet</code>で設定した管理パスワードを入力</li>
+</ul></li>
+</ul>
+<p><code>[OK]</code>ボタンを押すと<code>SoftEther VPN Server への接続設定</code>ダイアログに接続設定が追加されました。</p>
+<h4 id="vpn接続ユーザーの作成">VPN接続ユーザーの作成</h4>
+<p>仮想HUBのVPN接続ユーザーを作成します。</p>
+<p><code>SoftEther VPN サーバー管理マネージャ</code>ウィンドウで接続設定<code>自宅</code>を選択した状態で<code>[接続]</code>ボタンを押して接続に成功すると、<code>自宅 - SoftEther VPN サーバー管理マネージャ</code>ダイアログが開きます。</p>
+<p>仮想HUB<code>vpn</code>を選択した状態で<code>[仮想 HUB の管理]</code>ボタンを押して、<code>仮想 HUB の管理 - vpn</code>ダイアログを開きます。</p>
+<p><code>[ユーザーの管理]</code>ボタンを押して、<code>ユーザーの管理</code>ダイアログを開きます。</p>
+<p><code>[新規作成]</code>ボタンを押して、<code>ユーザーの新規作成</code>ダイアログを開きます。グループ参加なし、パスワード認証を行うユーザーを作成します。</p>
+<ul>
+<li>ユーザー名
+<ul>
+<li>アルファベットで任意の名称を入力</li>
+</ul></li>
+<li>本名
+<ul>
+<li>任意の名前を入力</li>
+</ul></li>
+<li>説明
+<ul>
+<li>任意の説明を入力</li>
+</ul></li>
+<li>グループ名
+<ul>
+<li>空文字列のまま入力を省略</li>
+</ul></li>
+<li>認証方法
+<ul>
+<li>パスワード認証</li>
+</ul></li>
+<li>パスワード認証
+<ul>
+<li>パスワード
+<ul>
+<li>パスワードを入力</li>
+</ul></li>
+<li>パスワードの確認入力
+<ul>
+<li>パスワードを入力</li>
+</ul></li>
+</ul></li>
+</ul>
+<p><code>[OK]</code>ボタンを押すと、<code>ユーザーの管理</code>ダイアログにユーザーが追加されます。</p>
+<h4 id="ipsecl2tpの設定">IPsec/L2TPの設定</h4>
+<p>IPsec/L2TP自体は使用しませんが、後述するOpenVPNのための設定を行います。</p>
+<p><code>自宅 - SoftEther VPN サーバー管理マネージャ</code>ダイアログで<code>[IPsec / L2TP 設定]</code>ボタンを押して、<code>IPsec / L2TP / L2TPv3 設定</code>ダイアログを開きます。</p>
+<p><code>接続時のユーザー名で仮想 HUB 名が省略された場合に接続する仮想 HUB の選択</code>で<code>vpn</code>を選択します。</p>
+<p><code>[OK]</code>ボタンを押して<code>IPsec / L2TP / L2TPv3 設定</code>ダイアログを閉じます。</p>
+<h4 id="openvpnの設定">OpenVPNの設定</h4>
+<p>AndroidではIPsec/L2TPは使えずOpenVPNを使用します。そのための設定を行います。</p>
+<p><code>自宅 - SoftEther VPN サーバー管理マネージャ</code>ダイアログで<code>[OpenVPN / MS-SSTP 設定]</code>ボタンを押して、<code>OpenVPN / MS-SSTP 設定</code>ダイアログを開きます。</p>
+<ul>
+<li><code>OpenVPN サーバー機能を有効にする</code>
+<ul>
+<li>チェックボックスを有効にします。</li>
+</ul></li>
+<li><code>[OpenVPN クライアント用のサンプル設定ファイルを生成]</code>ボタンを押して、zipファイルをダウンロードします。</li>
+</ul>
+<p><code>[OK]</code>ボタンを押して<code>OpenVPN / MS-SSTP 設定</code>ダイアログを閉じます。</p>
+<h2 id="vpnクライアントのセットアップ-windows">VPNクライアントのセットアップ (Windows)</h2>
+<p><code>SoftEther VPN クライアント接続マネージャ</code>を使って、VPNサーバーに接続します。</p>
+<h3 id="仮想vlanカードの作成">仮想VLANカードの作成</h3>
+<p><code>[新しい接続設定の作成]</code>を選択すると、初めに<code>新しい仮想 LAN カードの作成</code>ダイアログが表示されます。<code>仮想 LAN カードの名前</code>に適当な名称(例: <code>VPN</code>)を入力し<code>[OK]</code>ボタンを押します。</p>
+<h3 id="新しい接続設定の作成">新しい接続設定の作成</h3>
+<p><code>[新しい接続設定の作成]</code>を選択して<code>新しい接続設定のプロパティ</code>ダイアログを開きます。</p>
+<p>VPNサーバーの設定に合わせて以下の通り入力します。</p>
+<ul>
+<li>接続設定名
+<ul>
+<li>任意の名称を入力 (例: <code>VPN Client</code>)</li>
+</ul></li>
+<li>接続先 VPN Server の指定
+<ul>
+<li>ホスト名
+<ul>
+<li>PR-500KIのWAN側のIPアドレスを入力</li>
+</ul></li>
+<li>ポート番号
+<ul>
+<li>PR-500KIの静的NAPT設定で選んだポート番号を入力</li>
+</ul></li>
+<li>仮想 HUB 名
+<ul>
+<li>作成した仮想HUBの名前を選択 (<code>vpn</code>)</li>
+</ul></li>
+</ul></li>
+<li>経由するプロキシサーバーの設定
+<ul>
+<li>プロキシを必要としなかったため<code>直接 TCP/IP 接続 (プロキシを使わない)</code>を選択</li>
+</ul></li>
+<li>サーバー証明書の検証のオプション
+<ul>
+<li>設定を省略</li>
+</ul></li>
+<li>使用する仮想 LAN カード
+<ul>
+<li>作成した仮想LANカードを選択</li>
+</ul></li>
+<li>ユーザー認証
+<ul>
+<li>認証の種類
+<ul>
+<li>標準パスワード認証</li>
+</ul></li>
+<li>ユーザー名
+<ul>
+<li><code>ユーザーの管理</code>で作成したユーザーのユーザー名を入力</li>
+</ul></li>
+<li>パスワード
+<ul>
+<li><code>ユーザーの管理</code>で作成したユーザーのパスワードを入力</li>
+</ul></li>
+</ul></li>
+</ul>
+<p><code>[OK]</code>ボタンを押すと、<code>SoftEther VPN クライアント接続マネージャ</code>ウィンドウに接続設定が追加されました。</p>
+<h2 id="接続-windows">接続 (Windows)</h2>
+<p><code>SoftEther VPN クライアント接続マネージャ</code>ウィンドウで接続設定をダブルクリックすると接続が試行されます。接続に成功すると<code>状態</code>が<code>接続完了</code>と表示されます。</p>
+<h2 id="接続-android">接続 (Android)</h2>
+<h3 id="openvpn設定ファイルの作成">OpenVPN設定ファイルの作成</h3>
+<p><code>SoftEther VPN サーバー管理マネージャ</code>の<code>OpenVPN / MS-SSTP 設定</code>ダイアログからダウンロードしたzipファイルから<code>&lt;VPNサーバーホスト名&gt;_openvpn_remote_access_l3.ovpn</code>を取り出し、以下のように変更します。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode diff"><code class="sourceCode diff"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">@@ -60,7 +60,7 @@</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a> #</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a> # Specify either 'proto tcp' or 'proto udp'.</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">-proto udp</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="va">+proto tcp</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a> ###############################################################################</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="dt">@@ -86,7 +86,7 @@</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a> #       the Dynamic DNS hostname, replace it to either IP address or</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a> #       other domain's hostname.</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="st">-remote &lt;VPNサーバーの管理番号&gt;.v4.softether.net 1194</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="va">+remote &lt;VPNサーバーの管理番号&gt;.v4.softether.net &lt;静的NAPT設定でOpenVPN通信用に割り当てたWAN側ポート番号&gt;</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a> ###############################################################################</span></code></pre></div>
+<h3 id="android端末のopenvpnセットアップ">Android端末のOpenVPNセットアップ</h3>
+<p><code>&lt;VPNサーバーホスト名&gt;_openvpn_remote_access_l3.ovpn</code>をAndroid端末のストレージにコピーしておきます。</p>
+<p>AndroidOpenVPNクライアントをインストールします。</p>
+<p><code>Import Profile</code>で<code>&lt;VPNサーバーホスト名&gt;_openvpn_remote_access_l3.ovpn</code>を選択して<code>[IMPORT]</code>ボタンを押します。</p>
+<p><code>Username</code>には仮想HUBのユーザー名称を入力します。<code>Save password</code>チェックボックスを有効にして、<code>Password</code>にパスワードを入力して、<code>[ADD]</code>ボタンを押します。</p>
+<p>インポートしたプロファイルをタップすると接続が試行され、成功すればVPN接続が開始されます。</p>
+<h2 id="linux端末">Linux端末</h2>
+<p>VPNサーバーを動かしているRaspberry Pi 4もVPNクライアントとしてVPN接続することで、Raspberry Pi 4のWebサーバーにも接続できるようにします。</p>
+<p>ただLinux端末をSecureNATの仮想DHCPサーバーにIPアドレスを振ってもらう方法が分からなかったので、<code>191.168.30.2</code>を静的に割り当ててしまいます。</p>
+<p>試行錯誤を繰り返したので順序は正しくない可能性があります。</p>
+<pre class="console"><code>$ vpncmd /client
+Hostname of IP Address of Destination: # Enter
+
+Connected to VPN Client &quot;localhost&quot;.
+
+VPN Client&gt;NicCreate vpn0
+NicCreate command - Create New Virtual Network Adapter
+The command completed successfully.
+
+VPN Client&gt;AccountCreate vpnconn /SERVER:&lt;VPNサーバーのIPアドレス&gt;:443 /HUB:vpn /USERNAME:&lt;仮想ハブのユーザー名称&gt; /NICNAME:vpn0
+AccountCreate command - Create New VPN Connection Setting
+The command completed successfully.
+
+VPN Client&gt;NicList
+NicList command - Get List of Virtual Network Adapters
+Item                        |Value
+----------------------------+-----------------------------------
+Virtual Network Adapter Name|vpn0
+Status                      |Enabled
+MAC Address                 |5EE40FF922AC
+Version                     |Version 5.01 Build 9674   (English)
+The command completed successfully.
+
+VPN Client&gt;AccountPasswordSet
+AccountPasswordSet command - Set User Authentication Type of VPN Connection Setting to Password Authentication
+Name of VPN Connection Setting: vpnconn
+
+Please enter the password. To cancel press the Ctrl+D key.
+
+Password: ****** # `ユーザーの管理`で作成したユーザーのパスワードを入力
+Confirm input: ****** # `ユーザーの管理`で作成したユーザーのパスワードを入力
+
+
+Specify standard or radius: standard
+
+The command completed successfully.
+VPN Client&gt;exit</code></pre>
+<p>作成されたネットワークアダプターに静的IPアドレス<code>192.168.30.2</code>を割り当てます。</p>
+<pre class="console"><code># ip addr add 192.168.30.2/24 dev vpn_vpn0</code></pre>
+<p><code>vpncmd</code>で接続します。</p>
+<pre class="console"><code>VPN Client&gt;AccountConnect vpnconn
+AccountConnect command - Start Connection to VPN Server using VPN Connection Setting
+The command completed successfully.</code></pre>
+<p>最後にルーティングを設定します。</p>
+<pre><code># ip route add 192.168.30.0/24 via 192.168.30.2 dev vpn_vpn0
+# ip route
+...
+192.168.30.0/24 dev vpn_vpn0 proto kernel scope link src 192.168.30.2</code></pre>
+<h2 id="参考文献">参考文献</h2>
+<ul>
+<li><a href="v6プラスでポートを開放する方法">v6プラスでポートを開放する方法</a>
+<ul>
+<li>PR-500KIでの静的NAPT設定の手順を説明してくれています。</li>
+</ul></li>
+<li><a href="https://docs.rackspace.com/support/how-to/allow-web-traffic-in-iptables/">Allow web traffic in iptables software firewall - rackspace</a>
+<ul>
+<li><code>iptables</code>コマンドの使い方の説明があります。</li>
+</ul></li>
+<li><a href="https://qiita.com/ekzemplaro/items/47f2d1b88f80e01b403d">SoftEther_VPN の vpncmd の使い方</a>
+<ul>
+<li><code>vpncmd</code>を使ったVPNクライアント接続の手順です。</li>
+</ul></li>
+<li><a href="https://qiita.com/ekzemplaro/items/57b13994fbd1b5e3c286">Raspberry Pi に SoftEther_VPN Client をインストール</a>
+<ul>
+<li><code>vpncmd</code>を使ったVPNクライアント接続の手順です。</li>
+</ul></li>
+<li><a href="https://blog.oyasu.info/2021/08/17/8244/">SoftEther で L2TP/IPsec から OpenVPN に切り替えてみた</a>
+<ul>
+<li>Android端末ではOpenVPNサーバー機能を使えばよいことと、その設定方法が詳しくかかれていました。</li>
+</ul></li>
+<li><a href="https://faq.interlink.or.jp/faq2/View/wcDisplayContent.aspx?id=701">AndroidのOpenVPN接続設定（v3.0.0以降）　■セカイVPN■</a>
+<ul>
+<li>Android端末でのOpenVPN接続設定の手順が分かりやすく説明されていました。</li>
+</ul></li>
+</ul>
+
+    </div>
+    <div id="footer">
+      Site proudly generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </div>
+  </body>
+</html>
