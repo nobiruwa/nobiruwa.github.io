@@ -354,8 +354,10 @@ VPN Server/vpn&gt;exit</code></pre>
 <p>インポートしたプロファイルをタップすると接続が試行され、成功すればVPN接続が開始されます。</p>
 <h2 id="linux端末">Linux端末</h2>
 <p>VPNサーバーを動かしているRaspberry Pi 4もVPNクライアントとしてVPN接続することで、Raspberry Pi 4のWebサーバーにも接続できるようにします。</p>
-<p>ただLinux端末をSecureNATの仮想DHCPサーバーにIPアドレスを振ってもらう方法が分からなかったので、<code>191.168.30.2</code>を静的に割り当ててしまいます。</p>
 <p>試行錯誤を繰り返したので順序は正しくない可能性があります。</p>
+<p>まずは必要なパッケージをインストールします。</p>
+<pre class="console"><code># apt install softether-vpnclient</code></pre>
+<p><code>vpncmd</code>を使って(localhostの)VPNクライアントをセットアップします。 仮想NIC<code>vpn0</code>と仮想HUB<code>vpn</code>を接続するアカウント<code>vpnconn</code>を作成します。 接続するユーザーは仮想HUB<code>vpn</code>に作成したユーザーを用います。</p>
 <pre class="console"><code>$ vpncmd /client
 Hostname of IP Address of Destination: # Enter
 
@@ -365,7 +367,7 @@ VPN Client&gt;NicCreate vpn0
 NicCreate command - Create New Virtual Network Adapter
 The command completed successfully.
 
-VPN Client&gt;AccountCreate vpnconn /SERVER:&lt;VPNサーバーのIPアドレス&gt;:443 /HUB:vpn /USERNAME:&lt;仮想ハブのユーザー名称&gt; /NICNAME:vpn0
+VPN Client&gt;AccountCreate vpnconn /SERVER:&lt;VPNサーバーのIPアドレス&gt;:443 /HUB:vpn /USERNAME:&lt;仮想HUBのユーザー名称&gt; /NICNAME:vpn0
 AccountCreate command - Create New VPN Connection Setting
 The command completed successfully.
 
@@ -377,6 +379,12 @@ Virtual Network Adapter Name|vpn0
 Status                      |Enabled
 MAC Address                 |5EE40FF922AC
 Version                     |Version 5.01 Build 9674   (English)
+The command completed successfully.
+
+VPN Client&gt;AccountUsernameSet vpnconn
+AccountUsernameSet command - Set User Name of User to Use Connection of VPN Connection Setting
+Connecting User Name: ein
+
 The command completed successfully.
 
 VPN Client&gt;AccountPasswordSet
@@ -393,17 +401,15 @@ Specify standard or radius: standard
 
 The command completed successfully.
 VPN Client&gt;exit</code></pre>
-<p>作成されたネットワークアダプターに静的IPアドレス<code>192.168.30.2</code>を割り当てます。</p>
-<pre class="console"><code># ip addr add 192.168.30.2/24 dev vpn_vpn0</code></pre>
 <p><code>vpncmd</code>で接続します。</p>
 <pre class="console"><code>VPN Client&gt;AccountConnect vpnconn
 AccountConnect command - Start Connection to VPN Server using VPN Connection Setting
 The command completed successfully.</code></pre>
-<p>最後にルーティングを設定します。</p>
-<pre><code># ip route add 192.168.30.0/24 via 192.168.30.2 dev vpn_vpn0
-# ip route
-...
-192.168.30.0/24 dev vpn_vpn0 proto kernel scope link src 192.168.30.2</code></pre>
+<p>最後に<code>dhclient</code>コマンドを実行することえ、仮想DHCPサーバーからIPアドレスを取得できます。</p>
+<pre class="console"><code># dhclient -v vpn_vpn0</code></pre>
+<p>ただし、Raspberry Pi 4はサーバー用途であるため、<code>dhclient</code>コマンドを実行するかわりに、IPアドレスの静的割り当てとルーティング設定を行います。 仮想DHCPサーバーの管理外のIPアドレスを割り当てます。</p>
+<pre class="console"><code># ip addr add 192.168.30.2/24 dev vpn_vpn0
+# ip route add 192.168.30.0/24 via 192.168.30.2 dev vpn_vpn0</code></pre>
 <h2 id="参考文献">参考文献</h2>
 <ul>
 <li><a href="v6プラスでポートを開放する方法">v6プラスでポートを開放する方法</a>
@@ -415,6 +421,10 @@ The command completed successfully.</code></pre>
 <li><code>iptables</code>コマンドの使い方の説明があります。</li>
 </ul></li>
 <li><a href="https://qiita.com/ekzemplaro/items/47f2d1b88f80e01b403d">SoftEther_VPN の vpncmd の使い方</a>
+<ul>
+<li><code>vpncmd</code>を使ったVPNクライアント接続の手順です。</li>
+</ul></li>
+<li><a href="https://www.linuxmania.jp/softether-vpn.html">Linuxmania:SoftEtherでVPN環境を作ろう</a>
 <ul>
 <li><code>vpncmd</code>を使ったVPNクライアント接続の手順です。</li>
 </ul></li>
