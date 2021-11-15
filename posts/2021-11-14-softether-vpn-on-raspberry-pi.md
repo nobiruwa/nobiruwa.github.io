@@ -325,9 +325,17 @@ AndroidOpenVPNクライアントをインストールします。
 
 VPNサーバーを動かしているRaspberry Pi 4もVPNクライアントとしてVPN接続することで、Raspberry Pi 4のWebサーバーにも接続できるようにします。
 
-ただLinux端末をSecureNATの仮想DHCPサーバーにIPアドレスを振ってもらう方法が分からなかったので、`191.168.30.2`を静的に割り当ててしまいます。
-
 試行錯誤を繰り返したので順序は正しくない可能性があります。
+
+まずは必要なパッケージをインストールします。
+
+```console
+# apt install softether-vpnclient
+```
+
+`vpncmd`を使って(localhostの)VPNクライアントをセットアップします。
+仮想NIC`vpn0`と仮想HUB`vpn`を接続するアカウント`vpnconn`を作成します。
+接続するユーザーは仮想HUB`vpn`に作成したユーザーを用います。
 
 ```console
 $ vpncmd /client
@@ -339,7 +347,7 @@ VPN Client>NicCreate vpn0
 NicCreate command - Create New Virtual Network Adapter
 The command completed successfully.
 
-VPN Client>AccountCreate vpnconn /SERVER:<VPNサーバーのIPアドレス>:443 /HUB:vpn /USERNAME:<仮想ハブのユーザー名称> /NICNAME:vpn0
+VPN Client>AccountCreate vpnconn /SERVER:<VPNサーバーのIPアドレス>:443 /HUB:vpn /USERNAME:<仮想HUBのユーザー名称> /NICNAME:vpn0
 AccountCreate command - Create New VPN Connection Setting
 The command completed successfully.
 
@@ -351,6 +359,12 @@ Virtual Network Adapter Name|vpn0
 Status                      |Enabled
 MAC Address                 |5EE40FF922AC
 Version                     |Version 5.01 Build 9674   (English)
+The command completed successfully.
+
+VPN Client>AccountUsernameSet vpnconn
+AccountUsernameSet command - Set User Name of User to Use Connection of VPN Connection Setting
+Connecting User Name: ein
+
 The command completed successfully.
 
 VPN Client>AccountPasswordSet
@@ -369,12 +383,6 @@ The command completed successfully.
 VPN Client>exit
 ```
 
-作成されたネットワークアダプターに静的IPアドレス`192.168.30.2`を割り当てます。
-
-```console
-# ip addr add 192.168.30.2/24 dev vpn_vpn0
-```
-
 `vpncmd`で接続します。
 
 ```console
@@ -383,13 +391,18 @@ AccountConnect command - Start Connection to VPN Server using VPN Connection Set
 The command completed successfully.
 ```
 
-最後にルーティングを設定します。
+最後に`dhclient`コマンドを実行することえ、仮想DHCPサーバーからIPアドレスを取得できます。
 
+```console
+# dhclient -v vpn_vpn0
 ```
+
+ただし、Raspberry Pi 4はサーバー用途であるため、`dhclient`コマンドを実行するかわりに、IPアドレスの静的割り当てとルーティング設定を行います。
+仮想DHCPサーバーの管理外のIPアドレスを割り当てます。
+
+```console
+# ip addr add 192.168.30.2/24 dev vpn_vpn0
 # ip route add 192.168.30.0/24 via 192.168.30.2 dev vpn_vpn0
-# ip route
-...
-192.168.30.0/24 dev vpn_vpn0 proto kernel scope link src 192.168.30.2
 ```
 
 ## 参考文献
@@ -399,6 +412,8 @@ The command completed successfully.
 - [Allow web traffic in iptables software firewall - rackspace](https://docs.rackspace.com/support/how-to/allow-web-traffic-in-iptables/)
   - `iptables`コマンドの使い方の説明があります。
 - [SoftEther_VPN の vpncmd の使い方](https://qiita.com/ekzemplaro/items/47f2d1b88f80e01b403d)
+  - `vpncmd`を使ったVPNクライアント接続の手順です。
+- [Linuxmania:SoftEtherでVPN環境を作ろう](https://www.linuxmania.jp/softether-vpn.html)
   - `vpncmd`を使ったVPNクライアント接続の手順です。
 - [Raspberry Pi に SoftEther_VPN Client をインストール](https://qiita.com/ekzemplaro/items/57b13994fbd1b5e3c286)
   - `vpncmd`を使ったVPNクライアント接続の手順です。
