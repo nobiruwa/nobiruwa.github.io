@@ -32,8 +32,9 @@
 <h2 id="vpnサーバー-raspberry-pi-4-のセットアップ">VPNサーバー (Raspberry Pi 4) のセットアップ</h2>
 <p>「SoftEther VPN」の<code>SecureNAT</code>が気になり、自宅で常に稼動しているRaspberry Pi 4をVPNサーバー化するセットアップを行いました。</p>
 <h3 id="必要なパッケージのインストール">必要なパッケージのインストール</h3>
-<pre class="console"><code># apt install softether-common softether-vpnserver softether-vpnbridge softether-vpncmd</code></pre>
-<p><code>softether-vpnserver.service</code>と<code>softether-vpnbridge.service</code>が自動起動されました。</p>
+<pre class="console"><code># apt install softether-common softether-vpnserver softether-vpncmd</code></pre>
+<p><code>softether-vpnserver.service</code>が自動起動されました。</p>
+<p>なお、VPN Bridge接続をする場合は<code>softether-vpnbridge</code>も合わせてインストールする必要があります。</p>
 <h3 id="ファイアウォールでのポート開放">ファイアウォールでのポート開放</h3>
 <p>VPN接続をするために、VPNサーバーの443/TCPポートへの接続を許可します。</p>
 <p><a href="https://docs.rackspace.com/support/how-to/allow-web-traffic-in-iptables/">Allow web traffic in iptables software firewall - rackspace</a>を参考にしました。</p>
@@ -84,7 +85,7 @@
 </ul>
 <h3 id="仮想hubの作成">仮想HUBの作成</h3>
 <p>VPNサーバーの操作を<code>vpncmd</code>から行ってみました。</p>
-<p>まずは管理パスワードの設定と仮想HUBの作成です。</p>
+<p>まずはVPNサーバーの管理パスワードの設定と仮想HUBの作成です。 仮想HUBの名前だけでなく仮想HUBのパスワードもここで決定します。</p>
 <pre class="console"><code># vpncmd
 vpncmd command - SoftEther VPN Command Line Management Utility Developer Edition
 SoftEther VPN Command Line Management Utility (vpncmd command)
@@ -94,7 +95,7 @@ Compiled 2020/12/03 09:35:09 by Unknown at Unknown
 Copyright (c) all contributors on SoftEther VPN project in GitHub.
 Copyright (c) Daiyuu Nobori, SoftEther Project at University of Tsukuba, and SoftEther Corporation.
 All rights reserved.
-
+5
 By using vpncmd program, the following can be achieved.
 
 1. Management of VPN Server or VPN Bridge
@@ -107,12 +108,12 @@ Specify the host name or IP address of the computer that the destination VPN Ser
 By specifying according to the format 'host name:port number', you can also specify the port number.
 (When the port number is unspecified, 443 is used.)
 If nothing is input and the Enter key is pressed, the connection will be made to the port number 443 of localhost (this computer).
-Hostname of IP Address of Destination: xxx.xxx.xxx.xxx:443 # Raspberry Pi 4のIPアドレスとポート番号を入力してEnter
+Hostname of IP Address of Destination: # Enter
 
 If connecting to the server by Virtual Hub Admin Mode, please input the Virtual Hub name.
 If connecting by server admin mode, please press Enter without inputting anything.
 Specify Virtual Hub Name: # Enter
-Connection has been established with VPN Server &quot;xxx.xxx.xxx.xxx&quot; (port 443).
+Connection has been established with VPN Server &quot;localhost&quot; (port 443).
 
 You have administrator privileges for the entire VPN Server.
 VPN Server&gt;ServerPasswordSet
@@ -120,7 +121,7 @@ ServerPasswordSet command - Set VPN Server Administrator Password
 Please enter the password. To cancel press the Ctrl+D key.
 
 Password: ****** # VPNサーバーの管理パスワードを入力してEnter
-Confirm input: ****** # 再度管理パスワードを入力してEnter
+Confirm input: ****** # VPNサーバーの管理パスワードを再度入力してEnter
 
 The command completed successfully.
 VPN Server&gt;HubCreate # 仮想HUBを作成するためにHubCreateコマンドを実行
@@ -129,8 +130,8 @@ Name of Virtual Hub to be created: vpn # 仮想HUB名に与える名前を入力
 
 Please enter the password. To cancel press the Ctrl+D key.
 
-Password: ****** # パスワードを入力してEnter
-Confirm input: ****** # パスワードを再度入力してEnter
+Password: ****** # 仮想HUBのパスワードを入力してEnter
+Confirm input: ****** # 仮想HUBのパスワードを再度入力してEnter
 
 The command completed successfully.
 VPN Server&gt;exit</code></pre>
@@ -157,14 +158,14 @@ Specify the host name or IP address of the computer that the destination VPN Ser
 By specifying according to the format 'host name:port number', you can also specify the port number.
 (When the port number is unspecified, 443 is used.)
 If nothing is input and the Enter key is pressed, the connection will be made to the port number 443 of localhost (this computer).
-Hostname of IP Address of Destination: xxx.xxx.xxx.xxx:443 # Raspberry Pi 4のIPアドレスとポート番号を入力してEnter
+Hostname of IP Address of Destination: # Enter
 
 If connecting to the server by Virtual Hub Admin Mode, please input the Virtual Hub name.
 If connecting by server admin mode, please press Enter without inputting anything.
 Specify Virtual Hub Name: vpn # 仮想HUBの名前を入力してEnter
 Password: ********* # 仮想HUBのパスワードを入力してEnter
 
-Connection has been established with VPN Server &quot;xxx.xxx.xxx.xxx&quot; (port 443).
+Connection has been established with VPN Server &quot;localhost&quot; (port 443).
 
 You have administrator privileges for Virtual Hub 'vpn' on the VPN Server.
 
@@ -405,9 +406,9 @@ VPN Client&gt;exit</code></pre>
 <pre class="console"><code>VPN Client&gt;AccountConnect vpnconn
 AccountConnect command - Start Connection to VPN Server using VPN Connection Setting
 The command completed successfully.</code></pre>
-<p>最後に<code>dhclient</code>コマンドを実行することえ、仮想DHCPサーバーからIPアドレスを取得できます。</p>
-<pre class="console"><code># dhclient -v vpn_vpn0</code></pre>
-<p>ただし、Raspberry Pi 4はサーバー用途であるため、<code>dhclient</code>コマンドを実行するかわりに、IPアドレスの静的割り当てとルーティング設定を行います。 仮想DHCPサーバーの管理外のIPアドレスを割り当てます。</p>
+<p>最後に<code>dhclient</code>コマンドを実行することで、仮想DHCPサーバーからIPアドレスを取得できます。</p>
+<pre class="console"><code># dhclient -v vpn_vpn0 # サーバー用途の場合は静的割り当てのほうがよい</code></pre>
+<p>ただし、Raspberry Pi 4はサーバー用途であるため、<code>dhclient</code>コマンドを実行するかわりにIPアドレスの静的割り当てとルーティング設定を行います。 仮想DHCPサーバーの管理外のIPアドレスを割り当てます。</p>
 <pre class="console"><code># ip addr add 192.168.30.2/24 dev vpn_vpn0
 # ip route add 192.168.30.0/24 via 192.168.30.2 dev vpn_vpn0</code></pre>
 <h2 id="参考文献">参考文献</h2>
