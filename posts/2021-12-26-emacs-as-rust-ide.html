@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
     <link rel="stylesheet" href="../css/syntax.css">
     <link rel="stylesheet" href="../css/custom.css">
-    <title>My Hakyll Blog - EmacsでのRust開発</title>
+    <title>My Hakyll Blog - EmacsでのRust開発(rust-analyzer)</title>
   </head>
   <body>
     <div id="header">
@@ -20,23 +20,25 @@
     </div>
 
     <div id="content">
-      <h1>EmacsでのRust開発</h1>
+      <h1>EmacsでのRust開発(rust-analyzer)</h1>
 
       <div class="info">
-    Posted on April  3, 2021
+    Posted on December 26, 2021
     
         by nobiruwa
     
 </div>
 
 <h2 id="tldr">tl;dr</h2>
-<p><a href="https://github.com/rust-lang/rust-mode">rust-mode</a>, <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a>, <a href="https://github.com/kwrooijen/cargo.el">cargo.el</a>と<a href="https://github.com/rust-lang/rls">rls</a>を用いることで、十分に快適な環境を得ることができました。</p>
-<h2 id="rust-mode-lsp-mode-cargo.el-rls-の構築手順">rust-mode + lsp-mode + cargo.el + rls の構築手順</h2>
-<p>開発のモードとしてrust-modeとlsp-modeとcargo.elのcargo-minor-modeを用い、バックエンドには<code>rls</code>を用います。</p>
-<h3 id="rlsのインストール">rlsのインストール</h3>
-<p><a href="https://github.com/rust-lang/rls#setup">公式の手順</a>に従って<code>rls</code>をインストールします。</p>
-<pre class="console"><code>$ rustup update
-$ rustup component add rls rust-analysis rust-src</code></pre>
+<p><a href="2021-04-03-emacs-as-rust-ide.html">2021年4月3日の記事</a>では<a href="https://github.com/rust-lang/rls">rls</a>を使いましたが、<a href="https://github.com/rust-analyzer/rust-analyzer">rust-analyzer</a>を使うように手順を変更しました。<code>rls</code>と<code>rust-analyzer</code>の両方が存在する環境では<code>rust-analyzer</code>が優先されるようで、<a href="#rust-analyzerのインストール">rust-analyzerのインストール</a>以外は<a href="2021-04-03-emacs-as-rust-ide.html">2021年4月3日の記事</a>の内容そのままです。</p>
+<p><a href="https://github.com/rust-lang/rust-mode">rust-mode</a>, <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a>, <a href="https://github.com/kwrooijen/cargo.el">cargo.el</a>と<a href="https://github.com/rust-analyzer/rust-analyzer">rust-analyzer</a>を用いることで、十分に快適な環境を得ることができました。</p>
+<h2 id="rust-mode-lsp-mode-cargo.el-rust-analyzer-の構築手順">rust-mode + lsp-mode + cargo.el + rust-analyzer の構築手順</h2>
+<p>開発のモードとしてrust-modeとlsp-modeとcargo.elのcargo-minor-modeを用い、バックエンドには<code>rust-analyzer</code>を用います。</p>
+<h2 id="rust-analyzerのインストール">rust-analyzerのインストール</h2>
+<p><a href="https://rust-analyzer.github.io/manual.html#rust-analyzer-language-server-binary">公式の手順</a>に従って<code>rust-analyzer</code>をインストールします。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> mkdir <span class="at">-p</span> ~/.local/bin</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> curl <span class="at">-L</span> https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-x86_64-unknown-linux-gnu.gz <span class="kw">|</span> <span class="fu">gunzip</span> <span class="at">-c</span> <span class="at">-</span> <span class="op">&gt;</span> ~/.local/bin/rust-analyzer</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> chmod +x ~/.local/bin/rust-analyzer</span></code></pre></div>
 <h3 id="emacsパッケージのインストール">Emacsパッケージのインストール</h3>
 <pre class="emacs"><code>M-x package-install
 cargo
