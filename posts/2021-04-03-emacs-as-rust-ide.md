@@ -13,7 +13,7 @@ tags: Rust, Emacs, LSP
 開発のモードとしてrust-modeとlsp-modeとcargo.elのcargo-minor-modeを用い、バックエンドには`rls`を用います。
 
 
-#### rlsのインストール
+### rlsのインストール
 
 [公式の手順](https://github.com/rust-lang/rls#setup)に従って`rls`をインストールします。
 
@@ -22,7 +22,7 @@ $ rustup update
 $ rustup component add rls rust-analysis rust-src
 ```
 
-#### Emacsパッケージのインストール
+### Emacsパッケージのインストール
 
 ```emacs
 M-x package-install
@@ -32,9 +32,9 @@ lsp-ui
 rust-mode
 ```
 
-#### Emacsパッケージの設定
+### Emacsパッケージの設定
 
-lsp-modeとlsp-uiの設定は[過去の記事](2019-04-07-emacs-as-cpp-ide.md)で書いた通りなので省略します。
+lsp-modeとlsp-uiの設定は[過去の記事](2019-04-07-emacs-as-cpp-ide.html)で書いた通りなので省略します。
 
 ```lisp
 ;;;;;;;;
