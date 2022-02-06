@@ -288,7 +288,7 @@ VPN Server/vpn&gt;exit</code></pre>
 </ul></li>
 <li>ポート番号
 <ul>
-<li>PR-500KIの静的NAPT設定で選んだポート番号を入力</li>
+<li>PR-500KIの静的NAPT設定で選んだポート番号を入力(<code>443</code>)</li>
 </ul></li>
 <li>仮想 HUB 名
 <ul>
@@ -358,7 +358,8 @@ VPN Server/vpn&gt;exit</code></pre>
 <p>試行錯誤を繰り返したので順序は正しくない可能性があります。</p>
 <p>まずは必要なパッケージをインストールします。</p>
 <pre class="console"><code># apt install softether-vpnclient</code></pre>
-<p><code>vpncmd</code>を使って(localhostの)VPNクライアントをセットアップします。 仮想NIC<code>vpn0</code>と仮想HUB<code>vpn</code>を接続するアカウント<code>vpnconn</code>を作成します。 接続するユーザーは仮想HUB<code>vpn</code>に作成したユーザーを用います。</p>
+<p><code>vpncmd</code>を使って(localhostの)VPNクライアントをセットアップします。</p>
+<p>仮想NIC<code>vpn0</code>と仮想HUB<code>vpn</code>を接続するアカウント<code>vpnconn</code>を作成します。</p>
 <pre class="console"><code>$ vpncmd /client
 Hostname of IP Address of Destination: # Enter
 
@@ -380,18 +381,16 @@ Virtual Network Adapter Name|vpn0
 Status                      |Enabled
 MAC Address                 |5EE40FF922AC
 Version                     |Version 5.01 Build 9674   (English)
-The command completed successfully.
-
-VPN Client&gt;AccountUsernameSet vpnconn
+The command completed successfully.</code></pre>
+<p>作成したアカウントが仮想HUB<code>vpn</code>に作成したユーザーを用いて接続すよう、ユーザー名とパスワードを設定します。</p>
+<pre class="console"><code>VPN Client&gt;AccountUsernameSet vpnconn
 AccountUsernameSet command - Set User Name of User to Use Connection of VPN Connection Setting
-Connecting User Name: ein
+Connecting User Name: &lt;ユーザー名&gt; # `ユーザーの管理`で作成したユーザーのユーザー名を入力
 
 The command completed successfully.
 
-VPN Client&gt;AccountPasswordSet
+VPN Client&gt;AccountPasswordSet vpnconn
 AccountPasswordSet command - Set User Authentication Type of VPN Connection Setting to Password Authentication
-Name of VPN Connection Setting: vpnconn
-
 Please enter the password. To cancel press the Ctrl+D key.
 
 Password: ****** # `ユーザーの管理`で作成したユーザーのパスワードを入力
@@ -406,9 +405,25 @@ VPN Client&gt;exit</code></pre>
 <pre class="console"><code>VPN Client&gt;AccountConnect vpnconn
 AccountConnect command - Start Connection to VPN Server using VPN Connection Setting
 The command completed successfully.</code></pre>
-<p>最後に<code>dhclient</code>コマンドを実行することで、仮想DHCPサーバーからIPアドレスを取得できます。</p>
+<p><code>AccountStatusGet</code>コマンドでアカウントの状態を確認してください。</p>
+<pre class="console"><code>VPN Client&gt;AccountStatusGet vpnconn
+AccountStatusGet command - Get Current VPN Connection Setting Status
+Item                                      |Value
+------------------------------------------+-------------------------------------------------------------
+VPN Connection Setting Name               |vpnconn
+Session Status                            |Connection Completed (Session Established)
+VLAN ID                                   |-
+Server Name                               |&lt;IPアドレス&gt;
+Port Number                               |TCP Port 443
+Server Product Name                       |SoftEther VPN Server Developer Edition (32 bit) (Open Source)
+...[snip]...
+The command completed successfully.</code></pre>
+<p>セッションが確立していない場合は、<code>AccountCreate</code>、<code>AccountUsernameSet</code>、<code>AccountPasswordSet</code>の設定を再度実行してください。</p>
+<p>また、クライアント側のログ<code>/var/log/softether/client_log/client_YYYYmmdd.log</code>と、サーバー側のログ<code>/var/log/softether/server_log/vpn_YYYYmmdd.log</code>に接続失敗の理由が記載されているかを確認してください。</p>
+<p><code>AccountStatusGet</code>コマンドでセッションが確立されていることを確認したら、最後に仮想DHCPサーバーからIPアドレスを取得するために<code>dhclient</code>コマンドを実行してください。</p>
 <pre class="console"><code># dhclient -v vpn_vpn0 # サーバー用途の場合は静的割り当てのほうがよい</code></pre>
-<p>ただし、Raspberry Pi 4はサーバー用途であるため、<code>dhclient</code>コマンドを実行するかわりにIPアドレスの静的割り当てとルーティング設定を行います。 仮想DHCPサーバーの管理外のIPアドレスを割り当てます。</p>
+<p>ただし、Raspberry Pi 4はサーバー用途であるため、<code>dhclient</code>コマンドを実行するかわりにIPアドレスの静的割り当てとルーティング設定を行います。</p>
+<p>仮想DHCPサーバーの管理外のIPアドレスを割り当てます。</p>
 <pre class="console"><code># ip addr add 192.168.30.2/24 dev vpn_vpn0
 # ip route add 192.168.30.0/24 via 192.168.30.2 dev vpn_vpn0</code></pre>
 <h2 id="参考文献">参考文献</h2>

@@ -34,11 +34,14 @@
 <p><a href="https://github.com/rust-lang/rust-mode">rust-mode</a>, <a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a>, <a href="https://github.com/kwrooijen/cargo.el">cargo.el</a>と<a href="https://github.com/rust-analyzer/rust-analyzer">rust-analyzer</a>を用いることで、十分に快適な環境を得ることができました。</p>
 <h2 id="rust-mode-lsp-mode-cargo.el-rust-analyzer-の構築手順">rust-mode + lsp-mode + cargo.el + rust-analyzer の構築手順</h2>
 <p>開発のモードとしてrust-modeとlsp-modeとcargo.elのcargo-minor-modeを用い、バックエンドには<code>rust-analyzer</code>を用います。</p>
-<h2 id="rust-analyzerのインストール">rust-analyzerのインストール</h2>
+<h3 id="rust-analyzerのインストール">rust-analyzerのインストール</h3>
 <p><a href="https://rust-analyzer.github.io/manual.html#rust-analyzer-language-server-binary">公式の手順</a>に従って<code>rust-analyzer</code>をインストールします。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> mkdir <span class="at">-p</span> ~/.local/bin</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> curl <span class="at">-L</span> https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-x86_64-unknown-linux-gnu.gz <span class="kw">|</span> <span class="fu">gunzip</span> <span class="at">-c</span> <span class="at">-</span> <span class="op">&gt;</span> ~/.local/bin/rust-analyzer</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> chmod +x ~/.local/bin/rust-analyzer</span></code></pre></div>
+<p><a href="https://rustup.rs/">rustup</a>を使って<code>rust-src</code>をインストールします。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> rustup component add rust-src</span></code></pre></div>
+<p>次に<code>rust-analyzer</code>をインストールします。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> mkdir <span class="at">-p</span> ~/.local/bin</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> curl <span class="at">-L</span> https://github.com/rust-analyzer/rust-analyzer/releases/latest/download/rust-analyzer-x86_64-unknown-linux-gnu.gz <span class="kw">|</span> <span class="fu">gunzip</span> <span class="at">-c</span> <span class="at">-</span> <span class="op">&gt;</span> ~/.local/bin/rust-analyzer</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> chmod +x ~/.local/bin/rust-analyzer</span></code></pre></div>
 <h3 id="emacsパッケージのインストール">Emacsパッケージのインストール</h3>
 <pre class="emacs"><code>M-x package-install
 cargo
@@ -47,30 +50,30 @@ lsp-ui
 rust-mode</code></pre>
 <h3 id="emacsパッケージの設定">Emacsパッケージの設定</h3>
 <p>lsp-modeとlsp-uiの設定は<a href="2019-04-07-emacs-as-cpp-ide.html">過去の記事</a>で書いた通りなので省略します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">;; cargo-minor-mode</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>(<span class="kw">require</span> 'rust-mode)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>(add-hook 'rust-mode-hook 'cargo-minor-mode)</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">;; rust-mode</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co">;; cargo-minor-mode</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>(<span class="kw">require</span> 'rust-mode)</span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>(add-hook 'rust-mode-hook</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>          (<span class="kw">lambda</span> ()</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>            (<span class="kw">setq</span> indent-tabs-mode <span class="kw">nil</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>            (lsp)))</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">;; Formatting is bound to C-c C-f.</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">;; The folowing enables automatic formatting on save.</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>(<span class="kw">setq</span> rust-format-on-save <span class="kw">t</span>)</span></code></pre></div>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>(add-hook 'rust-mode-hook 'cargo-minor-mode)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">;; rust-mode</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>(<span class="kw">require</span> 'rust-mode)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>(add-hook 'rust-mode-hook</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>          (<span class="kw">lambda</span> ()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>            (<span class="kw">setq</span> indent-tabs-mode <span class="kw">nil</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>            (lsp)))</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">;; Formatting is bound to C-c C-f.</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">;; The folowing enables automatic formatting on save.</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>(<span class="kw">setq</span> rust-format-on-save <span class="kw">t</span>)</span></code></pre></div>
 <h2 id="cargo-edit-cargo-featureのインストール">cargo-edit, cargo-featureのインストール</h2>
 <p><a href="https://github.com/killercup/cargo-edit">cargo-edit</a>は<code>cargo add/rm/upgrade/set-version</code>サブコマンドを追加します。また、<a href="https://github.com/Riey/cargo-feature">cargo-feature</a>は<code>cargo feature</code>サブコマンドを追加します。</p>
 <p><code>cargo add</code>と<code>cargo feature</code>を使うと、<code>Cargo.toml</code>の<code>[dependencies]</code>セクションと<code>[dev-dependencies]</code>セクションを記述するかわりに、コマンドラインから編集できるようになります。私には合っていると思い導入することにします。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cargo install cargo-edit</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cargo install cargo-feature</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cargo install cargo-edit</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cargo install cargo-feature</span></code></pre></div>
 <p>ちなみに、サブコマンドの実体は<code>~/.cargo/bin</code>ディレクトリにあります。<code>cargo-add</code>, <code>cargo-feature</code>といったようにサブコマンドごとの実行ファイルが追加されます。</p>
 
     </div>
