@@ -262,7 +262,7 @@ VPNサーバーの設定に合わせて以下の通り入力します。
   - ホスト名
     - PR-500KIのWAN側のIPアドレスを入力
   - ポート番号
-    - PR-500KIの静的NAPT設定で選んだポート番号を入力
+    - PR-500KIの静的NAPT設定で選んだポート番号を入力(`443`)
   - 仮想 HUB 名
     - 作成した仮想HUBの名前を選択 (`vpn`)
 - 経由するプロキシサーバーの設定
@@ -337,8 +337,9 @@ VPNサーバーを動かしているRaspberry Pi 4もVPNクライアントとし
 ```
 
 `vpncmd`を使って(localhostの)VPNクライアントをセットアップします。
+
 仮想NIC`vpn0`と仮想HUB`vpn`を接続するアカウント`vpnconn`を作成します。
-接続するユーザーは仮想HUB`vpn`に作成したユーザーを用います。
+
 
 ```console
 $ vpncmd /client
@@ -363,17 +364,19 @@ Status                      |Enabled
 MAC Address                 |5EE40FF922AC
 Version                     |Version 5.01 Build 9674   (English)
 The command completed successfully.
+```
 
+作成したアカウントが仮想HUB`vpn`に作成したユーザーを用いて接続すよう、ユーザー名とパスワードを設定します。
+
+```console
 VPN Client>AccountUsernameSet vpnconn
 AccountUsernameSet command - Set User Name of User to Use Connection of VPN Connection Setting
-Connecting User Name: ein
+Connecting User Name: <ユーザー名> # `ユーザーの管理`で作成したユーザーのユーザー名を入力
 
 The command completed successfully.
 
-VPN Client>AccountPasswordSet
+VPN Client>AccountPasswordSet vpnconn
 AccountPasswordSet command - Set User Authentication Type of VPN Connection Setting to Password Authentication
-Name of VPN Connection Setting: vpnconn
-
 Please enter the password. To cancel press the Ctrl+D key.
 
 Password: ****** # `ユーザーの管理`で作成したユーザーのパスワードを入力
@@ -394,13 +397,35 @@ AccountConnect command - Start Connection to VPN Server using VPN Connection Set
 The command completed successfully.
 ```
 
-最後に`dhclient`コマンドを実行することで、仮想DHCPサーバーからIPアドレスを取得できます。
+`AccountStatusGet`コマンドでアカウントの状態を確認してください。
+
+```console
+VPN Client>AccountStatusGet vpnconn
+AccountStatusGet command - Get Current VPN Connection Setting Status
+Item                                      |Value
+------------------------------------------+-------------------------------------------------------------
+VPN Connection Setting Name               |vpnconn
+Session Status                            |Connection Completed (Session Established)
+VLAN ID                                   |-
+Server Name                               |<IPアドレス>
+Port Number                               |TCP Port 443
+Server Product Name                       |SoftEther VPN Server Developer Edition (32 bit) (Open Source)
+...[snip]...
+The command completed successfully.
+```
+
+セッションが確立していない場合は、`AccountCreate`、`AccountUsernameSet`、`AccountPasswordSet`の設定を再度実行してください。
+
+また、クライアント側のログ`/var/log/softether/client_log/client_YYYYmmdd.log`と、サーバー側のログ`/var/log/softether/server_log/vpn_YYYYmmdd.log`に接続失敗の理由が記載されているかを確認してください。
+
+`AccountStatusGet`コマンドでセッションが確立されていることを確認したら、最後に仮想DHCPサーバーからIPアドレスを取得するために`dhclient`コマンドを実行してください。
 
 ```console
 # dhclient -v vpn_vpn0 # サーバー用途の場合は静的割り当てのほうがよい
 ```
 
 ただし、Raspberry Pi 4はサーバー用途であるため、`dhclient`コマンドを実行するかわりにIPアドレスの静的割り当てとルーティング設定を行います。
+
 仮想DHCPサーバーの管理外のIPアドレスを割り当てます。
 
 ```console
