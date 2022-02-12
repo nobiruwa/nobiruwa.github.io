@@ -106,6 +106,59 @@ Pin-Priority: 1001</code></pre>
 </ul></li>
 </ul></li>
 </ol>
+<h3 id="pinningの確認">Pinningの確認</h3>
+<p><code>/etc/apt/preferences.d/testing.pref</code>の設定が<code>apt-cache policy</code>に反映されているかを確認します。</p>
+<pre class="console"><code>$ sudo apt-cache policy
+Package files:
+[...snip...]
+  50 http://ftp.jp.debian.org/debian testing/non-free i386 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=non-free,b=i386
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/non-free amd64 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=non-free,b=amd64
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/contrib i386 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=contrib,b=i386
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/contrib amd64 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=contrib,b=amd64
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/main i386 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=main,b=i386
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/main amd64 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=main,b=amd64
+     origin ftp.jp.debian.org
+[...snip...]
+Pinned packages:
+     xserver-xorg-input-evdev -&gt; 1:2.10.6-2 with priority 1001
+     xserver-xorg-input-mouse -&gt; 1:1.9.3-1 with priority 1001
+     nvidia-alternative -&gt; 470.103.01-1 with priority 1001
+     xserver-xorg-core -&gt; 2:1.20.14-1 with priority 1001
+     xserver-xorg-input-all -&gt; 1:7.7+23 with priority 1001
+     xserver-xorg-input-kbd -&gt; 1:1.9.0-1+b2 with priority 1001
+     xserver-xorg-input-mutouch -&gt; 1:1.3.0-2+b1 with priority 1001
+     xserver-xorg-input-joystick -&gt; 1:1.6.3-1+b1 with priority 1001
+     xserver-xorg-input-xwiimote -&gt; 0.5-1+b3 with priority 1001
+     xserver-xorg-input-elographics -&gt; 1:1.4.2-1 with priority 1001
+     nvidia-driver-bin -&gt; 470.103.01-1 with priority 1001
+     xserver-xorg-input-aiptek -&gt; 1:1.4.1-3+b1 with priority 1001
+     nvidia-driver-libs -&gt; 470.103.01-1 with priority 1001
+     nvidia-driver -&gt; 470.103.01-1 with priority 1001
+     xserver-xorg-input-synaptics -&gt; 1.9.1-2 with priority 1001
+     nvidia-kernel-dkms -&gt; 470.103.01-1 with priority 1001
+     xserver-xorg-input-mtrack -&gt; 0.3.1-1+b3 with priority 1001
+     xserver-xorg-input-libinput -&gt; 1.2.0-1 with priority 1001
+     xserver-xorg-input-evdev-dev -&gt; 1:2.10.6-2 with priority 1001
+     nvidia-legacy-check -&gt; 470.103.01-1 with priority 1001
+     xserver-xorg-input-wacom -&gt; 0.34.99.1-1+b1 with priority 1001
+     xserver-xorg-input-joystick-dev -&gt; 1:1.6.3-1 with priority 1001
+     nvidia-vdpau-driver -&gt; 470.103.01-1 with priority 1001
+     xserver-xorg-input-libinput-dev -&gt; 1.2.0-1 with priority 1001
+     xserver-xorg-input-synaptics-dev -&gt; 1.9.1-2 with priority 1001
+     xserver-xorg-video-nvidia -&gt; 470.103.01-1 with priority 1001
+     xserver-xorg-input-multitouch -&gt; 1.0~rc3-2+b1 with priority 1001</code></pre>
+<p>期待通りに反映されていることが確認できました。</p>
 <h2 id="パッケージのダウングレードインストール">パッケージのダウングレードインストール</h2>
 <p>最後にダウングレードインストールを行って完了です。</p>
 <p>以下のステップによりXが再び使えるようになりました。</p>
@@ -143,7 +196,7 @@ $ sudo apt -s install xserver-xorg-core/unstable nvidia-driver/unstable xserver-
 </ul></li>
 <li><a href="https://stackoverflow.com/a/59127797/10974912">user interface - Mouse and Keyboard not working after reinstalling ubuntu-desktop - Stack Overflow</a>
 <ul>
-<li>NVIDIAのドライバ再インストールをする時にキーボードとマウスが動かなくなる事象にいつもハマっています。 この質問と回答のおかげで<code>xserver-xorg-input-all</code>も再インストールが必要であることに気付かされました。</li>
+<li>NVIDIAのドライバを再インストールをする時にキーボードとマウスが動かなくなる事象にいつもハマっています。 この質問と回答のおかげで<code>xserver-xorg-input-all</code>も再インストールが必要であることに気付かされました。</li>
 </ul></li>
 </ul>
 
