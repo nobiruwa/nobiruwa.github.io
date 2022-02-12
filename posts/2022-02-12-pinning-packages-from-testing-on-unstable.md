@@ -104,6 +104,65 @@ testingアーカイブからpinningするパッケージを`Packages`セクシ�
    - `xserver-xorg-input-*`
      - `startx`後にマウスがキーボードを使えなくなったため、[user interface - Mouse and Keyboard not working after reinstalling ubuntu-desktop - Stack Overflow](https://stackoverflow.com/a/59127797/10974912)を参考に追加しました。
 
+### Pinningの確認
+
+`/etc/apt/preferences.d/testing.pref`の設定が`apt-cache policy`に反映されているかを確認します。
+
+```console
+$ sudo apt-cache policy
+Package files:
+[...snip...]
+  50 http://ftp.jp.debian.org/debian testing/non-free i386 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=non-free,b=i386
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/non-free amd64 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=non-free,b=amd64
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/contrib i386 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=contrib,b=i386
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/contrib amd64 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=contrib,b=amd64
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/main i386 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=main,b=i386
+     origin ftp.jp.debian.org
+  50 http://ftp.jp.debian.org/debian testing/main amd64 Packages
+     release o=Debian,a=testing,n=bookworm,l=Debian,c=main,b=amd64
+     origin ftp.jp.debian.org
+[...snip...]
+Pinned packages:
+     xserver-xorg-input-evdev -> 1:2.10.6-2 with priority 1001
+     xserver-xorg-input-mouse -> 1:1.9.3-1 with priority 1001
+     nvidia-alternative -> 470.103.01-1 with priority 1001
+     xserver-xorg-core -> 2:1.20.14-1 with priority 1001
+     xserver-xorg-input-all -> 1:7.7+23 with priority 1001
+     xserver-xorg-input-kbd -> 1:1.9.0-1+b2 with priority 1001
+     xserver-xorg-input-mutouch -> 1:1.3.0-2+b1 with priority 1001
+     xserver-xorg-input-joystick -> 1:1.6.3-1+b1 with priority 1001
+     xserver-xorg-input-xwiimote -> 0.5-1+b3 with priority 1001
+     xserver-xorg-input-elographics -> 1:1.4.2-1 with priority 1001
+     nvidia-driver-bin -> 470.103.01-1 with priority 1001
+     xserver-xorg-input-aiptek -> 1:1.4.1-3+b1 with priority 1001
+     nvidia-driver-libs -> 470.103.01-1 with priority 1001
+     nvidia-driver -> 470.103.01-1 with priority 1001
+     xserver-xorg-input-synaptics -> 1.9.1-2 with priority 1001
+     nvidia-kernel-dkms -> 470.103.01-1 with priority 1001
+     xserver-xorg-input-mtrack -> 0.3.1-1+b3 with priority 1001
+     xserver-xorg-input-libinput -> 1.2.0-1 with priority 1001
+     xserver-xorg-input-evdev-dev -> 1:2.10.6-2 with priority 1001
+     nvidia-legacy-check -> 470.103.01-1 with priority 1001
+     xserver-xorg-input-wacom -> 0.34.99.1-1+b1 with priority 1001
+     xserver-xorg-input-joystick-dev -> 1:1.6.3-1 with priority 1001
+     nvidia-vdpau-driver -> 470.103.01-1 with priority 1001
+     xserver-xorg-input-libinput-dev -> 1.2.0-1 with priority 1001
+     xserver-xorg-input-synaptics-dev -> 1.9.1-2 with priority 1001
+     xserver-xorg-video-nvidia -> 470.103.01-1 with priority 1001
+     xserver-xorg-input-multitouch -> 1.0~rc3-2+b1 with priority 1001
+```
+
+期待通りに反映されていることが確認できました。
+
 ## パッケージのダウングレードインストール
 
 最後にダウングレードインストールを行って完了です。
