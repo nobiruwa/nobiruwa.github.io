@@ -169,7 +169,7 @@ Pinned packages:
 <li><code>/etc/X11/xorg.conf</code>を念の為更新</li>
 </ol>
 <p>実際のコマンドは以下の通りです。</p>
-<pre class="console"><code>$ sudo apt install linux-{image,headers}-5.15.0-3-amd64
+<pre class="console"><code>$ sudo apt install linux-{image,headers}-5.15.0-3-amd64 linux-kbuild-5.15
 $ sudo apt install nvidia-driver/testing xserver-xorg-core/testing
 $ sudo apt install xserver-xorg-input-all
 $ sudo nvidia-xconfig</code></pre>
@@ -180,6 +180,7 @@ $ sudo nvidia-xconfig</code></pre>
 <p>unstable版のパッケージに戻してよいかは、以下の<code>apt -s install</code>コマンドで確認できます。</p>
 <pre class="console"><code>$ sudo apt update
 $ sudo apt -s install xserver-xorg-core/unstable nvidia-driver/unstable xserver-xorg-video-nvidia/unstable</code></pre>
+<p>新しいカーネルに戻す場合は、<code>linux-image-&lt;version&gt;-&lt;ARCH&gt;</code>と<code>linux-headers-&lt;version&gt;-&lt;ARCH&gt;</code>だけでなく<code>linux-kbuild-&lt;version&gt;</code>パッケージもインストールするようにしてください。</p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://wiki.debian.org/NvidiaGraphicsDrivers#Build_failures">NvidiaGraphicsDrivers#Build_failures - Debian Wiki</a>
