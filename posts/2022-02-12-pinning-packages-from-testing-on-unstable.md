@@ -177,7 +177,7 @@ Pinned packages:
 実際のコマンドは以下の通りです。
 
 ```console
-$ sudo apt install linux-{image,headers}-5.15.0-3-amd64
+$ sudo apt install linux-{image,headers}-5.15.0-3-amd64 linux-kbuild-5.15
 $ sudo apt install nvidia-driver/testing xserver-xorg-core/testing
 $ sudo apt install xserver-xorg-input-all
 $ sudo nvidia-xconfig
@@ -199,6 +199,8 @@ unstable版のパッケージに戻してよいかは、以下の`apt -s install
 $ sudo apt update
 $ sudo apt -s install xserver-xorg-core/unstable nvidia-driver/unstable xserver-xorg-video-nvidia/unstable
 ```
+
+新しいカーネルに戻す場合は、`linux-image-<version>-<ARCH>`と`linux-headers-<version>-<ARCH>`だけでなく`linux-kbuild-<version>`パッケージもインストールするようにしてください。
 
 ## 参考
 

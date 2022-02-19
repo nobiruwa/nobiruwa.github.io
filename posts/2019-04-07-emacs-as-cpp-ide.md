@@ -59,18 +59,20 @@ lsp-modeとcclsを用いることで、十分に快適な環境を得ること�
 
 cclsはクライアントからのリクエストを適度にdebounce(間引く)するため、比較的CPU使用率が跳ね上がることを防いでいるようです。
 
-詳細はさておき、Clang 7 (2019年4月現在、Debian SidのデフォルトのClangがこのバージョンのため)と組み合わせて開発環境を揃えるための手順と設定を記録しておきます。
+詳細はさておき、Clangと組み合わせて開発環境を揃えるための手順と設定を記録しておきます。
 
 #### Clangのインストール + cclsのビルド
 
+[公式の説明](https://github.com/MaskRay/ccls/wiki/Build)からほぼそのままです。
+ただ、好みでClangはDebianの公式リポジトリからインストールし、`release`ディレクトリにビルドされるように変えています。
+
 ```console
-$ sudo apt-get install cmake libclang-7-dev clang-format-7 clang-tools-7
+$ sudo apt-get install cmake clang clang-format clang-tools clangd libclang-dev llvm
 $ cd ~/repo
 $ git clone --depth=1 --recursive https://github.com/MaskRay/ccls.git ccls.git
 $ cd ccls.git
-$ sed -i -e 's/find_program(CLANG_EXECUTABLE clang)/find_program(CLANG_EXECUTABLE clang-7)/' CMakeLists.txt
-$ cmake -H. -BRelease -DCMAKE_BUILD_TYPE=Release 
-$ cmake --build Release
+$ cmake -H. -Brelease -DCMAKE_BUILD_TYPE=Release
+$ cmake --build release
 ```
 
 #### Emacsパッケージのインストール
@@ -98,7 +100,6 @@ lsp-ui
 ;; clang-format
 ;;;;;;;;
 (require 'clang-format)
-(setq clang-format-executable "/usr/bin/clang-format-7")
 ```
 
 ```lisp
@@ -110,9 +111,6 @@ lsp-ui
 
 ;; company-backends
 (require 'company-clang)
-(setq company-clang-executable (executable-find "/usr/bin/clang-7"))
-(setq company-clang--version '(normal . 7.0))
-
 (require 'company-dict)
 (require 'company-lsp)
 
@@ -147,10 +145,7 @@ lsp-ui
 ;; lsp-mode
 ;;;;;;;;
 (require 'lsp-mode)
-(setq lsp-clients-clangd-executable "/usr/bin/clangd-7")
 (setq lsp-prefer-flymake nil)
-;; # apt-get install clang-tools-7 # libclang-devのメジャーバージョンと合わせる
-;; C++ではclang-formatが必要
 (add-hook 'c-mode-hook #'lsp)
 (add-hook 'c++-mode-hook #'lsp)
 ```
