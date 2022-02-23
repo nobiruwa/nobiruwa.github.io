@@ -44,7 +44,20 @@ rust-mode
 
 ### Emacsパッケージの設定
 
-lsp-modeとlsp-uiの設定は[過去の記事](2019-04-07-emacs-as-cpp-ide.html)で書いた通りなので省略します。
+[過去の記事](2019-04-07-emacs-as-cpp-ide.html)でのlsp-mode, lsp-uiに加えて、lsp-mode, cargo-minor-mode, rust-modeのそれぞれに設定を行います。
+
+#### lsp-mode
+
+```lisp
+;;;;;;;;
+;; lsp-mode
+;;;;;;;;
+[...snip...]
+;; rust
+(setq lsp-rust-analyzer-proc-macro-enable t)
+```
+
+#### cargo-minor-mode
 
 ```lisp
 ;;;;;;;;
@@ -54,6 +67,8 @@ lsp-modeとlsp-uiの設定は[過去の記事](2019-04-07-emacs-as-cpp-ide.html)
 
 (add-hook 'rust-mode-hook 'cargo-minor-mode)
 ```
+
+#### rust-mode
 
 ```lisp
 ;;;;;;;;
