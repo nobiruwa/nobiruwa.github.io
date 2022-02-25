@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
+    <link rel="stylesheet" href="../css/syntax.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <title>My Hakyll Blog - 非公式APTリポジトリの利用 - apt-key addから/etc/apt/trusted.gpg.dとsigned-byオプションへの移行</title>
+  </head>
+  <body>
+    <div id="header">
+      <div id="logo">
+        <a href="../">Nobiruwa's</a>
+      </div>
+      <div id="navigation">
+        <a href="../">Home</a>
+        <a href="../archive.html">Archive</a>
+      </div>
+    </div>
+
+    <div id="content">
+      <h1>非公式APTリポジトリの利用 - apt-key addから/etc/apt/trusted.gpg.dとsigned-byオプションへの移行</h1>
+
+      <div class="info">
+    Posted on February 26, 2022
+    
+        by nobiruwa
+    
+</div>
+
+<p><code>apt key</code>を実行すると以下のメッセージを見るようになりました。</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Warning:</span> apt-key is deprecated. Manage keyring files in trusted.gpg.d instead <span class="er">(</span><span class="ex">see</span> apt-key<span class="er">(</span><span class="ex">8</span><span class="kw">))</span><span class="bu">.</span></span></code></pre></div>
+<p><code>/etc/apt/trusted.gpg.d</code>ディレクトリを見ると<code>debian-archive-keyring</code>パッケージによって展開されたDebian公式リポジトリのOpenPGP公開鍵が存在しています。</p>
+<p>非公式なAPTリポジトリについての対処方法は<a href="https://wiki.debian.org/DebianRepository/UseThirdParty">DebianRepository/UseThirdParty - Debian Wiki</a>に分かりやすく書いてありました。</p>
+<p>OpenPGP公開鍵の配布方法は<a href="https://wiki.debian.org/DebianRepository/UseThirdParty#OpenPGP_Key_distribution">OpenPGP Key distribution</a>にて以下のように定められています。</p>
+<ol type="1">
+<li>リポジトリはOpenPGP鍵で署名されているべきです。</li>
+<li>バイナリ形式の公開鍵が<code>&lt;deriv&gt;-archive-keyring.gpg</code>という名前でリポジトリのルートから取得可能であるべきです。
+<ul>
+<li><code>&lt;deriv&gt;</code>はリポジトリを表す短い名前です。</li>
+</ul></li>
+<li>ASCII形式の公開鍵は<code>&lt;deriv&gt;-archive-keyring.asc</code>という名前で取得可能でもよいです。</li>
+<li>OpenPGP公開鍵はHTTPSで提供されるべきです。</li>
+<li>公開鍵サーバから取得可能にしてもよいです。
+<ul>
+<li>適切な公開鍵サーバーを選ぶべきです。</li>
+<li>OpenPGP公開鍵は他の信頼できる鍵で署名されるべきです。</li>
+</ul></li>
+<li>rootのみが書き換え可能な場所でHTTPSのようなセキュアなメカニズムでダウンロードできなければなりません。
+<ul>
+<li><code>/etc/apt/trusted.gpg.d</code>に置いてはなりません。</li>
+<li><code>apt-key add</code>で追加してはなりません。</li>
+<li><code>/usr/share/keyrings</code>に置くべきです。</li>
+</ul></li>
+</ol>
+<p>リポジトリを利用する場合には以下に従う必要があります。</p>
+<ol type="1">
+<li>ASCII形式の公開鍵を使ってはなりません。
+<ul>
+<li><code>gpg --dearmor</code>や、<code>gpt --import</code>と<code>gpg --export</code>の組合せなどでバイナリ形式に変換すべきです。</li>
+</ul></li>
+<li><code>sources.list</code>のエントリは<code>signed-by</code>オプションを持つべきです。
+<ul>
+<li><code>signed-by</code>オプションにはフィンガープリントではなくファイルを指定しなければなりません。</li>
+<li>tipではsecure aptのバージョンが1.4以降であればASCII形式のOpenPGP公開鍵を使用できるとあります。 <code>signed-by</code>オプションでは<code>gpg</code>拡張子だとバイナリ形式として読み込み、<code>asc</code>拡張子だとASCII形式として読み込むようです。 私はバイナリ形式とASCII形式の両方を管理するものの、<code>signed-by</code>オプションにはバイナリ形式を使うことにします。</li>
+</ul></li>
+</ol>
+<h2 id="etcapttrusted.gpg.dとsigned-byオプションへの移行"><code>/etc/apt/trusted.gpg.d</code>と<code>signed-by</code>オプションへの移行</h2>
+<p>節のタイトルとは矛盾しますが<code>/etc/apt/trusted.gpg.d</code>を避けて非公式APTリポジトリの公開鍵を管理しなければなりません。</p>
+<p><code>/usr/share/keyrings</code>ディレクトリには<code>debian-archive-keyring</code>パッケージに含まれるOpenPGP公開鍵が置かれているため、<code>/usr/local/share/keyrings</code>ディレクトリを作り分けて管理することにしました。</p>
+<p>以下に利用している非公式APTリポジトリの<code>sources.list</code>の内容を掲載します。<code>#</code>で始まるコメント行にOpenPGP公開鍵の取得方法を書きました。</p>
+<p>プロンプト文字が<code>$</code>であれば一般ユーザーで実行するコマンドで、<code>#</code>であればrootで実行するコマンドです。</p>
+<h3 id="heroku-cli-etcaptsources.list.dheroku.list">Heroku CLI (<code>/etc/apt/sources.list.d/heroku.list</code>)</h3>
+<pre><code># # wget https://cli-assets.heroku.com/apt/release.key -O /usr/local/share/keyrings/heroku-archive-keyring.asc
+# # wget -qO- https://cli-assets.heroku.com/apt/release.key | gpg --dearmor | tee /usr/local/share/keyrings/heroku-archive-keyring.gpg &gt; /dev/null
+deb [signed-by=/usr/local/share/keyrings/heroku-archive-keyring.gpg] https://cli-assets.heroku.com/apt ./</code></pre>
+<h3 id="ローカルaptリポジトリ-etcaptsources.list.dlocal-debsrc-archive-keyring.list">ローカルAPTリポジトリ (<code>/etc/apt/sources.list.d/local-debsrc-archive-keyring.list</code>)</h3>
+<pre><code># $ gpg --list-keys # get a fingerprint
+# $ gpg --export &lt;fingerprint&gt; | sudo dd of=/usr/local/share/keyrings/local-debsrc-archive-keyring.gpg
+# $ gpg -a --export &lt;fingerprint&gt; | sudo tee /usr/local/share/keyrings/local-debsrc-archive-keyring.asc
+deb [signed-by=/usr/local/share/keyrings/local-debsrc-archive-keyring.gpg] file:///home/ein/debsrc/repository/ ./</code></pre>
+<h3 id="etcaptsources.list.d">(<code>/etc/apt/sources.list.d</code>)</h3>
+<pre><code># # wget https://packages.microsoft.com/keys/microsoft.asc -O /usr/local/share/keyrings/microsoft-archive-keyring.asc
+# # wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /usr/local/share/keyrings/microsoft-archive-keyring.gpg &gt; /dev/null
+deb [arch=amd64 signed-by=/usr/local/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod/ bullseye main</code></pre>
+<p><a href="https://docs.microsoft.com/en-us/powershell/scripting/install/install-debian?view=powershell-7.2">Installing PowerShell on Debian Linux - PowerShell | Microsoft Docs</a>の<a href="https://docs.microsoft.com/en-us/powershell/scripting/install/install-debian?view=powershell-7.2#installation-on-debian-10-via-package-repository">Installation on Debian 10 via Package Repository</a>を見ると正しいOpenPGP公開鍵の取得からPowerShellのインストールの手順は以下の通りのようです。</p>
+<pre class="console"><code># Download the Microsoft repository GPG keys
+$ wget https://packages.microsoft.com/config/debian/10/packages-microsoft-prod.deb
+
+# Register the Microsoft repository GPG keys
+$ sudo dpkg -i packages-microsoft-prod.deb
+
+# Update the list of products
+$ sudo apt-get update
+
+# Install PowerShell
+$ sudo apt-get install -y powershell
+
+# Start PowerShell
+$ pwsh</code></pre>
+<h3 id="skype-stable-etcaptsources.list.d">Skype Stable (<code>/etc/apt/sources.list.d</code>)</h3>
+<pre><code># # wget https://repo.skype.com/data/SKYPE-GPG-KEY -O /usr/local/share/keyrings/skype-archive-keyring.gpg
+# # rm -f /tmp/skype-archive-keyring.gpg
+# # gpg --keyring /tmp/skype-archive-keyring.gpg --no-default-keyring --import /usr/local/share/keyrings/skype-archive-keyring.gpg
+# # gpg --keyring /tmp/skype-archive-keyring.gpg --no-default-keyring --export -a &gt; /usr/local/share/keyrings/skype-archive-keyring.asc
+deb [arch=amd64 signed-by=/usr/local/share/keyrings/skype-archive-keyring.gpg] https://repo.skype.com/deb stable main</code></pre>
+<h3 id="skype-unstable-etcaptsources.list.d">Skype Unstable (<code>/etc/apt/sources.list.d</code>)</h3>
+<pre><code># # wget https://repo.skype.com/data/SKYPE-GPG-KEY -O /usr/local/share/keyrings/skype-archive-keyring.gpg
+# # rm -f /tmp/skype-archive-keyring.gpg
+# # gpg --keyring /tmp/skype-archive-keyring.gpg --no-default-keyring --import /usr/local/share/keyrings/skype-archive-keyring.gpg
+# # gpg --keyring /tmp/skype-archive-keyring.gpg --no-default-keyring --export -a &gt; /usr/local/share/keyrings/skype-archive-keyring.asc
+deb [arch=amd64 signed-by=/usr/local/share/keyrings/skype-archive-keyring.gpg] https://repo.skype.com/deb unstable main</code></pre>
+<h2 id="etcapttrusted.gpgの削除"><code>/etc/apt/trusted.gpg</code>の削除</h2>
+<p><code>apt-key add</code>で使われていた<code>/etc/apt/trusted.gpg</code>を削除します。</p>
+<pre class="console"><code># rm /etc/apt/trusted.gpg</code></pre>
+<h2 id="apt-updateの実行"><code>apt update</code>の実行</h2>
+<p>最後に<code>apt update</code>を実行してエラーが出なければ移行の完了です。</p>
+<p>なお、拡張子(<code>.gpg</code>か<code>.asc</code>)と実際の中身が違っていたり、無関係なOpenPGP公開鍵ファイルを指定していたりすると<code>NO_PUBKEY</code>といったGPG errorが表示されます。</p>
+
+    </div>
+    <div id="footer">
+      Site proudly generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </div>
+  </body>
+</html>
