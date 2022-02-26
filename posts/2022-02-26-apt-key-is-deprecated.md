@@ -57,7 +57,7 @@ OpenPGP公開鍵の配布方法は[OpenPGP Key distribution](https://wiki.debian
 deb [signed-by=/usr/local/share/keyrings/heroku-archive-keyring.gpg] https://cli-assets.heroku.com/apt ./
 ```
 
-### ローカルAPTリポジトリ (`/etc/apt/sources.list.d/local-debsrc-archive-keyring.list`)
+### ローカルAPTリポジトリ (`/etc/apt/sources.list.d/local-debsrc.list`)
 
 ```
 # $ gpg --list-keys # get a fingerprint
@@ -66,7 +66,7 @@ deb [signed-by=/usr/local/share/keyrings/heroku-archive-keyring.gpg] https://cli
 deb [signed-by=/usr/local/share/keyrings/local-debsrc-archive-keyring.gpg] file:///home/ein/debsrc/repository/ ./
 ```
 
-### (`/etc/apt/sources.list.d`)
+### PowerShell (`/etc/apt/sources.list.d/microsoft.list`)
 
 ```
 # # wget https://packages.microsoft.com/keys/microsoft.asc -O /usr/local/share/keyrings/microsoft-archive-keyring.asc
@@ -93,7 +93,7 @@ $ sudo apt-get install -y powershell
 $ pwsh
 ```
 
-### Skype Stable (`/etc/apt/sources.list.d`)
+### Skype Stable (`/etc/apt/sources.list.d/skype-stable.list`)
 
 ```
 # # wget https://repo.skype.com/data/SKYPE-GPG-KEY -O /usr/local/share/keyrings/skype-archive-keyring.gpg
@@ -103,7 +103,7 @@ $ pwsh
 deb [arch=amd64 signed-by=/usr/local/share/keyrings/skype-archive-keyring.gpg] https://repo.skype.com/deb stable main
 ```
 
-### Skype Unstable (`/etc/apt/sources.list.d`)
+### Skype Unstable (`/etc/apt/sources.list.d/skype-unstable.list`)
 
 ```
 # # wget https://repo.skype.com/data/SKYPE-GPG-KEY -O /usr/local/share/keyrings/skype-archive-keyring.gpg
