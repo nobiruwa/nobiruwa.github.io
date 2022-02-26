@@ -75,12 +75,12 @@
 <pre><code># # wget https://cli-assets.heroku.com/apt/release.key -O /usr/local/share/keyrings/heroku-archive-keyring.asc
 # # wget -qO- https://cli-assets.heroku.com/apt/release.key | gpg --dearmor | tee /usr/local/share/keyrings/heroku-archive-keyring.gpg &gt; /dev/null
 deb [signed-by=/usr/local/share/keyrings/heroku-archive-keyring.gpg] https://cli-assets.heroku.com/apt ./</code></pre>
-<h3 id="ローカルaptリポジトリ-etcaptsources.list.dlocal-debsrc-archive-keyring.list">ローカルAPTリポジトリ (<code>/etc/apt/sources.list.d/local-debsrc-archive-keyring.list</code>)</h3>
+<h3 id="ローカルaptリポジトリ-etcaptsources.list.dlocal-debsrc.list">ローカルAPTリポジトリ (<code>/etc/apt/sources.list.d/local-debsrc.list</code>)</h3>
 <pre><code># $ gpg --list-keys # get a fingerprint
 # $ gpg --export &lt;fingerprint&gt; | sudo dd of=/usr/local/share/keyrings/local-debsrc-archive-keyring.gpg
 # $ gpg -a --export &lt;fingerprint&gt; | sudo tee /usr/local/share/keyrings/local-debsrc-archive-keyring.asc
 deb [signed-by=/usr/local/share/keyrings/local-debsrc-archive-keyring.gpg] file:///home/ein/debsrc/repository/ ./</code></pre>
-<h3 id="etcaptsources.list.d">(<code>/etc/apt/sources.list.d</code>)</h3>
+<h3 id="powershell-etcaptsources.list.dmicrosoft.list">PowerShell (<code>/etc/apt/sources.list.d/microsoft.list</code>)</h3>
 <pre><code># # wget https://packages.microsoft.com/keys/microsoft.asc -O /usr/local/share/keyrings/microsoft-archive-keyring.asc
 # # wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /usr/local/share/keyrings/microsoft-archive-keyring.gpg &gt; /dev/null
 deb [arch=amd64 signed-by=/usr/local/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/microsoft-debian-bullseye-prod/ bullseye main</code></pre>
@@ -99,13 +99,13 @@ $ sudo apt-get install -y powershell
 
 # Start PowerShell
 $ pwsh</code></pre>
-<h3 id="skype-stable-etcaptsources.list.d">Skype Stable (<code>/etc/apt/sources.list.d</code>)</h3>
+<h3 id="skype-stable-etcaptsources.list.dskype-stable.list">Skype Stable (<code>/etc/apt/sources.list.d/skype-stable.list</code>)</h3>
 <pre><code># # wget https://repo.skype.com/data/SKYPE-GPG-KEY -O /usr/local/share/keyrings/skype-archive-keyring.gpg
 # # rm -f /tmp/skype-archive-keyring.gpg
 # # gpg --keyring /tmp/skype-archive-keyring.gpg --no-default-keyring --import /usr/local/share/keyrings/skype-archive-keyring.gpg
 # # gpg --keyring /tmp/skype-archive-keyring.gpg --no-default-keyring --export -a &gt; /usr/local/share/keyrings/skype-archive-keyring.asc
 deb [arch=amd64 signed-by=/usr/local/share/keyrings/skype-archive-keyring.gpg] https://repo.skype.com/deb stable main</code></pre>
-<h3 id="skype-unstable-etcaptsources.list.d">Skype Unstable (<code>/etc/apt/sources.list.d</code>)</h3>
+<h3 id="skype-unstable-etcaptsources.list.dskype-unstable.list">Skype Unstable (<code>/etc/apt/sources.list.d/skype-unstable.list</code>)</h3>
 <pre><code># # wget https://repo.skype.com/data/SKYPE-GPG-KEY -O /usr/local/share/keyrings/skype-archive-keyring.gpg
 # # rm -f /tmp/skype-archive-keyring.gpg
 # # gpg --keyring /tmp/skype-archive-keyring.gpg --no-default-keyring --import /usr/local/share/keyrings/skype-archive-keyring.gpg
