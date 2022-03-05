@@ -68,6 +68,7 @@ lsp-modeとlsp-uiの設定は[過去の記事](2019-04-07-emacs-as-cpp-ide.html)
 `cargo add`と`cargo feature`を使うと、`Cargo.toml`の`[dependencies]`セクションと`[dev-dependencies]`セクションを記述するかわりに、コマンドラインから編集できるようになります。私には合っていると思い導入することにします。
 
 ```bash
+$ sudo apt install libssl-dev
 $ cargo install cargo-edit
 $ cargo install cargo-feature
 ```

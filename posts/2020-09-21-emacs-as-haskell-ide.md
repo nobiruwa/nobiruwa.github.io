@@ -1,10 +1,12 @@
 ---
-title: EmacsでのHaskell開発
+title: EmacsでのHaskell開発(旧その2)
 author: nobiruwa
 tags: Haskell, Emacs, LSP
 ---
 
 ## tl;dr
+
+本記事は2022年3月時点ではobsoleteとなりました。[新しい記事](./2022-03-05-emacs-as-haskell-ide.html)を参照してください。
 
 [lsp-haskell](https://github.com/emacs-lsp/lsp-haskell)のバックエンドとして[haskell-language-server](https://github.com/haskell/haskell-language-server)を使うようにセットアップしました。
 
