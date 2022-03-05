@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
     <link rel="stylesheet" href="../css/syntax.css">
     <link rel="stylesheet" href="../css/custom.css">
-    <title>My Hakyll Blog - EmacsでのHaskell開発</title>
+    <title>My Hakyll Blog - EmacsでのHaskell開発(旧その2)</title>
   </head>
   <body>
     <div id="header">
@@ -20,7 +20,7 @@
     </div>
 
     <div id="content">
-      <h1>EmacsでのHaskell開発</h1>
+      <h1>EmacsでのHaskell開発(旧その2)</h1>
 
       <div class="info">
     Posted on September 21, 2020
@@ -30,6 +30,7 @@
 </div>
 
 <h2 id="tldr">tl;dr</h2>
+<p>本記事は2022年3月時点ではobsoleteとなりました。<a href="./2022-03-05-emacs-as-haskell-ide.html">新しい記事</a>を参照してください。</p>
 <p><a href="https://github.com/emacs-lsp/lsp-haskell">lsp-haskell</a>のバックエンドとして<a href="https://github.com/haskell/haskell-language-server">haskell-language-server</a>を使うようにセットアップしました。</p>
 <h3 id="切っ掛け">切っ掛け</h3>
 <p><a href="https://github.com/haskell/haskell-ide-engine">haskell-ide-engine</a>を使っていましたが、haskell-ide-engineと<a href="https://github.com/haskell/ghcide/">ghcide</a>は統合されhaskell-language-serverによって置き換えられました。2020年9月21日時点のlsp-haskellはバックエンドがhaskell-language-serverに切り替わっていました。</p>
@@ -109,7 +110,8 @@ lsp-haskell</code></pre>
 <pre class="console"><code>$ stack new --resolver=&lt;resolver name&gt; &lt;project-name&gt;
 // example
 $ stack new --resolver=lts-14.27 http-conduit-example</code></pre>
-<p>haskell-language-serverがプロジェクトのセットアップに失敗する場合はプロジェクトの設定ファイルを作成してみます。 設定に関する詳細は<a href="https://github.com/haskell/haskell-language-server#project-configuration">haskell-language-serverのREADME</a>と<a href="https://github.com/mpickering/hie-bios/blob/master/README.md#stack">hie-biosのREADME</a>の通りですが、以下に最小の設定を示します。</p>
+<p>haskell-language-serverがプロジェクトのセットアップに失敗する場合はプロジェクトの設定ファイルを作成してみます。
+設定に関する詳細は<a href="https://github.com/haskell/haskell-language-server#project-configuration">haskell-language-serverのREADME</a>と<a href="https://github.com/mpickering/hie-bios/blob/master/README.md#stack">hie-biosのREADME</a>の通りですが、以下に最小の設定を示します。</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cradle</span><span class="kw">:</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">stack</span><span class="kw">:</span></span></code></pre></div>
 

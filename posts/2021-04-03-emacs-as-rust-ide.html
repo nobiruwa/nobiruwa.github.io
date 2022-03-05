@@ -67,8 +67,9 @@ rust-mode</code></pre>
 <h2 id="cargo-edit-cargo-featureのインストール">cargo-edit, cargo-featureのインストール</h2>
 <p><a href="https://github.com/killercup/cargo-edit">cargo-edit</a>は<code>cargo add/rm/upgrade/set-version</code>サブコマンドを追加します。また、<a href="https://github.com/Riey/cargo-feature">cargo-feature</a>は<code>cargo feature</code>サブコマンドを追加します。</p>
 <p><code>cargo add</code>と<code>cargo feature</code>を使うと、<code>Cargo.toml</code>の<code>[dependencies]</code>セクションと<code>[dev-dependencies]</code>セクションを記述するかわりに、コマンドラインから編集できるようになります。私には合っていると思い導入することにします。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cargo install cargo-edit</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cargo install cargo-feature</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> sudo apt install libssl-dev</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cargo install cargo-edit</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cargo install cargo-feature</span></code></pre></div>
 <p>ちなみに、サブコマンドの実体は<code>~/.cargo/bin</code>ディレクトリにあります。<code>cargo-add</code>, <code>cargo-feature</code>といったようにサブコマンドごとの実行ファイルが追加されます。</p>
 
     </div>

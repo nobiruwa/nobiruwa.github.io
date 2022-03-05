@@ -63,7 +63,9 @@
 <li><code>sources.list</code>のエントリは<code>signed-by</code>オプションを持つべきです。
 <ul>
 <li><code>signed-by</code>オプションにはフィンガープリントではなくファイルを指定しなければなりません。</li>
-<li>tipではsecure aptのバージョンが1.4以降であればASCII形式のOpenPGP公開鍵を使用できるとあります。 <code>signed-by</code>オプションでは<code>gpg</code>拡張子だとバイナリ形式として読み込み、<code>asc</code>拡張子だとASCII形式として読み込むようです。 私はバイナリ形式とASCII形式の両方を管理するものの、<code>signed-by</code>オプションにはバイナリ形式を使うことにします。</li>
+<li>tipではsecure aptのバージョンが1.4以降であればASCII形式のOpenPGP公開鍵を使用できるとあります。
+<code>signed-by</code>オプションでは<code>gpg</code>拡張子だとバイナリ形式として読み込み、<code>asc</code>拡張子だとASCII形式として読み込むようです。
+私はバイナリ形式とASCII形式の両方を管理するものの、<code>signed-by</code>オプションにはバイナリ形式を使うことにします。</li>
 </ul></li>
 </ol>
 <h2 id="etcapttrusted.gpg.dとsigned-byオプションへの移行"><code>/etc/apt/trusted.gpg.d</code>と<code>signed-by</code>オプションへの移行</h2>

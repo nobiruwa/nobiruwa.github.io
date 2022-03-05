@@ -117,7 +117,8 @@
 <span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>  (add-to-list 'default-frame-alist `(font . ,user--standard-fontset))</span>
 <span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>  (add-to-list 'initial-frame-alist `(font . ,user--standard-fontset)))</span></code></pre></div>
 <h2 id="problemsの抜粋">PROBLEMSの抜粋</h2>
-<p>libotfに関する問題の存在は<code>PROBLEMS</code>ファイルにしっかりと書かれていました。 Emacsのよいところは公式がドキュメント化をしっかりしているところで、<code>PROBLEMS</code>ファイルにしっかり目を通しましょう、という教訓になりました。</p>
+<p>libotfに関する問題の存在は<code>PROBLEMS</code>ファイルにしっかりと書かれていました。
+Emacsのよいところは公式がドキュメント化をしっかりしているところで、<code>PROBLEMS</code>ファイルにしっかり目を通しましょう、という教訓になりました。</p>
 <pre class="org"><code>** Emacs crashes when you try to view a file with complex characters.
 
 One possible reason for this could be a bug in the libotf or the
@@ -170,7 +171,11 @@ element from LD_LIBRARY_PATH before starting emacs proper.
 Or you could recompile Emacs with an -Wl,-rpath option that
 gives the location of the correct libotf.</code></pre>
 <h2 id="切っ掛け">切っ掛け</h2>
-<p>tarから<code>~/opt/firefox</code>に展開して使っているFirefoxをユーザーのデフォルトのWebブラウザに設定しようと、 Firefoxのdesktopファイルを作ることにしました。一方でchromiumをパッケージとしてインストールしてあり、 <code>/usr/share/applications/chromium.desktop</code>を参考に<code>~/.local/share/applications/firefox.desktop</code>を 作ることにしました。しかし、Emacsで<code>/usr/share/applications/chromium.desktop</code>を開こうとするとクラッシュします。 Emacsで開けないテキストファイルがあるのは非常に困るので、問題を調査することにしました。</p>
+<p>tarから<code>~/opt/firefox</code>に展開して使っているFirefoxをユーザーのデフォルトのWebブラウザに設定しようと、
+Firefoxのdesktopファイルを作ることにしました。一方でchromiumをパッケージとしてインストールしてあり、
+<code>/usr/share/applications/chromium.desktop</code>を参考に<code>~/.local/share/applications/firefox.desktop</code>を
+作ることにしました。しかし、Emacsで<code>/usr/share/applications/chromium.desktop</code>を開こうとするとクラッシュします。
+Emacsで開けないテキストファイルがあるのは非常に困るので、問題を調査することにしました。</p>
 <h2 id="解決までにやったこと">解決までにやったこと</h2>
 <ol type="1">
 <li>別のエディタ、<code>vi</code>や<code>gedit</code>で開いてみる

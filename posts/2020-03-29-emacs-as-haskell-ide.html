@@ -34,7 +34,7 @@
 <h2 id="tldr">tl;dr</h2>
 <p><a href="https://github.com/emacs-lsp/lsp-haskell">lsp-haskell</a>と<a href="https://github.com/haskell/haskell-ide-engine">haskell-ide-engine</a>を用いることで、十分に快適な環境を得ることができました。</p>
 <h2 id="切っ掛け">切っ掛け</h2>
-<p>元々は<a href="https://github.com/chrisdone/intero">intero</a>を愛用していましたが、lts-14.20(GHC 8.6.5)を使い始めた頃から、関数によっては補完が表示されなくなりなした。GitHubを見ると“The intero project has reached the end of its life cycle.”とあり、代替のなかからLSPと簡単に統合が可能なhaskell-ide-engineを用いることにしました。</p>
+<p>元々は<a href="https://github.com/chrisdone/intero">intero</a>を愛用していましたが、lts-14.20(GHC 8.6.5)を使い始めた頃から、関数によっては補完が表示されなくなりなした。GitHubを見ると”The intero project has reached the end of its life cycle.”とあり、代替のなかからLSPと簡単に統合が可能なhaskell-ide-engineを用いることにしました。</p>
 <h2 id="lsp-haskell-haskell-ide-engine-の構築手順">lsp-haskell + haskell-ide-engine の構築手順</h2>
 <p>開発のモードとして<a href="https://github.com/emacs-lsp/lsp-mode">lsp-mode</a>を用い、バックエンドにはhaskell-ide-engineを用います。そのために、lsp-haskellをインストールします。</p>
 <h3 id="haskell-ide-engine">haskell-ide-engine</h3>
@@ -62,7 +62,8 @@ lsp-haskell</code></pre>
 <pre class="console"><code>$ stack new --resolver=&lt;resolver name&gt; &lt;project-name&gt;
 // example
 $ stack new --resolver=lts-14.27 http-conduit-example</code></pre>
-<p>HIEがプロジェクトのセットアップに失敗する場合はプロジェクトの設定ファイルを作成してみます。 設定に関する詳細は<a href="https://github.com/haskell/haskell-ide-engine#project-configuration">README</a>の通りですが、以下に最小の設定を示します。</p>
+<p>HIEがプロジェクトのセットアップに失敗する場合はプロジェクトの設定ファイルを作成してみます。
+設定に関する詳細は<a href="https://github.com/haskell/haskell-ide-engine#project-configuration">README</a>の通りですが、以下に最小の設定を示します。</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cradle</span><span class="kw">:</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">stack</span><span class="kw">:</span></span></code></pre></div>
 

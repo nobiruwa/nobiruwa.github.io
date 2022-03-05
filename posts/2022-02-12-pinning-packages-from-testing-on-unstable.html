@@ -34,7 +34,11 @@
 <p>少なくとも私のPCでは、<a href="https://wiki.debian.org/NvidiaGraphicsDrivers#Build_failures">NvidiaGraphicsDrivers#Build_failures - Debian Wiki</a>にあるようにNVIDIAのドライバが新しいカーネルに対応していない場合に起こっています。</p>
 <p>この記事では回避方法として以下の3つが上げられています。</p>
 <blockquote>
-<p>Solutions for this, from most to least recommended, are temporarily using an older kernel until the driver is updated, installing a newer version of the driver from Debian Experimental if one is available that supports your kernel version, or finding a patch for the build failure online that can be added to DKMS.</p>
+<p>Solutions for this, from most to least recommended, are temporarily
+using an older kernel until the driver is updated, installing a
+newer version of the driver from Debian Experimental if one is
+available that supports your kernel version, or finding a patch for
+the build failure online that can be added to DKMS.</p>
 </blockquote>
 <ol type="1">
 <li>ドライバーが更新されるまでより古いカーネルを使う</li>
@@ -43,7 +47,8 @@
 </ol>
 <p>今回は、ドライバーが更新されるまでの暫定的な対応として、testing版から古いカーネルとドライバなど他のパッケージをpinning(ピン留め)を使ってインストールすることにしました。</p>
 <h2 id="症状">症状</h2>
-<p>以下のように<code>xserver-xorg-video-nvidia</code>の依存パッケージである<code>xorg-video-abi-NN</code>(<code>NN</code>はバージョン番号)を解決できずに失敗します。 <code>xorg-video-abi-NN</code>はvirtual packageであり、実際には適切なバージョンの<code>xserver-xorg-core</code>がないということを示しています。</p>
+<p>以下のように<code>xserver-xorg-video-nvidia</code>の依存パッケージである<code>xorg-video-abi-NN</code>(<code>NN</code>はバージョン番号)を解決できずに失敗します。
+<code>xorg-video-abi-NN</code>はvirtual packageであり、実際には適切なバージョンの<code>xserver-xorg-core</code>がないということを示しています。</p>
 <pre class="console"><code>The following packages have unmet dependencies:
  xserver-xorg-video-nvidia : Depends: xorg-video-abi-24 or
                                       xorg-video-abi-23 but it is not installable or
@@ -197,7 +202,8 @@ $ sudo apt -s install xserver-xorg-core/unstable nvidia-driver/unstable xserver-
 </ul></li>
 <li><a href="https://stackoverflow.com/a/59127797/10974912">user interface - Mouse and Keyboard not working after reinstalling ubuntu-desktop - Stack Overflow</a>
 <ul>
-<li>NVIDIAのドライバを再インストールをする時にキーボードとマウスが動かなくなる事象にいつもハマっています。 この質問と回答のおかげで<code>xserver-xorg-input-all</code>も再インストールが必要であることに気付かされました。</li>
+<li>NVIDIAのドライバを再インストールをする時にキーボードとマウスが動かなくなる事象にいつもハマっています。
+この質問と回答のおかげで<code>xserver-xorg-input-all</code>も再インストールが必要であることに気付かされました。</li>
 </ul></li>
 </ul>
 
