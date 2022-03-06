@@ -142,6 +142,87 @@ nvidia-modsign-key-&lt;hexstring&gt;.key</code></pre>
 <p>生成された鍵は次回以降のコンパイルで再利用できます。</p>
 <p>鍵の入れ換えを行った場合は<a href="https://askubuntu.com/questions/805152/is-it-possible-to-delete-an-enrolled-key-using-mokutil-without-the-original-der">mokutil –export と mokutil –delete</a>
 を組み合わせて不要になった証明書を削除できます。</p>
+<h2 id="firefoxでの日本語入力uim">Firefoxでの日本語入力(uim)</h2>
+<p>私は日本語入力にUIMを使っており、GTK3アプリケーションであるFirefoxへの入力でいつもつまづきます。</p>
+<p>以下に設定箇所を記載しておきます。</p>
+<h3 id="uimパッケージのインストールuim-uim-skk">UIMパッケージのインストール(uim + uim-skk)</h3>
+<p>SKK辞書サーバー<code>skkearch</code>を導入します。</p>
+<pre class="console"><code>$ sudo apt install skkdic-cdb skkdic-extra skksearch
+$ sudo apt install uim uim-skk</code></pre>
+<h3 id="immodules.cacheの作成"><code>immodules.cache</code>の作成</h3>
+<p><code>libgtk-3-0</code>パッケージに含まれる<code>gtk-query-immodules-3.0</code>コマンドを用い、<code>im cache</code>と呼ばれるファイルを作成します。</p>
+<p>デフォルトの位置はマニュアルでは<code>libdir/gtk-3.0/3.0.0/immodules.cache</code>とあり、Debianでは<code>/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules.cache</code>となります。</p>
+<pre class="console"><code>$ sudo /usr/lib/x86_64-linux-gnu/libgtk-3-0/gtk-query-immodules-3.0 --update-cache
+$ grep uim /usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules.cache
+&quot;/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-uim.so&quot; 
+&quot;uim&quot; &quot;uim&quot; &quot;uim&quot; &quot;/usr/share/locale&quot; &quot;ja:ko:zh:*&quot; </code></pre>
+<h3 id="im-configの設定"><code>im-config</code>の設定</h3>
+<p><code>im-config</code>パッケージの<code>im-config</code>コマンドを用いてIMに<code>uim</code>を指定しました。</p>
+<pre class="console"><code>$ im-config -l
+ uim xim
+$ im-config -n uim
+$ im-config -m
+default
+uim
+uim
+
+uim</code></pre>
+<h3 id="gtk_im_moduleの設定"><code>GTK_IM_MODULE</code>の設定</h3>
+<p><code>*_IM_MODULE</code>環境変数にはすべて<code>uim</code>を指定しました。</p>
+<pre class="console"><code>$ grep IM_MODULE .xsessionrc
+export CLUTTER_IM_MODULE=uim
+export GTK_IM_MODULE=uim
+export QT_IM_MODULE=uim
+export QT4_IM_MODULE=uim</code></pre>
+<h3 id="uimの設定"><code>uim</code>の設定</h3>
+<p>私の好みの問題から、<code>uim-toolbar</code>のデフォルト(<code>alternatives</code>)には<code>uim-toolbar-gtk3-systray</code>を指定します。</p>
+<p><code>update-alternatives</code>のエントリに<code>uim-toolbar-gtk3-systray</code>が存在しないため、
+ほかのエントリよりも高い優先度で登録し<code>auto</code>で<code>uim-toolbar-gtk3-systray</code>が使用されるように変更しました。</p>
+<pre class="console"><code>$ sudo update-alternatives --install /usr/bin/uim-toolbar uim-toolbar /usr/bin/uim-toolbar-gtk3-systray 90
+$ sudo update-alternatives --display uim-toolbar
+uim-toolbar - auto mode
+  link best version is /usr/bin/uim-toolbar-gtk3-systray
+  link currently points to /usr/bin/uim-toolbar-gtk3-systray
+  link uim-toolbar is /usr/bin/uim-toolbar
+/bin/true - priority -100
+/usr/bin/uim-toolbar-gtk - priority 60
+/usr/bin/uim-toolbar-gtk3 - priority 80
+/usr/bin/uim-toolbar-gtk3-systray - priority 90
+/usr/bin/uim-toolbar-qt5 - priority 40</code></pre>
+<p>グローバルの設定ではデフォルトのIMを<code>uim-skk</code>に設定しました。
+<code>uim-skk</code>以外のIMを使うこともないのでIMの切り替えもトグルも無効にしました。</p>
+<pre class="console"><code>$ cat ~/.uim.d/customs/custom-global.scm
+(define custom-activate-default-im-name? #t)
+(define custom-preserved-default-im-name 'skk)
+(define default-im-name 'skk)
+(define enabled-im-list '(skk))
+(define enable-im-switch? #f)
+(define switch-im-key '(&quot;&lt;Control&gt;Shift_key&quot; &quot;&lt;Shift&gt;Control_key&quot;))
+(define switch-im-key? (make-key-predicate '(&quot;&lt;Control&gt;Shift_key&quot; &quot;&lt;Shift&gt;Control_key&quot;)))
+(define switch-im-skip-direct-im? #f)
+(define enable-im-toggle? #f)
+(define toggle-im-key '(&quot;&lt;Meta&gt; &quot;))
+(define toggle-im-key? (make-key-predicate '(&quot;&lt;Meta&gt; &quot;)))
+(define toggle-im-alt-im 'direct)
+(define uim-color 'uim-color-uim)
+(define candidate-window-style 'vertical)
+(define candidate-window-position 'caret)
+(define enable-lazy-loading? #t)
+(define bridge-show-input-state? #t)
+(define bridge-show-with? 'time)
+(define bridge-show-input-state-time-length 3)</code></pre>
+<p><code>uim-skk</code>が <code>skksearch</code> (<code>localhost:1178/TCP</code>) に接続する設定に変更しました。</p>
+<pre class="console"><code>$ cat ~/.uim.d/customs/custom-skk-dict.scm 
+(define skk-use-skkserv? #t)
+(define skk-skkserv-enable-completion? #f)
+(define skk-skkserv-completion-timeout 2000)
+(define skk-skkserv-use-env? #t)
+(define skk-skkserv-hostname &quot;localhost&quot;)
+(define skk-skkserv-portnum 1178)
+(define skk-skkserv-address-family 'unspecified)
+(define skk-dic-file-name &quot;/usr/share/skk/SKK-JISYO&quot;)
+(define skk-personal-dic-filename &quot;/home/ein/.skk-jisyo&quot;)
+(define skk-uim-personal-dic-filename &quot;/home/ein/.skk-uim-jisyo&quot;)</code></pre>
 
     </div>
     <div id="footer">
