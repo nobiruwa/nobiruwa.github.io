@@ -173,3 +173,122 @@ $ sudo mokutil -import nvidia-modsign-crt-<hexstring>.der
 
 鍵の入れ換えを行った場合は[mokutil --export と mokutil --delete](https://askubuntu.com/questions/805152/is-it-possible-to-delete-an-enrolled-key-using-mokutil-without-the-original-der)
 を組み合わせて不要になった証明書を削除できます。
+
+## Firefoxでの日本語入力(uim)
+
+私は日本語入力にUIMを使っており、GTK3アプリケーションであるFirefoxへの入力でいつもつまづきます。
+
+以下に設定箇所を記載しておきます。
+
+### UIMパッケージのインストール(uim + uim-skk)
+
+SKK辞書サーバー`skkearch`を導入します。
+
+```console
+$ sudo apt install skkdic-cdb skkdic-extra skksearch
+$ sudo apt install uim uim-skk
+```
+
+### `immodules.cache`の作成
+
+`libgtk-3-0`パッケージに含まれる`gtk-query-immodules-3.0`コマンドを用い、`im cache`と呼ばれるファイルを作成します。
+
+デフォルトの位置はマニュアルでは`libdir/gtk-3.0/3.0.0/immodules.cache`とあり、Debianでは`/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules.cache`となります。
+
+```console
+$ sudo /usr/lib/x86_64-linux-gnu/libgtk-3-0/gtk-query-immodules-3.0 --update-cache
+$ grep uim /usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules.cache
+"/usr/lib/x86_64-linux-gnu/gtk-3.0/3.0.0/immodules/im-uim.so" 
+"uim" "uim" "uim" "/usr/share/locale" "ja:ko:zh:*" 
+```
+
+### `im-config`の設定
+
+`im-config`パッケージの`im-config`コマンドを用いてIMに`uim`を指定しました。
+
+```console
+$ im-config -l
+ uim xim
+$ im-config -n uim
+$ im-config -m
+default
+uim
+uim
+
+uim
+```
+
+### `GTK_IM_MODULE`の設定
+
+`*_IM_MODULE`環境変数にはすべて`uim`を指定しました。
+
+```console
+$ grep IM_MODULE .xsessionrc
+export CLUTTER_IM_MODULE=uim
+export GTK_IM_MODULE=uim
+export QT_IM_MODULE=uim
+export QT4_IM_MODULE=uim
+```
+
+### `uim`の設定
+
+私の好みの問題から、`uim-toolbar`のデフォルト(`alternatives`)には`uim-toolbar-gtk3-systray`を指定します。
+
+`update-alternatives`のエントリに`uim-toolbar-gtk3-systray`が存在しないため、
+ほかのエントリよりも高い優先度で登録し`auto`で`uim-toolbar-gtk3-systray`が使用されるように変更しました。
+
+```console
+$ sudo update-alternatives --install /usr/bin/uim-toolbar uim-toolbar /usr/bin/uim-toolbar-gtk3-systray 90
+$ sudo update-alternatives --display uim-toolbar
+uim-toolbar - auto mode
+  link best version is /usr/bin/uim-toolbar-gtk3-systray
+  link currently points to /usr/bin/uim-toolbar-gtk3-systray
+  link uim-toolbar is /usr/bin/uim-toolbar
+/bin/true - priority -100
+/usr/bin/uim-toolbar-gtk - priority 60
+/usr/bin/uim-toolbar-gtk3 - priority 80
+/usr/bin/uim-toolbar-gtk3-systray - priority 90
+/usr/bin/uim-toolbar-qt5 - priority 40
+```
+
+グローバルの設定ではデフォルトのIMを`uim-skk`に設定しました。
+`uim-skk`以外のIMを使うこともないのでIMの切り替えもトグルも無効にしました。
+
+```console
+$ cat ~/.uim.d/customs/custom-global.scm
+(define custom-activate-default-im-name? #t)
+(define custom-preserved-default-im-name 'skk)
+(define default-im-name 'skk)
+(define enabled-im-list '(skk))
+(define enable-im-switch? #f)
+(define switch-im-key '("<Control>Shift_key" "<Shift>Control_key"))
+(define switch-im-key? (make-key-predicate '("<Control>Shift_key" "<Shift>Control_key")))
+(define switch-im-skip-direct-im? #f)
+(define enable-im-toggle? #f)
+(define toggle-im-key '("<Meta> "))
+(define toggle-im-key? (make-key-predicate '("<Meta> ")))
+(define toggle-im-alt-im 'direct)
+(define uim-color 'uim-color-uim)
+(define candidate-window-style 'vertical)
+(define candidate-window-position 'caret)
+(define enable-lazy-loading? #t)
+(define bridge-show-input-state? #t)
+(define bridge-show-with? 'time)
+(define bridge-show-input-state-time-length 3)
+```
+
+`uim-skk`が `skksearch` (`localhost:1178/TCP`) に接続する設定に変更しました。
+
+```console
+$ cat ~/.uim.d/customs/custom-skk-dict.scm 
+(define skk-use-skkserv? #t)
+(define skk-skkserv-enable-completion? #f)
+(define skk-skkserv-completion-timeout 2000)
+(define skk-skkserv-use-env? #t)
+(define skk-skkserv-hostname "localhost")
+(define skk-skkserv-portnum 1178)
+(define skk-skkserv-address-family 'unspecified)
+(define skk-dic-file-name "/usr/share/skk/SKK-JISYO")
+(define skk-personal-dic-filename "/home/ein/.skk-jisyo")
+(define skk-uim-personal-dic-filename "/home/ein/.skk-uim-jisyo")
+```
