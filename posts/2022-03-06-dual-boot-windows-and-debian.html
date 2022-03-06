@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
+    <link rel="stylesheet" href="../css/syntax.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <title>My Hakyll Blog - WindowsとDebianのデュアルブートを構成する</title>
+  </head>
+  <body>
+    <div id="header">
+      <div id="logo">
+        <a href="../">Nobiruwa's</a>
+      </div>
+      <div id="navigation">
+        <a href="../">Home</a>
+        <a href="../archive.html">Archive</a>
+      </div>
+    </div>
+
+    <div id="content">
+      <h1>WindowsとDebianのデュアルブートを構成する</h1>
+
+      <div class="info">
+    Posted on March  6, 2022
+    
+        by nobiruwa
+    
+</div>
+
+<h2 id="切っ掛け">切っ掛け</h2>
+<p>HP PavillionシリーズのデスクトップPCを10年以上使い続けて特に異常もないのですがスペックを刷新しようと思いマウスコンピューター製のデスクトップPCを購入しました。</p>
+<p>これまではUEFIではなくBIOSを使ったり、UEFIは使うもののSecure Bootを無効にし使ったりと、Secure Bootを避けていました。</p>
+<p>今回はUEFIでSecure Bootを有効にしたうえで、デュアルブート構成でのDebianのインストールに挑戦しました。</p>
+<h2 id="tldr">tl;dr</h2>
+<p>WindowsのシステムドライブのUEFIパーティションを汚さないよう(LinuxがUEFIから起動されるために必要な<code>shim</code>というローダーは入れられる)、Linuxのインストールドライブを分けると無用なトラブルを避けられるようです。</p>
+<p>新しいデスクトップPCでは購入オプションとして1TBのHDDを追加し、これにDebian GNU/Linux(以下Debian)をインストールすることにしました。</p>
+<p>このとき、GRUBもLinuxのインストールドライブにインストールするようにします。</p>
+<p>UEFIでは<code>shim</code>を起動順序の先頭にすることでGRUBからDebianとWindowsを自由に切り替えられるようになります。</p>
+<p>上記の点に気を付ければDebianのインストール自体は<code>Expert Install</code>で慣れている(<code>Graphical Install</code>はステップのどこかで終了しないことがあるので避けています)ので割愛します。</p>
+<p>以下では、UEFIのブート構成に関して学習したことと、今回新たにハマった点を備忘のために記録します。</p>
+<h2 id="ブート構成の確認">ブート構成の確認</h2>
+<p>Debianをインストールしたら、Debianから<code>blkid</code>を実行してパーティション情報を確認します。</p>
+<pre class="console"><code>$ sudo blkid | sort
+/dev/sda1: PARTUUID=&quot;3d5baade-95fb-45b4-8128-5951466ceef1&quot;
+/dev/sda2: UUID=&quot;9225299d-ac2d-4b74-9257-31e7fbeb9c21&quot; BLOCK_SIZE=&quot;4096&quot; TYPE=&quot;ext4&quot; PARTUUID=&quot;a1d12f99-db89-4314-9bc1-7538a2668897&quot;
+/dev/sda3: UUID=&quot;3ea32de2-2799-417e-8467-9cfbbebf3e77&quot; TYPE=&quot;swap&quot; PARTUUID=&quot;4779845e-1534-4213-9a72-9c36bfb685b3&quot;
+/dev/sdb1: LABEL=&quot;SYSTEM&quot; UUID=&quot;E28E-5404&quot; BLOCK_SIZE=&quot;512&quot; TYPE=&quot;vfat&quot; PARTLABEL=&quot;EFI system partition&quot; PARTUUID=&quot;feb4246b-0490-4823-8219-a4198ebab99e&quot;
+/dev/sdb2: PARTLABEL=&quot;Microsoft reserved partition&quot; PARTUUID=&quot;62cecad1-1ecf-467f-beb1-e7c5a51a0bd5&quot;
+/dev/sdb3: LABEL=&quot;Windows&quot; BLOCK_SIZE=&quot;512&quot; UUID=&quot;A4768EE4768EB718&quot; TYPE=&quot;ntfs&quot; PARTLABEL=&quot;Basic data partition&quot; PARTUUID=&quot;0be2818d-aa2c-4da8-ab26-bbfe79e9c81f&quot;
+/dev/sdb4: LABEL=&quot;Windows RE tools&quot; BLOCK_SIZE=&quot;512&quot; UUID=&quot;24B48F21B48EF518&quot; TYPE=&quot;ntfs&quot; PARTLABEL=&quot;Basic data partition&quot; PARTUUID=&quot;f66dc73e-7639-46f3-a226-dfe9b03b8923&quot;</code></pre>
+<p>デバイスブロックの割当は、Debianが<code>/dev/sda</code>、Windowsが<code>/dev/sdb</code>となっているようです。</p>
+<p><code>efibootmgr</code>コマンドを実行して、UEFIのブートエントリを確認します。</p>
+<pre><code>$ efibootmgr -v
+BootCurrent: 0002
+Timeout: 1 seconds
+BootOrder: 0002,0000
+Boot0000* Windows Boot Manager	HD(1,GPT,feb4246b-0490-4823-8219-a4198ebab99e,0x800,0x82000)/File(\EFI\MICROSOFT\BOOT\BOOTMGFW.EFI)WINDOWS.........x...B.C.D.O.B.J.E.C.T.=.{.9.d.e.a.8.6.2.c.-.5.c.d.d.-.4.e.7.0.-.a.c.c.1.-.f.3.2.b.3.4.4.d.4.7.9.5.}.../P...............
+Boot0002* debian	HD(1,GPT,feb4246b-0490-4823-8219-a4198ebab99e,0x800,0x82000)/File(\EFI\DEBIAN\SHIMX64.EFI)</code></pre>
+<p><code>shim</code>が追加されていることが確認できました。</p>
+<p>次にDebianの<code>/etc/fstab</code>の内容を確認します。</p>
+<pre class="console"><code>$ cat /etc/fstab
+[...snip...]
+# / was on /dev/sdb2 during installation
+UUID=9225299d-ac2d-4b74-9257-31e7fbeb9c21 /               ext4    errors=remount-ro 0       1
+# /boot/efi was on /dev/sda1 during installation
+UUID=E28E-5404  /boot/efi       vfat    umask=0077      0       1
+# swap was on /dev/sdb3 during installation
+UUID=3ea32de2-2799-417e-8467-9cfbbebf3e77 none            swap    sw              0       0</code></pre>
+<p><code>/boot/efi</code>にUEFIパーティションがマウントされるようです。</p>
+<p>UEFIパーティションに追加されたDebian用のファイル構成を確認します。</p>
+<pre class="console"><code>$ sudo find /boot/efi/EFI/debian 
+/boot/efi/EFI/debian
+/boot/efi/EFI/debian/shimx64.efi
+/boot/efi/EFI/debian/grubx64.efi
+/boot/efi/EFI/debian/mmx64.efi
+/boot/efi/EFI/debian/fbx64.efi
+/boot/efi/EFI/debian/BOOTX64.CSV
+/boot/efi/EFI/debian/grub.cfg</code></pre>
+<p><code>/boot/efi/EFI/debian/grub.cfg</code>があることから<code>shim</code>はGRUBを実行するのだと分かります。</p>
+<p><code>/boot/efi/EFI/debian/grub.cfg</code>の内容を確認します。</p>
+<pre class="console"><code>$ sudo cat /boot/efi/EFI/debian/grub.cfg
+search.fs_uuid 9225299d-ac2d-4b74-9257-31e7fbeb9c21 root hd0,gpt2 
+set prefix=($root)'/boot/grub'
+configfile $prefix/grub.cfg</code></pre>
+<p>GRUBは<code>/</code>(=<code>PARTUUID=9225299d-ac2d-4b74-9257-31e7fbeb9c21</code> = <code>/dev/sda2</code>)にあるGRUBの設定(<code>/boot/grub/grub.cfg</code>)をロードして、メニューを表示するということが分かります。</p>
+<h2 id="grubのメニューにwindowsを表示させる">GRUBのメニューにWindowsを表示させる</h2>
+<p><code>os-prober</code>がWindowsの存在するパーティションを探索してGRUBのメニューに追加するのですが、<a href="https://forum.manjaro.org/t/grub2-why-is-os-prober-now-disabled-by-default/57599">セキュリティを理由に</a>デフォルトでは無効となっています。</p>
+<p><code>/etc/grub.d</code>ディレクトリ配下にカスタムのスクリプトを置くことでもメニューエントリを追加できますが、今回は自己責任で<code>os-prober</code>を有効にしてWindowsを表示させることにしました。</p>
+<p>手順は以下の3ステップです。</p>
+<ol type="1">
+<li><code>ntfs-3g</code>をインストールする</li>
+<li><code>/etc/default/grub</code>に<code>GRUB_DISABLE_OS_PROBER=false</code>を追加する</li>
+<li><code>update-grub</code>を実行する</li>
+</ol>
+<p>コマンドは以下の通り実行しました。</p>
+<pre class="console"><code>$ sudo apt install ntfs-3g
+$ echo '' &gt;&gt; /etc/default/grub
+$ echo '# Enable os-prober' &gt;&gt; /etc/default/grub
+$ echo 'GRUB_DISABLE_OS_PROBER=false' &gt;&gt; /etc/default/grub
+$ sudo update-grub</code></pre>
+<h2 id="nvidiaグラフィックスドライバーをインストールする">NVIDIAグラフィックスドライバーをインストールする</h2>
+<p>NVIDIAグラフィックスドライバーは<code>nvidia-driver</code>パッケージを入れるだけで使えるようになると考えていましたが、
+<a href="https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=953366">Debian Bug report logs - #953366</a>と同じ状態になり
+GUIを起動することができませんでした 。</p>
+<p>Secure Bootの導入によって、カーネルドライバーに署名が必須となります。</p>
+<p>Debianが公式に署名していないドライバーにはMachine Owner Key (以下MOK)、つまりマシン所有者自身の署名が必要です。</p>
+<p><a href="https://wiki.debian.org/SecureBoot">Debian Wiki</a>で具体的な手順が説明されています。
+<a href="https://ubuntu.com/blog/how-to-sign-things-for-secure-boot">Ubuntuのブログ</a>が元となっているようですが使用するコマンド名に違いがあるようです。</p>
+<ol type="1">
+<li>MOKを作成する。
+<ul>
+<li>適当な内容でX.509エンコーディングの証明書と鍵を作ればよく、<code>openssl</code>コマンドを使って作成できます。</li>
+<li>証明書はUbuntuを真似て<code>/var/lib/shim-signed/mok</code>ディレクトリに置くとよいです。</li>
+</ul></li>
+<li>MOKをエンロールする。
+<ul>
+<li>エンロールとはドライバーの署名が信頼できるものであるとみなされるよう、EFIに証明書を登録する作業です。</li>
+<li><code>mokutil</code>パッケージの<code>mokutil</code>コマンドを使用します。<code>mokutil</code>コマンドは実行時にパスワードを求めます。
+Debian Wikiでは<code># prompts for one-time password</code>とあるので1回限りのパスワードと考えてよさそうです。
+OSの終了からマシンの電源が切られるまでの間に証明書の登録を行うようで、
+OSのシャットダウンを行うと途中ターミナルのダイアログで<code>mokutil</code>コマンドで入力したパスワードの再入力を
+求められます。これで、OSの起動時に毎回証明書がロードされるようになります。</li>
+</ul></li>
+<li>ドライバーに署名する。
+<ul>
+<li><code>sbsigntool</code>パッケージの<code>sbsign</code>コマンドを使ってカーネルそのもの(<code>/boot/vmlinuz-$VERSION</code>)やカーネルモジュール(<code>*.ko</code>)に署名することができます。</li>
+</ul></li>
+</ol>
+<p>以上がSecure BootのためのMOKを使った署名の方法ですが、NVIDIAのプロプライエタリなドライバーインストーラを使うと、
+ドライバーのコンパイル、署名鍵の作成、署名を一度に行ってくれます。あとはMOKをエンロールするだけです。</p>
+<p>インストーラは<code>lynx</code>などテキストベースのWebブラウザを使えばコンソールからもダウンロードできます。</p>
+<p>インストーラのウィザードの内容は<a href="https://qiita.com/arc279/items/99f08b549c95881007b9">UEFI のセキュアブート機にNVIDIAのドライバを入れる話</a>で確認できます。</p>
+<p>MOKは<code>/usr/share/nvidia</code>ディレクトリ配下に保存されます。</p>
+<pre class="console"><code>$ ls /usr/share/nvidia/nvidia-modsign*
+nvidia-modsign-crt-&lt;hexstring&gt;.der
+nvidia-modsign-key-&lt;hexstring&gt;.key</code></pre>
+<p><code>&lt;hexstring&gt;</code>は鍵を表す8桁16進数の数値です。</p>
+<p>インストーラ実行後、<code>mokutil</code>で<code>nvidia-modsign-crt-&lt;hexstring&gt;.der</code>を登録します。</p>
+<pre class="console"><code>$ sudo mokutil -import nvidia-modsign-crt-&lt;hexstring&gt;.der</code></pre>
+<p>生成された鍵は次回以降のコンパイルで再利用できます。</p>
+<p>鍵の入れ換えを行った場合は<a href="https://askubuntu.com/questions/805152/is-it-possible-to-delete-an-enrolled-key-using-mokutil-without-the-original-der">mokutil –export と mokutil –delete</a>
+を組み合わせて不要になった証明書を削除できます。</p>
+
+    </div>
+    <div id="footer">
+      Site proudly generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </div>
+  </body>
+</html>
