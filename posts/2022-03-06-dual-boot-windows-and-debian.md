@@ -153,7 +153,7 @@ Debianが公式に署名していないドライバーにはMachine Owner Key (�
 
 インストーラのウィザードの内容は[UEFI のセキュアブート機にNVIDIAのドライバを入れる話](https://qiita.com/arc279/items/99f08b549c95881007b9)で確認できます。
 
-MOKは`/usr/share/nvidia`ディレクトリ配下に保存されます。
+MOKはNVIDIAのプロファイルディレクトリ`/usr/share/nvidia`配下に保存されます。
 
 ```console
 $ ls /usr/share/nvidia/nvidia-modsign*
@@ -169,7 +169,57 @@ nvidia-modsign-key-<hexstring>.key
 $ sudo mokutil -import nvidia-modsign-crt-<hexstring>.der
 ```
 
-生成された鍵は次回以降のコンパイルで再利用できます。
+### MOK再利用時にファイルが削除される
+
+生成された鍵は次回以降のコンパイルで再利用できます。が、再利用するとインストーラがMOKを削除してしまいます。
+インストーラ実行のたびにNVIDIAのプロファイルディレクトリが削除され再度生成されるためのようです。
+
+そこで、インストーラ実行の前後でMOKをバックアップ、リストアするスクリプト`reinstall-nvidia-driver-with-modsign-key.sh`を作成しました。
+
+```bash
+#!/usr/bin/env bash
+
+NVIDIA_INSTALLER=$1
+NVIDIA_INSTALLER_PATH=`readlink -f "${NVIDIA_INSTALLER}"`
+
+if [ -f "${NVIDIA_INSTALLER_PATH}" ] ; then
+    MODSIGN_KEY=`ls -1 /usr/share/nvidia/nvidia-modsign-key-*.key  2> /dev/null | head -1`
+    MODSIGN_PUBKEY=`ls -1 /usr/share/nvidia/nvidia-modsign-crt-*.der 2> /dev/null | head -1`
+
+    if [ -f "${MODSIGN_KEY}" -a -f "${MODSIGN_PUBKEY}" ] ; then
+        MODSIGN_KEY_BACKUP=/tmp/`basename "${MODSIGN_KEY}"`
+        MODSIGN_PUBKEY_BACKUP=/tmp/`basename "${MODSIGN_PUBKEY}"`
+
+        cp "${MODSIGN_KEY}" "${MODSIGN_KEY_BACKUP}"
+        cp "${MODSIGN_PUBKEY}" "${MODSIGN_PUBKEY_BACKUP}"
+
+        "${NVIDIA_INSTALLER_PATH}" --no-install-compat32-libs --module-signing-secret-key="${MODSIGN_KEY}" --module-signing-public-key="${MODSIGN_PUBKEY}"
+
+        if [ ! -f "${MODSIGN_KEY}" ] ; then
+            cp "${MODSIGN_KEY_BACKUP}" "${MODSIGN_KEY}"
+        fi
+
+        if [ ! -f "${MODSIGN_PUBKEY}" ] ; then
+            cp "${MODSIGN_PUBKEY_BACKUP}" "${MODSIGN_PUBKEY}"
+        fi
+    else
+        echo "Neither ${MODSIGN_KEY} nor ${MODSIGN_PUBKEY} found."
+        exit 1
+    fi
+else
+    echo "Please specify a nvidia installer as a first argument."
+    exit 1
+fi
+```
+
+以下のようにroot権限で使用します。ついでにインストールに必要な依存パッケージのインストールコマンドも書いておきます。
+
+```console
+$ sudo apt install linux-image-amd64 linux-headers-amd64 build-essential libglvnd-dev pkg-config
+$ sudo ./reinstall-nvidia-driver-with-modsign-key.sh ./NVIDIA-Linux-x86_64-495.46.run
+```
+
+### MOKの削除
 
 鍵の入れ換えを行った場合は[mokutil --export と mokutil --delete](https://askubuntu.com/questions/805152/is-it-possible-to-delete-an-enrolled-key-using-mokutil-without-the-original-der)
 を組み合わせて不要になった証明書を削除できます。
