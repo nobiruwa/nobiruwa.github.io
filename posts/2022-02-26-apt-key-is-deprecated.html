@@ -30,7 +30,7 @@
 </div>
 
 <p><code>apt key</code>を実行すると以下のメッセージを見るようになりました。</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Warning:</span> apt-key is deprecated. Manage keyring files in trusted.gpg.d instead <span class="er">(</span><span class="ex">see</span> apt-key<span class="er">(</span><span class="ex">8</span><span class="kw">))</span><span class="bu">.</span></span></code></pre></div>
+<pre class="console"><code>Warning: apt-key is deprecated. Manage keyring files in trusted.gpg.d instead (see apt-key(8)).</code></pre>
 <p><code>/etc/apt/trusted.gpg.d</code>ディレクトリを見ると<code>debian-archive-keyring</code>パッケージによって展開されたDebian公式リポジトリのOpenPGP公開鍵が存在しています。</p>
 <p>非公式なAPTリポジトリについての対処方法は<a href="https://wiki.debian.org/DebianRepository/UseThirdParty">DebianRepository/UseThirdParty - Debian Wiki</a>に分かりやすく書いてありました。</p>
 <p>OpenPGP公開鍵の配布方法は<a href="https://wiki.debian.org/DebianRepository/UseThirdParty#OpenPGP_Key_distribution">OpenPGP Key distribution</a>にて以下のように定められています。</p>
