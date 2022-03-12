@@ -132,14 +132,54 @@ OSのシャットダウンを行うと途中ターミナルのダイアログで
 ドライバーのコンパイル、署名鍵の作成、署名を一度に行ってくれます。あとはMOKをエンロールするだけです。</p>
 <p>インストーラは<code>lynx</code>などテキストベースのWebブラウザを使えばコンソールからもダウンロードできます。</p>
 <p>インストーラのウィザードの内容は<a href="https://qiita.com/arc279/items/99f08b549c95881007b9">UEFI のセキュアブート機にNVIDIAのドライバを入れる話</a>で確認できます。</p>
-<p>MOKは<code>/usr/share/nvidia</code>ディレクトリ配下に保存されます。</p>
+<p>MOKはNVIDIAのプロファイルディレクトリ<code>/usr/share/nvidia</code>配下に保存されます。</p>
 <pre class="console"><code>$ ls /usr/share/nvidia/nvidia-modsign*
 nvidia-modsign-crt-&lt;hexstring&gt;.der
 nvidia-modsign-key-&lt;hexstring&gt;.key</code></pre>
 <p><code>&lt;hexstring&gt;</code>は鍵を表す8桁16進数の数値です。</p>
 <p>インストーラ実行後、<code>mokutil</code>で<code>nvidia-modsign-crt-&lt;hexstring&gt;.der</code>を登録します。</p>
 <pre class="console"><code>$ sudo mokutil -import nvidia-modsign-crt-&lt;hexstring&gt;.der</code></pre>
-<p>生成された鍵は次回以降のコンパイルで再利用できます。</p>
+<h3 id="mok再利用時にファイルが削除される">MOK再利用時にファイルが削除される</h3>
+<p>生成された鍵は次回以降のコンパイルで再利用できます。が、再利用するとインストーラがMOKを削除してしまいます。
+インストーラ実行のたびにNVIDIAのプロファイルディレクトリが削除され再度生成されるためのようです。</p>
+<p>そこで、インストーラ実行の前後でMOKをバックアップ、リストアするスクリプト<code>reinstall-nvidia-driver-with-modsign-key.sh</code>を作成しました。</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/usr/bin/env bash</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">NVIDIA_INSTALLER</span><span class="op">=</span><span class="va">$1</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="va">NVIDIA_INSTALLER_PATH</span><span class="op">=</span><span class="kw">`</span><span class="fu">readlink</span> <span class="at">-f</span> <span class="st">&quot;</span><span class="va">${NVIDIA_INSTALLER}</span><span class="st">&quot;</span><span class="kw">`</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">${NVIDIA_INSTALLER_PATH}</span><span class="st">&quot;</span> <span class="bu">]</span> <span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="va">MODSIGN_KEY</span><span class="op">=</span><span class="kw">`</span><span class="fu">ls</span> <span class="at">-1</span> /usr/share/nvidia/nvidia-modsign-key-<span class="pp">*</span>.key  <span class="dv">2</span><span class="op">&gt;</span> /dev/null <span class="kw">|</span> <span class="fu">head</span> <span class="at">-1</span><span class="kw">`</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="va">MODSIGN_PUBKEY</span><span class="op">=</span><span class="kw">`</span><span class="fu">ls</span> <span class="at">-1</span> /usr/share/nvidia/nvidia-modsign-crt-<span class="pp">*</span>.der <span class="dv">2</span><span class="op">&gt;</span> /dev/null <span class="kw">|</span> <span class="fu">head</span> <span class="at">-1</span><span class="kw">`</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">${MODSIGN_KEY}</span><span class="st">&quot;</span> -a <span class="er">-f</span> <span class="st">&quot;</span><span class="va">${MODSIGN_PUBKEY}</span><span class="st">&quot;</span> ] <span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">MODSIGN_KEY_BACKUP</span><span class="op">=</span>/tmp/<span class="kw">`</span><span class="fu">basename</span> <span class="st">&quot;</span><span class="va">${MODSIGN_KEY}</span><span class="st">&quot;</span><span class="kw">`</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">MODSIGN_PUBKEY_BACKUP</span><span class="op">=</span>/tmp/<span class="kw">`</span><span class="fu">basename</span> <span class="st">&quot;</span><span class="va">${MODSIGN_PUBKEY}</span><span class="st">&quot;</span><span class="kw">`</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cp</span> <span class="st">&quot;</span><span class="va">${MODSIGN_KEY}</span><span class="st">&quot;</span> <span class="st">&quot;</span><span class="va">${MODSIGN_KEY_BACKUP}</span><span class="st">&quot;</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">cp</span> <span class="st">&quot;</span><span class="va">${MODSIGN_PUBKEY}</span><span class="st">&quot;</span> <span class="st">&quot;</span><span class="va">${MODSIGN_PUBKEY_BACKUP}</span><span class="st">&quot;</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;</span><span class="va">${NVIDIA_INSTALLER_PATH}</span><span class="st">&quot;</span> <span class="at">--no-install-compat32-libs</span> <span class="at">--module-signing-secret-key</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${MODSIGN_KEY}</span><span class="st">&quot;</span> <span class="at">--module-signing-public-key</span><span class="op">=</span><span class="st">&quot;</span><span class="va">${MODSIGN_PUBKEY}</span><span class="st">&quot;</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">${MODSIGN_KEY}</span><span class="st">&quot;</span> <span class="bu">]</span> <span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>            <span class="fu">cp</span> <span class="st">&quot;</span><span class="va">${MODSIGN_KEY_BACKUP}</span><span class="st">&quot;</span> <span class="st">&quot;</span><span class="va">${MODSIGN_KEY}</span><span class="st">&quot;</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        <span class="cf">fi</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-f</span> <span class="st">&quot;</span><span class="va">${MODSIGN_PUBKEY}</span><span class="st">&quot;</span> <span class="bu">]</span> <span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>            <span class="fu">cp</span> <span class="st">&quot;</span><span class="va">${MODSIGN_PUBKEY_BACKUP}</span><span class="st">&quot;</span> <span class="st">&quot;</span><span class="va">${MODSIGN_PUBKEY}</span><span class="st">&quot;</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">fi</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>        <span class="bu">echo</span> <span class="st">&quot;Neither </span><span class="va">${MODSIGN_KEY}</span><span class="st"> nor </span><span class="va">${MODSIGN_PUBKEY}</span><span class="st"> found.&quot;</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        <span class="bu">exit</span> 1</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;Please specify a nvidia installer as a first argument.&quot;</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<p>以下のようにroot権限で使用します。ついでにインストールに必要な依存パッケージのインストールコマンドも書いておきます。</p>
+<pre class="console"><code>$ sudo apt install linux-image-amd64 linux-headers-amd64 build-essential libglvnd-dev pkg-config
+$ sudo ./reinstall-nvidia-driver-with-modsign-key.sh ./NVIDIA-Linux-x86_64-495.46.run</code></pre>
+<h3 id="mokの削除">MOKの削除</h3>
 <p>鍵の入れ換えを行った場合は<a href="https://askubuntu.com/questions/805152/is-it-possible-to-delete-an-enrolled-key-using-mokutil-without-the-original-der">mokutil –export と mokutil –delete</a>
 を組み合わせて不要になった証明書を削除できます。</p>
 <h2 id="firefoxでの日本語入力uim">Firefoxでの日本語入力(uim)</h2>
