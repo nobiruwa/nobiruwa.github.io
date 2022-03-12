@@ -30,6 +30,10 @@ import Hakyll
 --------------------------------------------------------------------------------
 main :: IO ()
 main = hakyll $ do
+    match "favicon.ico" $ do
+      route idRoute
+      compile copyFileCompiler
+
     match "images/*" $ do
         route   idRoute
         compile copyFileCompiler
