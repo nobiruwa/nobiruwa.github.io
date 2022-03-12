@@ -6,7 +6,7 @@ tags: Debian, APT, apt key
 
 `apt key`を実行すると以下のメッセージを見るようになりました。
 
-```bash
+```console
 Warning: apt-key is deprecated. Manage keyring files in trusted.gpg.d instead (see apt-key(8)).
 ```
 
