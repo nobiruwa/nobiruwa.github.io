@@ -37,13 +37,12 @@
 <pre class="console"><code>$ curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh</code></pre>
 <p>インストールの途中にシステム要件が表示されるので、その通りにパッケージをインストールします。</p>
 <pre class="console"><code>$ sudo apt install build-essential curl libffi-dev libffi6 libgmp-dev libgmp10 libncurses-dev libncurses5 libtinfo5</code></pre>
-<p><code>~/.bash_profile</code>にて、環境変数<code>PATH</code>を設定します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># GHCup (Haskell packages)</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="va">GHCUP_HOME</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/.ghcup&quot;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="va">GHCUP_BIN</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$GHCUP_HOME</span><span class="st">/bin&quot;</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;</span><span class="va">$GHCUP_BIN</span><span class="st">&quot;</span> <span class="bu">]</span> <span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$GHCUP_BIN</span><span class="st">:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<p><code>~/.profile</code>にて、環境変数<code>PATH</code>を設定します。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">GHCUP_HOME</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/.ghcup&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="va">GHCUP_BIN</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$GHCUP_HOME</span><span class="st">/bin&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;</span><span class="va">$GHCUP_BIN</span><span class="st">&quot;</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$GHCUP_BIN</span><span class="st">:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
 <p>あらゆるプロジェクトでのビルドで並列実行数を制限する場合はstackのグローバルな設定ファイルにGHCオプションを記述します。<code>~/.stack/config.yaml</code>に以下の行を追加するとよいでしょう。</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ghc-options</span><span class="kw">:</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">&quot;$locals&quot;</span><span class="kw">:</span><span class="at"> -j1</span></span></code></pre></div>

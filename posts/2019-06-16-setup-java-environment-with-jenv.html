@@ -31,27 +31,49 @@
 
 <h2 id="tldr">tl;dr</h2>
 <pre class="console"><code>$ git clone https://github.com/gcuisinier/jenv.git ~/.jenv
-$ cat &lt;&lt; EOF &gt;&gt; ~/.bash_profile
-# jEnv configuration
-JENVBIN=$HOME/.jenv/bin
-if [ -d $JENVBIN ] ; then
-    export PATH=&quot;$JENVBIN:$PATH&quot;
-    eval &quot;$(jenv init -)&quot;
+$ cat &lt;&lt; EOF &gt;&gt; ~/.profile
+JENV_HOME=&quot;$HOME/.jenv&quot;
+JENV_BIN=&quot;$JENV_HOME/bin&quot;
+if [ -d &quot;$JENV_BIN&quot; ]; then
+    export PATH=&quot;$JENV_BIN:$PATH&quot;
+    # rehash after init, because my login shell is dash.
+    eval &quot;$(jenv init --no-rehash -)&quot;
+    (jenv rehash &amp;) 2&gt; /dev/null
 fi
 EOF</code></pre>
 <h2 id="動機">動機</h2>
-<p>Java 8を使うことが多いのですが、Debian Unstableではデフォルトが11, 12とどんどんあがっていきます。そこで、Rubyのvenv、Pythonのvirtualenvのように一般ユーザーがJavaのバージョンを容易に変更できるようにしたいと思いました。</p>
-<h2 id="jenvの入手">jEnvの入手</h2>
-<p><a href="https://www.jenv.be/">jEnv</a>の公式にある通りです。
-まずは<code>~/.jenv</code>を用意します。</p>
+<p>Java 8を使うことが多いのですが、Debian Unstableではデフォルトが11, 12とどんどんあがっていきます。そこで、Rubyの<a href="https://github.com/rbenv/rbenv">rbenv/rbenv</a>のように一般ユーザーがJavaのバージョンを容易に変更できるようにしたいと思いました。</p>
+<h2 id="セットアップ">セットアップ</h2>
+<h3 id="おおまかな手順">おおまかな手順</h3>
+<p>rbenvのフォークをセットアップする際は、おおむね以下の手順に従います。</p>
+<p>ログインシェルにdashを使っているため公式では<code>eval $(jenv init -)</code>を実行しているところ、
+<code>eval $(xxenv init --no-rehash -)</code>と<code>xxenv rehash</code>に分けています。</p>
+<ol type="1">
+<li><code>xxenv</code>リポジトリを<code>~/.xxenv</code>にチェックアウトする。</li>
+<li><code>xxenv-build</code>リポジトリを<code>git clone</code>で<code>~/.xxenv/plugins/xxenv-build</code>にチェックアウトする。</li>
+<li><code>~/.profile</code>(Debian系の場合)に以下の記述を追加する。
+<ul>
+<li><code>export PATH=$HOME/.xxenv/bin:$PATH</code></li>
+<li><code>eval $(xxenv init --no-rehash -)</code></li>
+<li><code>eval (xxenv rehash &amp;) 2&gt; /dev/null</code></li>
+</ul></li>
+</ol>
+<p>jenvのセットアップは以下の通りです。</p>
+<h3 id="jenvのチェックアウト">jEnvのチェックアウト</h3>
+<p><a href="https://www.jenv.be/">jEnv</a>の公式にある通りです。</p>
+<p><code>jenv</code>リポジトリをチェックアウトします。</p>
+<p>場所は公式に合わせて<code>~/.jenv</code>とします。</p>
 <pre class="console"><code>$ git clone https://github.com/gcuisinier/jenv.git ~/.jenv</code></pre>
-<p><code>~/.bash_profile</code>にて、環境変数<code>PATH</code>と<code>JAVA_HOME</code>を設定します。</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># jEnv configuration</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="va">JENVBIN</span><span class="op">=</span><span class="va">$HOME</span>/.jenv/bin</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="va">$JENVBIN</span> <span class="bu">]</span> <span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$JENVBIN</span><span class="st">:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">eval</span> <span class="st">&quot;</span><span class="va">$(</span><span class="ex">jenv</span> init <span class="at">-</span><span class="va">)</span><span class="st">&quot;</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<h3 id="profileの記述"><code>~/.profile</code>の記述</h3>
+<p><code>~/.profile</code>にて、環境変数<code>PATH</code>を設定します。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">JENV_HOME</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/.jenv&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="va">JENV_BIN</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$JENV_HOME</span><span class="st">/bin&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;</span><span class="va">$JENV_BIN</span><span class="st">&quot;</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$JENV_BIN</span><span class="st">:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># rehash after init, because my login shell is dash.</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">eval</span> <span class="st">&quot;</span><span class="va">$(</span><span class="ex">jenv</span> init <span class="at">--no-rehash</span> <span class="at">-</span><span class="va">)</span><span class="st">&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">(</span><span class="ex">jenv</span> rehash <span class="kw">&amp;)</span> <span class="dv">2</span><span class="op">&gt;</span> /dev/null</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
 <h2 id="jdkの入手">JDKの入手</h2>
 <p>OpenJDKのバイナリは<a href="https://github.com/ojdkbuild/ojdkbuild/releases">GitHub</a>で配布しています。</p>
 <p>好みのバージョンのzipファイルをダウンロードし、<code>~/opt</code>などに展開してください。</p>
@@ -62,20 +84,20 @@ EOF</code></pre>
 <pre class="console"><code>$ jenv versions</code></pre>
 <h2 id="グローバルのjava環境">グローバルのJava環境</h2>
 <p>グローバルのJava環境を指定します。</p>
-<pre class="console"><code>$ jenv global &lt;java versionsで列挙されるバージョン文字列&gt;</code></pre>
+<pre class="console"><code>$ jenv global &lt;jenv versionsで列挙されるバージョン文字列&gt;</code></pre>
 <h2 id="ローカルのjava環境">ローカルのJava環境</h2>
 <p>ローカルのJava環境を設定するには、以下のコマンドを実行します。</p>
 <pre class="console"><code>$ cd &lt;設定したいディレクトリ&gt;
-$ jenv local &lt;java versionsで列挙されるバージョン文字列&gt;</code></pre>
-<p><code>java local</code>を実行したディレクトリには<code>.java-version</code>ファイルが生成されます。
-<code>java local</code>を実行したディレクトリとその子孫ディレクトリで実行する<code>java</code>/<code>javac</code>コマンドは、<code>.java-version</code>で指定されたJava環境のものが使用されます。</p>
+$ jenv local &lt;jenv versionsで列挙されるバージョン文字列&gt;</code></pre>
+<p><code>jenv local</code>を実行したディレクトリには<code>.java-version</code>ファイルが生成されます。</p>
+<p><code>jenv local</code>を実行したディレクトリとその子孫ディレクトリで実行する<code>java</code>/<code>javac</code>コマンドは、<code>.java-version</code>で指定されたJava環境のものが使用されます。</p>
 <h2 id="プラグインの有効化">プラグインの有効化</h2>
 <p>いくつかのプラグインを有効にします。たとえば、<code>export</code>プラグインはグローバルのJava環境を<code>JAVA_HOME</code>に設定します。</p>
 <pre class="console"><code>$ jenv enable-plugin export
 $ jenv enable-plugin maven
 $ jenv enable-plugin gradle</code></pre>
-<p>ログインシェルがdashで、<code>~/.bash_profile</code>の内容を<code>~/.profile</code>に記述した場合は<code>"$(jenv init -)"</code>が働かず便利なjenv関数を定義しません。
-そのため、サブコマンドに<code>sh-</code>プリフィックスを付けて実行してください。</p>
+<p>ログインシェルがdashである場合は<code>"$(jenv init -)"</code>が働かず便利なjenv関数を定義しません。</p>
+<p>そのため、サブコマンドに<code>sh-</code>プリフィックスを付けて実行してください。</p>
 <pre class="console"><code>$ jenv sh-enable-plugin export
 $ jenv sh-enable-plugin maven
 $ jenv sh-enable-plugin gradle</code></pre>

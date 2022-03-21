@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
+    <link rel="stylesheet" href="../css/syntax.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <title>My Hakyll Blog - pyenvを用いたPython環境のセットアップ</title>
+  </head>
+  <body>
+    <div id="header">
+      <div id="logo">
+        <a href="../">Nobiruwa's</a>
+      </div>
+      <div id="navigation">
+        <a href="../">Home</a>
+        <a href="../archive.html">Archive</a>
+      </div>
+    </div>
+
+    <div id="content">
+      <h1>pyenvを用いたPython環境のセットアップ</h1>
+
+      <div class="info">
+    Posted on March 21, 2022
+    
+        by nobiruwa
+    
+</div>
+
+<h2 id="tldr">tl;dr</h2>
+<pre class="console"><code>$ git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
+$ PYENV_HOME=&quot;$HOME/.pyenv&quot;
+$ PYENV_BIN=&quot;$PYENV_HOME/bin&quot;
+$ PATH=&quot;$PYENV_BIN:$PATH&quot;
+$ eval &quot;$(pyenv init --path)&quot;
+$ eval &quot;$(pyenv init -)&quot;
+$ mkdir -p $(pyenv root)/plugins
+$ git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
+$ cat &lt;&lt; EOF &gt;&gt; ~/.profile
+PYENV_HOME=&quot;$HOME/.pyenv&quot;
+PYENV_BIN=&quot;$PYENV_HOME/bin&quot;
+if [ -d &quot;$PYENV_BIN&quot; ]; then
+    export PATH=&quot;$PYENV_BIN:$PATH&quot;
+    # rehash after init, because my login shell is dash.
+    eval &quot;$(pyenv init --path)&quot;
+    eval &quot;$(pyenv init --no-rehash -)&quot;
+    (pyenv rehash &amp;) 2&gt; /dev/null
+fi
+EOF</code></pre>
+<h2 id="動機">動機</h2>
+<p><a href="2019-06-16-setup-java-environment-with-jenv.html">jEnvを用いたJava環境のセットアップ</a>、<a href="2022-03-21-setup-node-environment-with-nodenv.html">nodenvを用いたNode.js環境のセットアップ</a>と同じく、プログラミング言語の開発環境を<a href="https://github.com/rbenv/rbenv">rbenv/rbenv</a>のフォークである<a href="https://github.com/pyenv/pyenv">pyenv/pyenv</a>によって構築したいと思いました。</p>
+<h2 id="セットアップ">セットアップ</h2>
+<h3 id="pyenvのチェックアウト">pyenvのチェックアウト</h3>
+<p><code>pyenv</code>リポジトリをチェックアウトします。</p>
+<p>場所は公式に合わせて<code>~/.pyenv</code>とします。</p>
+<p>さらに、<code>pyenv-virtualenv</code>リポジトリをpyenvのプラグインとしてチェックアウトします。</p>
+<pre class="console"><code>$ git clone https://github.com/pyenv/pyenv.git $HOME/.pyenv
+# 一時的に`$HOME/.pyenv/bin`を`$PATH`に追加してpyenv-virtualenvをインストールする
+$ PYENV_HOME=&quot;$HOME/.pyenv&quot;
+$ PYENV_BIN=&quot;$PYENV_HOME/bin&quot;
+$ PATH=&quot;$PYENV_BIN:$PATH&quot;
+$ eval &quot;$(pyenv init --path)&quot;
+$ eval &quot;$(pyenv init -)&quot;
+$ mkdir -p $(pyenv root)/plugins
+$ git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv</code></pre>
+<h3 id="profileの記述"><code>~/.profile</code>の記述</h3>
+<p><code>~/.profile</code>にて、環境変数<code>PATH</code>を設定します。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="va">PYENV_HOME</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$HOME</span><span class="st">/.pyenv&quot;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="va">PYENV_BIN</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$PYENV_HOME</span><span class="st">/bin&quot;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-d</span> <span class="st">&quot;</span><span class="va">$PYENV_BIN</span><span class="st">&quot;</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="st">&quot;</span><span class="va">$PYENV_BIN</span><span class="st">:</span><span class="va">$PATH</span><span class="st">&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># rehash after init, because my login shell is dash.</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">eval</span> <span class="st">&quot;</span><span class="va">$(</span><span class="ex">pyenv</span> init <span class="at">--path</span><span class="va">)</span><span class="st">&quot;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">eval</span> <span class="st">&quot;</span><span class="va">$(</span><span class="ex">pyenv</span> init <span class="at">--no-rehash</span> <span class="at">-</span><span class="va">)</span><span class="st">&quot;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">(</span><span class="ex">pyenv</span> rehash <span class="kw">&amp;)</span> <span class="dv">2</span><span class="op">&gt;</span> /dev/null</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code></pre></div>
+<h2 id="pythonのインストール">Pythonのインストール</h2>
+<p><code>pyenv install</code>コマンドで<code>~/.pyenv/versions</code>配下に特定のバージョンのPythonをインストールします。</p>
+<pre class="console"><code># インストール可能なバージョンを列挙する
+$ pyenv install --list
+# 3.10.3をインストールする場合
+$ pyenv install 3.10.3</code></pre>
+<p>登録されたPythonは下記のコマンドで確認できます。</p>
+<pre class="console"><code>$ pyenv versions</code></pre>
+<p>なお、<code>pip install</code>コマンドは<code>~/.pyenv/versions/&lt;pyenv versionsで列挙されるバージョン文字列&gt;</code>ディレクトリ配下にインストールされます。</p>
+<p>これだけではコマンドを使用可能になりませんので、<code>pyenv rehash</code>コマンドを実行してください。</p>
+<p>すべてのバージョンの<code>bin</code>ディレクトリを更新するので少々時間がかかります。</p>
+<h2 id="グローバルのpython環境">グローバルのPython環境</h2>
+<p>グローバルのPython環境を指定します。</p>
+<pre class="console"><code>$ pyenv global &lt;pyenv versionsで列挙されるバージョン文字列&gt;</code></pre>
+<h2 id="ローカルのpython環境">ローカルのPython環境</h2>
+<p>ローカルのPython環境を設定するには、以下のコマンドを実行します。</p>
+<pre class="console"><code>$ cd &lt;設定したいディレクトリ&gt;
+$ pyenv local &lt;pyenv versionsで列挙されるバージョン文字列&gt;</code></pre>
+<p><code>pyenv local</code>を実行したディレクトリには<code>.python-version</code>ファイルが生成されます。</p>
+<p><code>pyenv local</code>を実行したディレクトリとその子孫ディレクトリで実行する<code>python</code>/<code>pip</code>/<code>virtualenv</code>コマンド等は、<code>.python-version</code>で指定されたPython環境のものが使用されます。</p>
+
+    </div>
+    <div id="footer">
+      Site proudly generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </div>
+  </body>
+</html>
