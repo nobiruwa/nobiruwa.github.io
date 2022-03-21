@@ -36,8 +36,8 @@
 <p>pyrightはNode.jsパッケージです。よって、はじめに<code>npm</code>コマンドをインストールします。</p>
 <pre class="console"><code>$ sudo apt install npm</code></pre>
 <h4 id="追記">追記</h4>
-<p><a href="https://github.com/nodenv/nodenv">nodenv/nodenv</a>を使って<code>npm</code>コマンドを準備するように<a href="2022-03-21-setup-node-environment-with-nodenv.html">なりました</a>。</p>
-<p>また、Pythonも<a href="https://github.com/pyenv/pyenv">pyenv/pyenv</a>を使うように<a href="2022-03-21-setup-python-environment-with-pyenv.html">なりました</a>。</p>
+<p><a href="https://github.com/nodenv/nodenv">nodenv/nodenv</a>を使って<code>npm</code>コマンドを準備するように<a href="2022-03-21-setup-node-environment-with-nodenv.html">しました</a>。</p>
+<p>また、Pythonも<a href="https://github.com/pyenv/pyenv">pyenv/pyenv</a>を使うように<a href="2022-03-21-setup-python-environment-with-pyenv.html">しました</a>。</p>
 <h3 id="emacsパッケージのインストール">Emacsパッケージのインストール</h3>
 <pre class="emacs"><code>M-x package-install
 lsp-mode
@@ -54,13 +54,39 @@ lsp-pyright</code></pre>
 <pre><code>Unable to find installed server supporting this file. The following servers could be installed automatically: pyright[Enter]</code></pre>
 <p>この手順により<code>pyright</code>コマンドは<code>~/.emacs.d/.cache/lsp/npm/pyright/bin/pyright</code>にインストールされます。</p>
 <h2 id="virtualenvを使うプロジェクトの設定">virtualenvを使うプロジェクトの設定</h2>
-<p>私はしばしばvirtualenvを使います。virtualenvにしかないパッケージに対して補完を有効にするために、プロジェクトディレクトリに以下の内容を含む<code>pyrightconfig.json</code>を用意します。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;venvPath&quot;</span><span class="fu">:</span> <span class="st">&quot;~/.venvs&quot;</span><span class="fu">,</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;venv&quot;</span><span class="fu">:</span> <span class="st">&quot;sandbox&quot;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<p>この場合、<code>~/.venvs/sandbox</code>ディレクトリのvirtualenv環境が使われます。</p>
+<p>私はしばしばvirtualenvを使います。virtualenvにしかないパッケージに対して補完を有効にするためには<code>pyrightconfig.json</code>を用意してvirtualenv環境のパスをpyrightに伝える必要があります(<code>pyright</code>コマンドの起動オプションで伝えることもできます)。</p>
 <p><code>pyrightconfig.json</code>の書式は<a href="https://github.com/microsoft/pyright/blob/main/docs/configuration.md">Pyright Configuration</a>で確認できます。</p>
+<p>最低限必要な設定オプジョンは<code>venvPath</code>と<code>venv</code>の2つです。</p>
+<p><code>pyrightconfig.json</code>を含むプロジェクトのリソースを複数のユーザーで共用したいので、<code>venvPath</code>には<code>~/.venvs</code>を指定したいです。</p>
+<p>しかしながら、<a href="https://github.com/microsoft/pyright/issues/1340#issuecomment-756243657">pyrightの設計思想</a>から<code>~</code>や環境変数は展開されません。</p>
+<p>LSPクライアント、つまりEmacsで展開する必要があります。</p>
+<p>そこで、<code>eval</code>を使って動的にローカル変数の値を設定できる仕組みを使って、<code>venvPath</code>オプションを設定することにします。</p>
+<p>ホームディレクトリかPythonプロジェクトのワークスペースのルートディレクトリに<code>.dir-locals.el</code>を用意し<code>venvPath</code>オプションに対応する<code>lsp-pyright-venv-path</code>変数を設定します。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>((python-mode . ((<span class="kw">eval</span> . (setq-local lsp-pyright-venv-path (expand-file-name <span class="st">&quot;~/.venvs&quot;</span>))))))</span></code></pre></div>
+<p>これだけだと、Pythonのソースコードを開くたびに<code>lsp-pyright-venv-path</code>変数が安全でないローカル変数であるとして警告が表示されます。</p>
+<pre><code>The local variables list in /home/ein/pythonprojects/
+contains values that may not be safe (*).
+
+Do you want to apply it?  You can type
+y  -- to apply the local variables list.
+n  -- to ignore the local variables list.
+!  -- to apply the local variables list, and permanently mark these
+      values (*) as safe (in the future, they will be set automatically.)
+
+  * eval : (setq-local lsp-pyright-venv-path (expand-file-name &quot;~/.venvs&quot;))</code></pre>
+<p><code>!</code>を選択して安全なローカル変数であると永続的にマークします。</p>
+<p>すると、Emacsの<code>init.el</code>(あるいは<code>custom-file</code>変数が示すファイル)の<code>custom-set-variables</code>関数の呼び出しパラメータに<code>safe-local-variable-values</code>が追加されます。</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>(custom-set-variables</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a> ...</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a> '(safe-local-variable-values</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>   '((<span class="kw">eval</span> setq-local lsp-pyright-venv-path</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>           (expand-file-name <span class="st">&quot;~/.venvs&quot;</span>)))))</span></code></pre></div>
+<p>この、<code>custom-set-variables</code>関数の呼び出しを<code>init.el</code>にベタ書きするか、<code>custom-file</code>変数が示すファイルに記載しておき<code>init.el</code>からロードするようにしておけば、警告が表示されなくなります。</p>
+<p>各プロジェクトの<code>pyrightconfig.json</code>では、<code>~/.venvs</code>ディレクトリ配下にあるサブディレクトリ名を指定します。</p>
+<p><code>~/.venvs/sandbox</code>ディレクトリのvirtualenv環境を使う場合は以下の記載とします。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;venv&quot;</span><span class="fu">:</span> <span class="st">&quot;sandbox&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 
     </div>
     <div id="footer">
