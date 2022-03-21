@@ -18,6 +18,12 @@ pyrightはNode.jsパッケージです。よって、はじめに`npm`コマン�
 $ sudo apt install npm
 ```
 
+#### 追記
+
+[nodenv/nodenv](https://github.com/nodenv/nodenv)を使って`npm`コマンドを準備するように[なりました](2022-03-21-setup-node-environment-with-nodenv.html)。
+
+また、Pythonも[pyenv/pyenv](https://github.com/pyenv/pyenv)を使うように[なりました](2022-03-21-setup-python-environment-with-pyenv.html)。
+
 ### Emacsパッケージのインストール
 
 ```emacs

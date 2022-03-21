@@ -115,13 +115,12 @@ To configure your current shell, run:
 source $HOME/.cargo/env
 ```
 
-`~/.bash_profile`にて、環境変数`PATH`を設定します。
+`~/.profile`にて、環境変数`PATH`を設定します。
 
 ```bash
-# Cargo configuration
 CARGO_HOME="$HOME/.cargo"
 CARGO_BIN="$CARGO_HOME/bin"
-if [ -d "$CARGO_BIN" ] ; then
+if [ -d "$CARGO_BIN" ]; then
     export PATH="$CARGO_BIN:$PATH"
 fi
 ```

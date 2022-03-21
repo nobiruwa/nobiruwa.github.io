@@ -24,13 +24,12 @@ $ curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 $ sudo apt install build-essential curl libffi-dev libffi6 libgmp-dev libgmp10 libncurses-dev libncurses5 libtinfo5
 ```
 
-`~/.bash_profile`にて、環境変数`PATH`を設定します。
+`~/.profile`にて、環境変数`PATH`を設定します。
 
 ```bash
-# GHCup (Haskell packages)
 GHCUP_HOME="$HOME/.ghcup"
 GHCUP_BIN="$GHCUP_HOME/bin"
-if [ -d "$GHCUP_BIN" ] ; then
+if [ -d "$GHCUP_BIN" ]; then
     export PATH="$GHCUP_BIN:$PATH"
 fi
 ```
