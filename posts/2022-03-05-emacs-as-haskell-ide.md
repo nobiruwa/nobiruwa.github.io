@@ -52,12 +52,47 @@ lsp-haskell
 
 #### Emacsパッケージの設定
 
+rust-modeを真似てバッファー全体にフォーマットを掛けてから保存されるようにしています。
+
 ```lisp
 ;;;;;;;;
 ;; lsp-haskell
 ;;;;;;;;
 (require 'lsp-haskell)
-(add-hook 'haskell-mode-hook #'lsp)
+(setq lsp-haskell-formatting-provider "brittany")
+
+;; rust-modeを参考にバッファーを保存する時にフォーマットする
+(defcustom haskell-format-on-save nil
+  "Format future haskell buffers before saving using lsp-haskell-formatting-provider."
+  :type 'boolean
+  :safe #'booleanp
+  :group 'lsp-haskell-mode)
+
+(defun haskell-enable-format-on-save ()
+  "Enable formatting using lsp-haskell-formatting-provider when saving buffer."
+  (interactive)
+  (setq-local haskell-format-on-save t))
+
+(defun haskell-disable-format-on-save ()
+  "Disable formatting using lsp-haskell-formatting-provider when saving buffer."
+  (interactive)
+  (setq-local haskell-format-on-save nil))
+
+(defun haskell-format-save-hook ()
+  "Enable formatting using lsp-haskell-formatting-provider when saving buffer."
+  (when haskell-format-on-save
+      (lsp-format-buffer)))
+
+;; lsp-format-buffer, lsp-format-regionが使用するインデント幅を
+;; haskell-modeのhaskell-indentation-layout-offsetに合わせる
+(add-to-list 'lsp--formatting-indent-alist '(haskell-mode . haskell-indentation-layout-offset))
+
+(add-hook 'before-save-hook #'haskell-format-save-hook)
+
+(add-hook 'haskell-mode-hook
+          (lambda ()
+            (setq-local haskell-format-on-save t)
+            (lsp)))
 ```
 
 ### プロジェクトの作成
