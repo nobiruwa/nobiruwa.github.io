@@ -51,11 +51,45 @@
 <pre class="emacs"><code>M-x package-install
 lsp-haskell</code></pre>
 <h4 id="emacsパッケージの設定">Emacsパッケージの設定</h4>
+<p>rust-modeを真似てバッファー全体にフォーマットを掛けてから保存されるようにしています。</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">;; lsp-haskell</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>(<span class="kw">require</span> 'lsp-haskell)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>(add-hook 'haskell-mode-hook #'lsp)</span></code></pre></div>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>(<span class="kw">setq</span> lsp-haskell-formatting-provider <span class="st">&quot;brittany&quot;</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">;; rust-modeを参考にバッファーを保存する時にフォーマットする</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>(defcustom haskell-format-on-save <span class="kw">nil</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Format future haskell buffers before saving using lsp-haskell-formatting-provider.&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="bu">:type</span> 'boolean</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  :safe #'booleanp</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  :group 'lsp-haskell-mode)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defun</span><span class="fu"> haskell-enable-format-on-save </span>()</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Enable formatting using lsp-haskell-formatting-provider when saving buffer.&quot;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  (interactive)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  (setq-local haskell-format-on-save <span class="kw">t</span>))</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defun</span><span class="fu"> haskell-disable-format-on-save </span>()</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Disable formatting using lsp-haskell-formatting-provider when saving buffer.&quot;</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  (interactive)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  (setq-local haskell-format-on-save <span class="kw">nil</span>))</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>(<span class="kw">defun</span><span class="fu"> haskell-format-save-hook </span>()</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;Enable formatting using lsp-haskell-formatting-provider when saving buffer.&quot;</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">when</span> haskell-format-on-save</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>      (lsp-format-buffer)))</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co">;; lsp-format-buffer, lsp-format-regionが使用するインデント幅を</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="co">;; haskell-modeのhaskell-indentation-layout-offsetに合わせる</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>(add-to-list 'lsp--formatting-indent-alist '(haskell-mode . haskell-indentation-layout-offset))</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>(add-hook 'before-save-hook #'haskell-format-save-hook)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>(add-hook 'haskell-mode-hook</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>          (<span class="kw">lambda</span> ()</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>            (setq-local haskell-format-on-save <span class="kw">t</span>)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>            (lsp)))</span></code></pre></div>
 <h3 id="プロジェクトの作成">プロジェクトの作成</h3>
 <pre class="console"><code>$ stack new --resolver=&lt;resolver name&gt; &lt;project-name&gt;
 // example
