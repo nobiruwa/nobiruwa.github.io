@@ -49,6 +49,14 @@ OpenPGP公開鍵の配布方法は[OpenPGP Key distribution](https://wiki.debian
 
 プロンプト文字が`$`であれば一般ユーザーで実行するコマンドで、`#`であればrootで実行するコマンドです。
 
+### Docker Engine (`/etc/apt/sources.list.d/docker-engine.list`)
+
+```
+# # wget https://download.docker.com/linux/debian/gpg -O /usr/local/share/keyrings/docker-engine.asc
+# # wget -qO- https://download.docker.com/linux/debian/gpg | gpg --dearmor | tee /usr/local/share/keyrings/docker-engine.gpg > /dev/null
+deb [signed-by=/usr/local/share/keyrings/docker-engine.gpg] https://download.docker.com/linux/debian bullseye stable
+```
+
 ### Heroku CLI (`/etc/apt/sources.list.d/heroku.list`)
 
 ```
