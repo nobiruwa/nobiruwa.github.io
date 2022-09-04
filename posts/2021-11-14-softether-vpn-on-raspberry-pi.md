@@ -8,6 +8,23 @@ tags: VPN, Linux, Raspberry Pi
 
 「SoftEther VPN」の`SecureNAT`が気になり、自宅で常に稼動しているRaspberry Pi 4をVPNサーバー化するセットアップを行いました。
 
+### SecureNAT機能について
+
+SecureNAT機能について理解するために、公式サイトの[3.7 仮想 NAT および仮想 DHCP サーバー](https://ja.softether.org/4-docs/1-manual/3/3.7)と、[VPNFAQ036. SecureNAT の動作モードにはどのような違いがありますか。](https://ja.softether.org/4-docs/3-kb/VPNFAQ036)を見る必要がありました。
+
+FAQにあるように、SecureNAT起動時にDHCPサーバーへACK要求を行います。
+
+> ## 利用モードの選択
+> SecureNAT は仮想 NAT 機能の利用時に、ホスト OS に接続されたイーサネットインターフェイスと Raw IP ソケットで、 DHCP 要求を送信してみます。この DHCP 要求で IP アドレスを取得できたら、インターネット上の Web サーバーの名前解決が DNS で行えることと、解決された IP アドレスへの HTTP での接続が可能であることを確認します。全てに成功した場合のみ、そのインターフェイスが仮想 NAT の WAN 側として使用されます。イーサネットインターフェイスでの通信に成功した場合はカーネルモード SecureNAT が使用され、Raw IP ソケットでの通信に成功した場合は Raw IP モード SecureNAT が使用されます。いずれも成功しなかった場合はユーザモード SecureNAT が使用されます。
+
+VPNサーバーのログ `/var/log/softether/server_log/vpn_yyyymmdd.log` に結果が記録されます。
+
+```
+yyyy-MM-dd HH:mm:ss.fff [HUB "vpn"] SecureNAT: It has been detected that the Kernel-mode NAT for SecureNAT can be run on the interface "eth0". The Kernel-mode NAT is starting. The TCP, UDP and ICMP NAT processings will be performed with high-performance via Kernel-Mode hereafter. The parameters of Kernel-mode NAT: IP Address = "<払い出されたIPアドレス>", Subnet Mask = "255.255.255.0", Default Gateway = "<デフォルトゲートウェイのIPアドレス>", Broadcast Address = "<ブロードキャストのIPアドレス>", Virtual MAC Address: "<仮想MACアドレス>", DHCP Server Address: "<DHCPサーバーのIPアドレス>", DNS Server Address: "<DNSサーバーのIPアドレス>"
+```
+
+DHCPサーバーのログを見ると、`Virtual MAC Address`の仮想MACアドレスにIPアドレスがリースされていました。
+
 ### 必要なパッケージのインストール
 
 ```console
@@ -449,3 +466,9 @@ The command completed successfully.
   - Android端末ではOpenVPNサーバー機能を使えばよいことと、その設定方法が詳しくかかれていました。
 - [AndroidのOpenVPN接続設定（v3.0.0以降）　■セカイVPN■ ](https://faq.interlink.or.jp/faq2/View/wcDisplayContent.aspx?id=701)
   - Android端末でのOpenVPN接続設定の手順が分かりやすく説明されていました。
+- [3.7 仮想 NAT および仮想 DHCP サーバー](https://ja.softether.org/4-docs/1-manual/3/3.7)
+  - SecureNAT機能の説明があります。
+- [VPNFAQ036. SecureNAT の動作モードにはどのような違いがありますか。](https://ja.softether.org/4-docs/3-kb/VPNFAQ036)
+  - SecureNATが動作モードを決定するためにDHCPサーバー、DNSサーバー、HTTPサーバーと通信を行うとの説明があります。
+- [SoftEther VPN connects every minute to Yahoo.com](https://www.vpnusers.com/viewtopic.php?t=7716)
+  - SecureNAT動作モードを決定する際のDNS名前解決とHTTP通信にyahoo.comが用いられているという回答があります。
