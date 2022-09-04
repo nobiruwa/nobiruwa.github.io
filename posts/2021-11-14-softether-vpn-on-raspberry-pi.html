@@ -31,6 +31,16 @@
 
 <h2 id="vpnサーバー-raspberry-pi-4-のセットアップ">VPNサーバー (Raspberry Pi 4) のセットアップ</h2>
 <p>「SoftEther VPN」の<code>SecureNAT</code>が気になり、自宅で常に稼動しているRaspberry Pi 4をVPNサーバー化するセットアップを行いました。</p>
+<h3 id="securenat機能について">SecureNAT機能について</h3>
+<p>SecureNAT機能について理解するために、公式サイトの<a href="https://ja.softether.org/4-docs/1-manual/3/3.7">3.7 仮想 NAT および仮想 DHCP サーバー</a>と、<a href="https://ja.softether.org/4-docs/3-kb/VPNFAQ036">VPNFAQ036. SecureNAT の動作モードにはどのような違いがありますか。</a>を見る必要がありました。</p>
+<p>FAQにあるように、SecureNAT起動時にDHCPサーバーへACK要求を行います。</p>
+<blockquote>
+<h2 id="利用モードの選択">利用モードの選択</h2>
+<p>SecureNAT は仮想 NAT 機能の利用時に、ホスト OS に接続されたイーサネットインターフェイスと Raw IP ソケットで、 DHCP 要求を送信してみます。この DHCP 要求で IP アドレスを取得できたら、インターネット上の Web サーバーの名前解決が DNS で行えることと、解決された IP アドレスへの HTTP での接続が可能であることを確認します。全てに成功した場合のみ、そのインターフェイスが仮想 NAT の WAN 側として使用されます。イーサネットインターフェイスでの通信に成功した場合はカーネルモード SecureNAT が使用され、Raw IP ソケットでの通信に成功した場合は Raw IP モード SecureNAT が使用されます。いずれも成功しなかった場合はユーザモード SecureNAT が使用されます。</p>
+</blockquote>
+<p>VPNサーバーのログ <code>/var/log/softether/server_log/vpn_yyyymmdd.log</code> に結果が記録されます。</p>
+<pre><code>yyyy-MM-dd HH:mm:ss.fff [HUB &quot;vpn&quot;] SecureNAT: It has been detected that the Kernel-mode NAT for SecureNAT can be run on the interface &quot;eth0&quot;. The Kernel-mode NAT is starting. The TCP, UDP and ICMP NAT processings will be performed with high-performance via Kernel-Mode hereafter. The parameters of Kernel-mode NAT: IP Address = &quot;&lt;払い出されたIPアドレス&gt;&quot;, Subnet Mask = &quot;255.255.255.0&quot;, Default Gateway = &quot;&lt;デフォルトゲートウェイのIPアドレス&gt;&quot;, Broadcast Address = &quot;&lt;ブロードキャストのIPアドレス&gt;&quot;, Virtual MAC Address: &quot;&lt;仮想MACアドレス&gt;&quot;, DHCP Server Address: &quot;&lt;DHCPサーバーのIPアドレス&gt;&quot;, DNS Server Address: &quot;&lt;DNSサーバーのIPアドレス&gt;&quot;</code></pre>
+<p>DHCPサーバーのログを見ると、<code>Virtual MAC Address</code>の仮想MACアドレスにIPアドレスがリースされていました。</p>
 <h3 id="必要なパッケージのインストール">必要なパッケージのインストール</h3>
 <pre class="console"><code># apt install softether-common softether-vpnserver softether-vpncmd</code></pre>
 <p><code>softether-vpnserver.service</code>が自動起動されました。</p>
@@ -330,24 +340,24 @@ VPN Server/vpn&gt;exit</code></pre>
 <h2 id="接続-android">接続 (Android)</h2>
 <h3 id="openvpn設定ファイルの作成">OpenVPN設定ファイルの作成</h3>
 <p><code>SoftEther VPN サーバー管理マネージャ</code>の<code>OpenVPN / MS-SSTP 設定</code>ダイアログからダウンロードしたzipファイルから<code>&lt;VPNサーバーホスト名&gt;_openvpn_remote_access_l3.ovpn</code>を取り出し、以下のように変更します。</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode diff"><code class="sourceCode diff"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">@@ -60,7 +60,7 @@</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a> #</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a> # Specify either 'proto tcp' or 'proto udp'.</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">-proto udp</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="va">+proto tcp</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a> ###############################################################################</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="dt">@@ -86,7 +86,7 @@</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a> #       the Dynamic DNS hostname, replace it to either IP address or</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a> #       other domain's hostname.</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="st">-remote &lt;VPNサーバーの管理番号&gt;.v4.softether.net 1194</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="va">+remote &lt;VPNサーバーの管理番号&gt;.v4.softether.net &lt;静的NAPT設定でOpenVPN通信用に割り当てたWAN側ポート番号&gt;</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a> ###############################################################################</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode diff"><code class="sourceCode diff"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">@@ -60,7 +60,7 @@</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a> #</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a> # Specify either 'proto tcp' or 'proto udp'.</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="st">-proto udp</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="va">+proto tcp</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a> ###############################################################################</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="dt">@@ -86,7 +86,7 @@</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a> #       the Dynamic DNS hostname, replace it to either IP address or</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a> #       other domain's hostname.</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="st">-remote &lt;VPNサーバーの管理番号&gt;.v4.softether.net 1194</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="va">+remote &lt;VPNサーバーの管理番号&gt;.v4.softether.net &lt;静的NAPT設定でOpenVPN通信用に割り当てたWAN側ポート番号&gt;</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a> ###############################################################################</span></code></pre></div>
 <h3 id="android端末のopenvpnセットアップ">Android端末のOpenVPNセットアップ</h3>
 <p><code>&lt;VPNサーバーホスト名&gt;_openvpn_remote_access_l3.ovpn</code>をAndroid端末のストレージにコピーしておきます。</p>
 <p>AndroidOpenVPNクライアントをインストールします。</p>
@@ -456,6 +466,18 @@ The command completed successfully.</code></pre>
 <li><a href="https://faq.interlink.or.jp/faq2/View/wcDisplayContent.aspx?id=701">AndroidのOpenVPN接続設定（v3.0.0以降）　■セカイVPN■</a>
 <ul>
 <li>Android端末でのOpenVPN接続設定の手順が分かりやすく説明されていました。</li>
+</ul></li>
+<li><a href="https://ja.softether.org/4-docs/1-manual/3/3.7">3.7 仮想 NAT および仮想 DHCP サーバー</a>
+<ul>
+<li>SecureNAT機能の説明があります。</li>
+</ul></li>
+<li><a href="https://ja.softether.org/4-docs/3-kb/VPNFAQ036">VPNFAQ036. SecureNAT の動作モードにはどのような違いがありますか。</a>
+<ul>
+<li>SecureNATが動作モードを決定するためにDHCPサーバー、DNSサーバー、HTTPサーバーと通信を行うとの説明があります。</li>
+</ul></li>
+<li><a href="https://www.vpnusers.com/viewtopic.php?t=7716">SoftEther VPN connects every minute to Yahoo.com</a>
+<ul>
+<li>SecureNAT動作モードを決定する際のDNS名前解決とHTTP通信にyahoo.comが用いられているという回答があります。</li>
 </ul></li>
 </ul>
 
