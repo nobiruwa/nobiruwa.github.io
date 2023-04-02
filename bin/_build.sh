@@ -7,6 +7,6 @@ CUR_DIR=`pwd`
 
 cd "$GIT_REPO_ROOT_DIRECTORY"
 
-stack build && stack exec nobiruwa-github-io clean && stack exec nobiruwa-github-io build
+stack build && stack exec nobiruwa-github-io-exe clean && stack exec nobiruwa-github-io-exe build
 
 cd "$CUR_DIR"
