@@ -104,8 +104,8 @@ lsp-haskell</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode lisp"><code class="sourceCode commonlisp"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">;; lsp-haskell</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">;;;;;;;;</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>(<span class="kw">require</span> 'lsp-haskell)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>(add-hook 'haskell-mode-hook #'lsp)</span></code></pre></div>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>(<span class="kw">require</span> <span class="dt">'lsp-haskell</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>(add-hook <span class="dt">'haskell-mode-hook</span> <span class="op">#'</span>lsp)</span></code></pre></div>
 <h3 id="プロジェクトの作成">プロジェクトの作成</h3>
 <pre class="console"><code>$ stack new --resolver=&lt;resolver name&gt; &lt;project-name&gt;
 // example

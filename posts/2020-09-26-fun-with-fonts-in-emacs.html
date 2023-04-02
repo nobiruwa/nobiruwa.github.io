@@ -80,23 +80,23 @@
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  (create-fontset-from-ascii-font user--cjk-font <span class="kw">nil</span> (replace-regexp-in-string <span class="st">&quot;fontset-&quot;</span> <span class="st">&quot;&quot;</span> user--standard-fontset))</span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; unicodeに対してuser--cjk-fontがグリフを持っていればそれを使い、</span></span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; 持っていない場合にはuser--unicode-fontで補完する</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset 'unicode</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset <span class="dt">'unicode</span></span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>                    (font-spec :family user--cjk-font)</span>
 <span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span>)</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset 'unicode</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset <span class="dt">'unicode</span></span>
 <span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>                    (font-spec :family user--unicode-font)</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span> 'append)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span> <span class="dt">'append</span>)</span>
 <span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; latinに対してuser--latin-fontを使う</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset 'latin</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font user--standard-fontset <span class="dt">'latin</span></span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>                    (font-spec :family user--latin-font)</span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span> 'prepend)</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>                    <span class="kw">nil</span> <span class="dt">'prepend</span>)</span>
 <span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; CJKに対してuser--cjk-fontを使う</span></span>
 <span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">dolist</span> (charset '(kana han cjk-misc hangul kanbun bopomofo))</span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>    (set-fontset-font user--standard-fontset charset</span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>                  (font-spec :family user--cjk-font)</span>
-<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">nil</span> 'prepend))</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>                  <span class="kw">nil</span> <span class="dt">'prepend</span>))</span>
 <span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; symbolに対してuser--unicode-emoji-fontを使う</span></span>
-<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font <span class="kw">t</span> 'symbol user--unicode-emoji-font <span class="kw">nil</span> 'append)</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  (set-fontset-font <span class="kw">t</span> <span class="dt">'symbol</span> user--unicode-emoji-font <span class="kw">nil</span> <span class="dt">'append</span>)</span>
 <span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; </span><span class="al">TODO</span><span class="co"> 日本語フォントではU+2018とU+2019は全角幅だがWeb上の英文ではアポストロフィに使われていて</span></span>
 <span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; 見栄えが悪い。現状は全角で表示し必要に応じてU+0027に置換する。よい方法はないものか。</span></span>
 <span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">dolist</span> (charset '((<span class="ch">#x</span>2018 . #x2019)    ;; Curly single quotes &quot;‘’&quot;</span>
@@ -108,68 +108,68 @@
 <span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>  (<span class="kw">dolist</span> (charset '(bengali bengali-akruti bengali-cdac))</span>
 <span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>    (set-fontset-font user--standard-fontset charset</span>
 <span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>                      (font-spec :family user--unicode-font-fallback)</span>
-<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">nil</span> 'prepend)))</span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>                      <span class="kw">nil</span> <span class="dt">'prepend</span>)))</span>
 <span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>(<span class="kw">when</span> window-system</span>
 <span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; create fontset-user</span></span>
 <span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>  (user--set-font)</span>
 <span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>  <span class="co">;; Ensure user--standard-fontset gets used for new frames.</span></span>
-<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>  (add-to-list 'default-frame-alist `(font . ,user--standard-fontset))</span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>  (add-to-list 'initial-frame-alist `(font . ,user--standard-fontset)))</span></code></pre></div>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>  (add-to-list <span class="dt">'default-frame-alist</span> `(font . ,user--standard-fontset))</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>  (add-to-list <span class="dt">'initial-frame-alist</span> `(font . ,user--standard-fontset)))</span></code></pre></div>
 <h2 id="problemsの抜粋">PROBLEMSの抜粋</h2>
 <p>libotfに関する問題の存在は<code>PROBLEMS</code>ファイルにしっかりと書かれていました。
 Emacsのよいところは公式がドキュメント化をしっかりしているところで、<code>PROBLEMS</code>ファイルにしっかり目を通しましょう、という教訓になりました。</p>
-<pre class="org"><code>** Emacs crashes when you try to view a file with complex characters.
-
-One possible reason for this could be a bug in the libotf or the
-libm17n-flt/m17n-db libraries Emacs uses for displaying complex
-scripts.  Make sure you have the latest versions of these libraries
-installed.  If the problem still persists with the latest released
-versions of these libraries, you can try building these libraries from
-their CVS repository:
-
-  cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/m17n co libotf
-  cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/m17n co m17n-db
-  cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/m17n co m17n-lib
-
-One known problem that causes such crashes is with using Noto Serif
-Kannada fonts.  To work around that, force Emacs not to select these
-fonts, by adding the following to your ~/.emacs init file:
-
-  (push &quot;Noto Serif Kannada&quot; face-ignored-fonts)
-
-You can try this interactively in a running Emacs session like this:
-
-  M-: (push &quot;Noto Serif Kannada&quot; face-ignored-fonts) RET
-
-Another set of problems is caused by an incompatible libotf library.
-In this case, displaying the etc/HELLO file (as shown by C-h h)
-triggers the following message to be shown in the terminal from which
-you launched Emacs:
-
-  symbol lookup error: /usr/bin/emacs: undefined symbol: OTF_open
-
-This problem occurs because unfortunately there are two libraries
-called &quot;libotf&quot;.  One is the library for handling OpenType fonts,
-http://www.m17n.org/libotf/, which is the one that Emacs expects.
-The other is a library for Open Trace Format, and is used by some
-versions of the MPI message passing interface for parallel
-programming.
-
-For example, on RHEL6 GNU/Linux, the OpenMPI rpm provides a version
-of &quot;libotf.so&quot; in /usr/lib/openmpi/lib.  This directory is not
-normally in the ld search path, but if you want to use OpenMPI,
-you must issue the command &quot;module load openmpi&quot;.  This adds
-/usr/lib/openmpi/lib to LD_LIBRARY_PATH.  If you then start Emacs from
-the same shell, you will encounter this crash.
-Ref: &lt;URL:https://bugzilla.redhat.com/show_bug.cgi?id=844776&gt;
-
-There is no good solution to this problem if you need to use both
-OpenMPI and Emacs with libotf support.  The best you can do is use a
-wrapper shell script (or function) &quot;emacs&quot; that removes the offending
-element from LD_LIBRARY_PATH before starting emacs proper.
-Or you could recompile Emacs with an -Wl,-rpath option that
-gives the location of the correct libotf.</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode org"><code class="sourceCode orgmode"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">** Emacs crashes when you try to view a file with complex characters.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>One possible reason for this could be a bug in the libotf or the</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>libm17n-flt/m17n-db libraries Emacs uses for displaying complex</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>scripts.  Make sure you have the latest versions of these libraries</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>installed.  If the problem still persists with the latest released</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>versions of these libraries, you can try building these libraries from</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>their CVS repository:</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/m17n co libotf</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/m17n co m17n-db</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  cvs -z3 -d:pserver:anonymous@cvs.savannah.nongnu.org:/sources/m17n co m17n-lib</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>One known problem that causes such crashes is with using Noto Serif</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>Kannada fonts.  To work around that, force Emacs not to select these</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>fonts, by adding the following to your ~/.emacs init file:</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  (push &quot;Noto Serif Kannada&quot; face-ignored-fonts)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>You can try this interactively in a running Emacs session like this:</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  M-: (push &quot;Noto Serif Kannada&quot; face-ignored-fonts) RET</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>Another set of problems is caused by an incompatible libotf library.</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>In this case, displaying the etc/HELLO file (as shown by C-h h)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>triggers the following message to be shown in the terminal from which</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>you launched Emacs:</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  symbol lookup error: /usr/bin/emacs: undefined symbol: OTF_open</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>This problem occurs because unfortunately there are two libraries</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>called &quot;libotf&quot;.  One is the library for handling OpenType fonts,</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>http://www.m17n.org/libotf/, which is the one that Emacs expects.</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>The other is a library for Open Trace Format, and is used by some</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>versions of the MPI message passing interface for parallel</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>programming.</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>For example, on RHEL6 GNU/Linux, the OpenMPI rpm provides a version</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>of &quot;libotf.so&quot; in /usr/lib/openmpi/lib.  This directory is not</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>normally in the ld search path, but if you want to use OpenMPI,</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>you must issue the command &quot;module load openmpi&quot;.  This adds</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>/usr/lib/openmpi/lib to LD_LIBRARY_PATH.  If you then start Emacs from</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>the same shell, you will encounter this crash.</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>Ref: &lt;URL:https://bugzilla.redhat.com/show_bug.cgi?id=844776&gt;</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>There is no good solution to this problem if you need to use both</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>OpenMPI and Emacs with libotf support.  The best you can do is use a</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>wrapper shell script (or function) &quot;emacs&quot; that removes the offending</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>element from LD_LIBRARY_PATH before starting emacs proper.</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>Or you could recompile Emacs with an -Wl,-rpath option that</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>gives the location of the correct libotf.</span></code></pre></div>
 <h2 id="切っ掛け">切っ掛け</h2>
 <p>tarから<code>~/opt/firefox</code>に展開して使っているFirefoxをユーザーのデフォルトのWebブラウザに設定しようと、
 Firefoxのdesktopファイルを作ることにしました。一方でchromiumをパッケージとしてインストールしてあり、

@@ -69,10 +69,10 @@ $ ros setup</code></pre>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">;; https://lisphub.jp/common-lisp/cookbook/index.cgi?SLIME#H-33uy3rfpe0845</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">defun</span><span class="fu"> my-slime-space </span>(n)</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>      (interactive <span class="st">&quot;p&quot;</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      (<span class="kw">if</span> (<span class="kw">and</span> (<span class="kw">boundp</span> 'skk-henkan-mode) skk-henkan-mode)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      (<span class="kw">if</span> (<span class="kw">and</span> (<span class="kw">boundp</span> <span class="dt">'skk-henkan-mode</span>) skk-henkan-mode)</span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>          (skk-insert n)</span>
 <span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        (slime-autodoc-space n)))</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    (define-key slime-autodoc-mode-map <span class="st">&quot; &quot;</span> 'my-slime-space)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    (define-key slime-autodoc-mode-map <span class="st">&quot; &quot;</span> <span class="dt">'my-slime-space</span>)</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    (<span class="kw">setq</span> inferior-lisp-program <span class="st">&quot;ros -Q run&quot;</span>)))</span></code></pre></div>
 <h2 id="サンプルスクリプト">サンプルスクリプト</h2>
 <p>Wikiの<a href="https://github.com/roswell/roswell/wiki#scripting-with-roswell">Scripting with Roswell</a>の通りです。</p>
