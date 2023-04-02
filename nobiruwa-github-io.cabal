@@ -1,21 +1,36 @@
-name:                nobiruwa-github-io
-version:             0.1.0.0
--- synopsis:
--- description:
-homepage:            https://github.com/githubuser/nobiruwa-github-io#readme
-license:             BSD3
-license-file:        LICENSE
-author:              Author name here
-maintainer:          example@example.com
-copyright:           2019 Author name here
-category:            Web
-build-type:          Simple
-extra-source-files:  README.md
-cabal-version:       >=1.10
+cabal-version: 1.12
 
-executable nobiruwa-github-io
-  main-is:             site.hs
-  default-language:    Haskell2010
-  ghc-options:         -threaded
-  build-depends:       base >= 4.7 && < 5,
-                       hakyll
+-- This file has been generated from package.yaml by hpack version 0.35.1.
+--
+-- see: https://github.com/sol/hpack
+
+name:           nobiruwa-github-io
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/nobiruwa-github-io#readme>
+homepage:       https://github.com/githubuser/nobiruwa-github-io#readme
+bug-reports:    https://github.com/githubuser/nobiruwa-github-io/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2023 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    CHANGELOG.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/nobiruwa-github-io
+
+executable nobiruwa-github-io-exe
+  main-is: site.hs
+  other-modules:
+      Paths_nobiruwa_github_io
+  hs-source-dirs:
+      ./
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , hakyll
+  default-language: GHC2021
