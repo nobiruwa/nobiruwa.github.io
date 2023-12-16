@@ -435,13 +435,13 @@ The command completed successfully.
 
 また、クライアント側のログ`/var/log/softether/client_log/client_YYYYmmdd.log`と、サーバー側のログ`/var/log/softether/server_log/vpn_YYYYmmdd.log`に接続失敗の理由が記載されているかを確認してください。
 
-`AccountStatusGet`コマンドでセッションが確立されていることを確認したら、最後に仮想DHCPサーバーからIPアドレスを取得するために`dhclient`コマンドを実行してください。
+`AccountStatusGet`コマンドでセッションが確立されていることを確認したら、最後に仮想DHCPサーバーからIPアドレスを取得するために`dhcpcd`コマンドを実行してください。
 
 ```console
-# dhclient -v vpn_vpn0 # サーバー用途の場合は静的割り当てのほうがよい
+# dhcpcd vpn_vpn0 # サーバー用途の場合は静的割り当てのほうがよい
 ```
 
-ただし、Raspberry Pi 4はサーバー用途であるため、`dhclient`コマンドを実行するかわりにIPアドレスの静的割り当てとルーティング設定を行います。
+ただし、Raspberry Pi 4はサーバー用途であるため、`dhcpcd`コマンド(`dhcpcd-base`パッケージが必要です)を実行するかわりにIPアドレスの静的割り当てとルーティング設定を行います。
 
 仮想DHCPサーバーの管理外のIPアドレスを割り当てます。
 
@@ -472,3 +472,5 @@ The command completed successfully.
   - SecureNATが動作モードを決定するためにDHCPサーバー、DNSサーバー、HTTPサーバーと通信を行うとの説明があります。
 - [SoftEther VPN connects every minute to Yahoo.com](https://www.vpnusers.com/viewtopic.php?t=7716)
   - SecureNAT動作モードを決定する際のDNS名前解決とHTTP通信にyahoo.comが用いられているという回答があります。
+- [DHCP_Client - Debian Wiki](https://wiki.debian.org/DHCP_Client)
+  - `dhclient`コマンドの代替コマンドとして`dhcpcd`が挙げられています。
