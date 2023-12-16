@@ -431,9 +431,9 @@ Server Product Name                       |SoftEther VPN Server Developer Editio
 The command completed successfully.</code></pre>
 <p>セッションが確立していない場合は、<code>AccountCreate</code>、<code>AccountUsernameSet</code>、<code>AccountPasswordSet</code>の設定を再度実行してください。</p>
 <p>また、クライアント側のログ<code>/var/log/softether/client_log/client_YYYYmmdd.log</code>と、サーバー側のログ<code>/var/log/softether/server_log/vpn_YYYYmmdd.log</code>に接続失敗の理由が記載されているかを確認してください。</p>
-<p><code>AccountStatusGet</code>コマンドでセッションが確立されていることを確認したら、最後に仮想DHCPサーバーからIPアドレスを取得するために<code>dhclient</code>コマンドを実行してください。</p>
-<pre class="console"><code># dhclient -v vpn_vpn0 # サーバー用途の場合は静的割り当てのほうがよい</code></pre>
-<p>ただし、Raspberry Pi 4はサーバー用途であるため、<code>dhclient</code>コマンドを実行するかわりにIPアドレスの静的割り当てとルーティング設定を行います。</p>
+<p><code>AccountStatusGet</code>コマンドでセッションが確立されていることを確認したら、最後に仮想DHCPサーバーからIPアドレスを取得するために<code>dhcpcd</code>コマンドを実行してください。</p>
+<pre class="console"><code># dhcpcd vpn_vpn0 # サーバー用途の場合は静的割り当てのほうがよい</code></pre>
+<p>ただし、Raspberry Pi 4はサーバー用途であるため、<code>dhcpcd</code>コマンド(<code>dhcpcd-base</code>パッケージが必要です)を実行するかわりにIPアドレスの静的割り当てとルーティング設定を行います。</p>
 <p>仮想DHCPサーバーの管理外のIPアドレスを割り当てます。</p>
 <pre class="console"><code># ip addr add 192.168.30.2/24 dev vpn_vpn0
 # ip route add 192.168.30.0/24 via 192.168.30.2 dev vpn_vpn0</code></pre>
@@ -478,6 +478,10 @@ The command completed successfully.</code></pre>
 <li><a href="https://www.vpnusers.com/viewtopic.php?t=7716">SoftEther VPN connects every minute to Yahoo.com</a>
 <ul>
 <li>SecureNAT動作モードを決定する際のDNS名前解決とHTTP通信にyahoo.comが用いられているという回答があります。</li>
+</ul></li>
+<li><a href="https://wiki.debian.org/DHCP_Client">DHCP_Client - Debian Wiki</a>
+<ul>
+<li><code>dhclient</code>コマンドの代替コマンドとして<code>dhcpcd</code>が挙げられています。</li>
 </ul></li>
 </ul>
 
