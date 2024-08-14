@@ -450,6 +450,88 @@ The command completed successfully.
 # ip route add 192.168.30.0/24 via 192.168.30.2 dev vpn_vpn0
 ```
 
+## Raspberry Pi 4でのVPN接続自動化
+
+Raspbery Pi 4の起動時、前節のVPN接続が自動で行われるようにします。
+
+`/home/pi/bin/vpn0-start.sh`、`/home/pi/bin/vpn0-stop.sh`、`/home/pi/.config/systemd/system/user/vpn0.service`を作成します。内容はそれぞれ以下の通りです。
+
+### `/home/pi/bin/vpn0-start.sh`
+
+```bash
+#!/usr/bin/env bash
+
+# SoftEther
+vpncmd /client localhost /cmd AccountConnect vpnconn
+
+# Network
+DEVICE_NAME=vpn_vpn0
+ADDRESS=192.168.30.2
+MASK=24 
+NETWORK_ADDRESS=192.168.30.0/24
+
+sudo ip addr add ${ADDRESS}/${MASK} dev ${DEVICE_NAME}
+
+sudo ip route add ${NETWORK_ADDRESS} via ${ADDRESS} dev ${DEVICE_NAME}
+
+exit 0
+```
+
+### `/home/pi/bin/vpn0-stop.sh`
+
+```bash
+#!/usr/bin/env bash
+
+# Network
+DEVICE_NAME=vpn_vpn0
+ADDRESS=192.168.30.2
+MASK=24
+NETWORK_ADDRESS=192.168.30.0/24
+
+routes=`ip route | egrep ${DEVICE_NAME}`
+
+while IFS= read -r line
+do
+  if [[ $line =~ ([0-9\.\/]+) ]]; then
+    network_address=${BASH_REMATCH[1]}
+    echo delete route ${network_address}
+    sudo ip route delete ${network_address}
+  fi
+done <<< "$routes"
+
+sudo ip addr del ${ADDRESS}/${MASK} dev ${DEVICE_NAME}
+
+# SoftEther
+vpncmd /client localhost /cmd AccountDisconnect vpnconn
+
+exit 0
+```
+
+### `/home/pi/.config/systemd/system/user/vpn0.service`
+
+```systemd-unit
+[Unit]
+Description=assign a static ip address to the softether client.
+After=softether-vpnserver.service softether-vpnclient.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/pi/bin/vpn0-start.sh
+ExecStop=/home/pi/bin/vpn0-stop.sh
+TimeoutStopSec=5
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
+```
+
+### サービスの有効化
+
+```bash
+systemctl --user daemon-reload
+systemctl --user enable vpn0.service
+```
+
 ## 参考文献
 
 - [v6プラスでポートを開放する方法](v6プラスでポートを開放する方法)
