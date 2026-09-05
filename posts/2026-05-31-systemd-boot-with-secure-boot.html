@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../css/hakyll-cssgarden/bronx.css">
+    <link rel="stylesheet" href="../css/syntax.css">
+    <link rel="stylesheet" href="../css/custom.css">
+    <title>My Hakyll Blog - UEFIセキュアブート環境におけるGRUBからsystemd-bootへの移行</title>
+  </head>
+  <body>
+    <div id="header">
+      <div id="logo">
+        <a href="../">Nobiruwa's</a>
+      </div>
+      <div id="navigation">
+        <a href="../">Home</a>
+        <a href="../archive.html">Archive</a>
+      </div>
+    </div>
+
+    <div id="content">
+      <h1>UEFIセキュアブート環境におけるGRUBからsystemd-bootへの移行</h1>
+
+      <div class="info">
+    Posted on May 31, 2026
+    
+        by nobiruwa
+    
+</div>
+
+<h2 id="切っ掛け">切っ掛け</h2>
+<p>2026年5月にセキュアブートの証明書を更新するWindows Updateを行ってから、GRUBからWindows 11を起動することが出来なくなりました。<br />
+この問題を解消しようと調べ物をしていたなかでsystemd-bootの存在を知り、試してみることにしました。</p>
+<h2 id="最終的な起動時の構成">最終的な起動時の構成</h2>
+<p><a href="https://www.freedesktop.org/wiki/MatthewGarrett/BootLoaderSpec/">Boot Loader Specification</a> (BLS) のうち、 Type #1 構成を選びました。</p>
+<p>チェーンロードの関係は以下のようになります。</p>
+<pre class="plain"><code>UEFI
+  ↓
+/boot/efi/EFI/debian/shimx64.efi (Signed by Microsoft UEFI CA 2023)
+  ↓
+/boot/efi/EFI/systemd-bootx64.efi (Signed by Debian Secure Boot CA)
+  ↓
+/boot/efi/loader/entries/(マシンID)-(カーネルバージョン)-(アーキテクチャ).conf
+  ↓
+/boot/efi/(マシンID)/(カーネルバージョン)-(アーキテクチャ)/linux
+  +
+/boot/efi/(マシンID)/(カーネルバージョン)-(アーキテクチャ)/initrd.img-(カーネルバージョン)-(アーキテクチャ)</code></pre>
+<p>自前の鍵(KEK/DB, etc.)を用意してshimを使わないようにしたり、Type #2構成でsystemd-bootからUKIを起動するようにしたり、といったいくつかのバリエーションがあるようですが面倒なので採用しませんでした。</p>
+<p>上記のブートをデフォルトとし、Windows 11を起動したい場合はUEFIのブートメニューを使うようにしました。</p>
+<h2 id="構築手順">構築手順</h2>
+<p>色々と試したので正確な構築手順を理解できていませんが、おそらく以下のコマンドにより完了してしまうのでは。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># apt install --allow-remove-essential systemd-boot-efi-amd64-signed systemd-boot grub-efi-amd64-signed-</span></span></code></pre></div>
+<h2 id="注意点">注意点</h2>
+<h3 id="systemd-bootx64.efiが署名されていること">systemd-bootx64.efiが署名されていること</h3>
+<p>systemd-boot-efi-amd64パッケージのefiファイルがESPパーティションにコピーされた場合、systemd-bootx64.efiは未署名であるためセキュアブートを有効にしたマシンでは起動に失敗します。</p>
+<h4 id="systemd-bootx64.efiの確認と修正">systemd-bootx64.efiの確認と修正</h4>
+<p>正しい状態は以下の通りです。</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># diff /usr/lib/systemd/boot/efi/systemd-bootx64.efi /boot/efi/EFI/systemd/systemd-bootx64.efi</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Binary</span> files /usr/lib/systemd/boot/efi/systemd-bootx64.efi and /boot/efi/EFI/systemd/systemd-bootx64.efi differ</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># diff /usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed /boot/efi/EFI/systemd/systemd-bootx64.efi</span></span></code></pre></div>
+<p>もし未署名のsystemd-bootx64.efiがコピーされた場合は、systemd-boot関連のパッケージを再設定します。</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mv /boot/efi/EFI/systemd/systemd-bootx64.efi /tmp</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># dpkg-reconfigure systemd-boot</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/EFI&quot;</span>.</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/EFI/systemd&quot;</span>.</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/EFI/BOOT&quot;</span>.</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/loader&quot;</span>.</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/loader/keys&quot;</span>.</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/loader&quot;</span>.</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/loader/entries&quot;</span>.</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/EFI&quot;</span>.</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/EFI/Linux&quot;</span>.</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Copied</span> <span class="st">&quot;/usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed&quot;</span> to <span class="st">&quot;/boot/efi/EFI/systemd/systemd-bootx64.efi&quot;</span>.</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="ex">Copied</span> <span class="st">&quot;/usr/lib/systemd/boot/efi/systemd-bootx64.efi.signed&quot;</span> to <span class="st">&quot;/boot/efi/EFI/BOOT/BOOTX64.EFI&quot;</span>.</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="ex">Created</span> directory <span class="st">&quot;/boot/efi/e714167f6abc424f8496f8921afb8d7f&quot;</span>.</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="ex">Random</span> seed file /boot/efi/loader/random-seed successfully refreshed <span class="er">(</span><span class="ex">32</span> bytes<span class="kw">)</span><span class="bu">.</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="ex">Updated</span> EFI boot entry <span class="st">&quot;Linux Boot Manager&quot;</span>.</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="ex">Updated</span> EFI boot entry <span class="st">&quot;Fallback Linux Boot Manager&quot;</span>.</span></code></pre></div>
+<h3 id="shimx64.efi経由でsystemd-bootx64.efiを起動すること">shimx64.efi経由でsystemd-bootx64.efiを起動すること</h3>
+<p>ブートメニューからLinux Boot Managerを選択しても起動に失敗します。systemd-bootをセットアップするとshim64.efi経由でsystemd-bootx64.efiを起動するDebianというエントリが作られますので、そちらをデフォルトのブートローダーとして設定しておきます。</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># efibootmgr -u</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">BootCurrent:</span> 000A</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Timeout:</span> 1 seconds</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">BootOrder:</span> 000A,0000,0002,0001,0003,0004</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Boot0000*</span> Windows Boot Manager	HD<span class="er">(</span><span class="ex">1,GPT,feb4246b-0490-4823-8219-a4198ebab99e,0x800,0x82000</span><span class="kw">)</span><span class="ex">/\EFI\MICROSOFT\BOOT\BOOTMGFW.EFI䥗䑎坏S</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Boot0001*</span> Linux Boot Manager	HD<span class="er">(</span><span class="ex">1,GPT,feb4246b-0490-4823-8219-a4198ebab99e,0x800,0x82000</span><span class="kw">)</span><span class="ex">/\EFI\SYSTEMD\SYSTEMD-BOOTX64.EFI</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Boot0002*</span> debian	HD<span class="er">(</span><span class="ex">1,GPT,feb4246b-0490-4823-8219-a4198ebab99e,0x800,0x82000</span><span class="kw">)</span><span class="ex">/\EFI\DEBIAN\SHIMX64.EFI</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Boot0003*</span> UEFI: PXE IPv4 Intel<span class="er">(</span><span class="ex">R</span><span class="kw">)</span> <span class="ex">Ethernet</span> Connection <span class="er">(</span><span class="ex">14</span><span class="kw">)</span> <span class="ex">I219-V</span>	PciRoot<span class="er">(</span><span class="ex">0x0</span><span class="kw">)</span><span class="ex">/Pci</span><span class="er">(</span><span class="ex">0x1f,0x6</span><span class="kw">)</span><span class="ex">/MAC</span><span class="er">(</span><span class="ex">a8a1597e4880,0</span><span class="kw">)</span><span class="ex">/IPv4</span><span class="er">(</span><span class="ex">0.0.0.0,0,DHCP,0.0.0.0,0.0.0.0,0.0.0.0</span><span class="kw">)</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Boot0004*</span> UEFI: PXE IPv6 Intel<span class="er">(</span><span class="ex">R</span><span class="kw">)</span> <span class="ex">Ethernet</span> Connection <span class="er">(</span><span class="ex">14</span><span class="kw">)</span> <span class="ex">I219-V</span>	PciRoot<span class="er">(</span><span class="ex">0x0</span><span class="kw">)</span><span class="ex">/Pci</span><span class="er">(</span><span class="ex">0x1f,0x6</span><span class="kw">)</span><span class="ex">/MAC</span><span class="er">(</span><span class="ex">a8a1597e4880,0</span><span class="kw">)</span><span class="ex">/IPv6</span><span class="er">(</span><span class="ex">[::],0,Static,[::],[::],64</span><span class="kw">)</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Boot0005*</span> Fallback Linux Boot Manager	HD<span class="er">(</span><span class="ex">1,GPT,feb4246b-0490-4823-8219-a4198ebab99e,0x800,0x82000</span><span class="kw">)</span><span class="ex">/\EFI\systemd\systemd-boot-fallbackx64.efi</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Boot0006*</span> Fallback Linux Boot Manager	VenHw<span class="er">(</span><span class="ex">99e275e7-75a0-4b37-a2e6-c5385e6c00cb</span><span class="kw">)</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Boot0007*</span> Fallback Linux Boot Manager	VenHw<span class="er">(</span><span class="ex">99e275e7-75a0-4b37-a2e6-c5385e6c00cb</span><span class="kw">)</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="ex">Boot000A*</span> Debian	HD<span class="er">(</span><span class="ex">1,GPT,feb4246b-0490-4823-8219-a4198ebab99e,0x800,0x82000</span><span class="kw">)</span><span class="ex">/EFI\DEBIAN\SHIMX64.EFI\EFI\systemd\systemd-bootx64.efi</span> <span class="dt">\0</span></span></code></pre></div>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://www.freedesktop.org/wiki/MatthewGarrett/BootLoaderSpec/">Boot Loader Specification</a></li>
+<li><a href="https://wiki.debian.org/SecureBoot#Supported_architectures_and_packages">Supported architectures and packages - SecureBoot - Debian Wiki</a></li>
+<li><a href="https://wiki.debian.org/SecureBoot#Secure_Boot_setup_with_systemd-boot">Secure Boot setup with systemd-boot - SecureBoot - Debian Wiki</a></li>
+</ul>
+<p>最終的に採用しなかったものの、UKIについても参考にしました。</p>
+<ul>
+<li><a href="https://wiki.debian.org/UKI">UKI - Debian Wiki</a></li>
+</ul>
+
+    </div>
+    <div id="footer">
+      Site proudly generated by
+      <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+    </div>
+  </body>
+</html>
