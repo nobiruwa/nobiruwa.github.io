@@ -34,7 +34,7 @@
 <h2 id="切っ掛け">切っ掛け</h2>
 <p><a href="http://www.opengl-tutorial.org/">OpenGLのチュートリアル</a>を使って学習しているところ、GNU Globalでは一部のAPIの補完がイマイチだったので、環境を模索することにしました。</p>
 <p>例えば、以下のAPIはGNU Globalが<code>/usr/include</code>配下を入力して作るタグGTAGSには登録されません。</p>
-<div class="sourceCode" id="mycode" data-startFrom="100"><pre class="sourceCode numberSource cpp numberLines"><code class="sourceCode cpp" style="counter-reset: source-line 99;"><span id="mycode-100"><a href="#mycode-100"></a><span class="pp">#define glBindVertexArray </span>GLEW_GET_FUN<span class="op">(</span>__glewBindVertexArray<span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="mycode" data-startFrom="100"><pre class="sourceCode numberSource cpp numberLines"><code class="sourceCode cpp" style="counter-reset: source-line 99;"><span id="mycode-100"><a href="#mycode-100" aria-label="100"></a><span class="pp">#define glBindVertexArray </span>GLEW_GET_FUN<span class="op">(</span>__glewBindVertexArray<span class="op">)</span></span></code></pre></div>
 <p>目標はOpenGLの開発をベンチマークとして、以下の事が実現できるようになることです。</p>
 <ol type="1">
 <li>関数名の補完ができる</li>
